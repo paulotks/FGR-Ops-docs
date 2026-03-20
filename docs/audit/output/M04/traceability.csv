@@ -1,6 +1,6 @@
 PRD-ID,SPEC-Path,Status,Severidade,Comentario
 REQ-FUNC-001,docs/SPEC/03-fila-scoring-estados-sla.md,Coberto,menor,A maquina de estados documenta transicoes autorizadas guards por perfil e terminalidade de CONCLUIDA.
-REQ-FUNC-002,docs/SPEC/03-fila-scoring-estados-sla.md,Parcial,bloqueante,O Hard Filter cobre jurisdicao e compatibilidade no fluxo normal mas a Regra Zero por operadorAlocadoId abre conflito para alocacao manual fora dos filtros.
+REQ-FUNC-002,docs/SPEC/03-fila-scoring-estados-sla.md,Coberto,menor,PRD qualifica filtro estrito como fluxo automatico e referencia REQ-FUNC-006 como excecao explicita (DEC-001). SPEC documenta modelo hibrido na Regra Zero e Hard Filter.
 REQ-FUNC-003,docs/SPEC/02-modelo-dados.md,Coberto,menor,O modelo de dados cobre TipoMaquinario Maquinario Servico Ajudante e autorizacoes do Operador por tipo.
 REQ-FUNC-004,docs/SPEC/01-modulos-plataforma.md + docs/SPEC/02-modelo-dados.md + docs/SPEC/03-fila-scoring-estados-sla.md + docs/SPEC/06-definicoes-complementares.md,Coberto,menor,O conjunto SPEC cobre RegistroExpediente selecao de maquina e ajudante troca auditavel e regra de adjacencia neutra na primeira demanda do dia.
 REQ-FUNC-005,docs/SPEC/01-modulos-plataforma.md + docs/SPEC/02-modelo-dados.md,Parcial,importante,A SPEC reconhece demandas agrupadas lote multiplo e DemandaGrupo mas nao fecha o contrato da logica estrutural partilhada nem a independencia das demandas no envio bulk.

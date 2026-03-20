@@ -44,6 +44,12 @@
         "file": "docs/PRD/05-criterios-aceite.md",
         "section": "## Jurisdicao logistica sobre preferencias no score",
         "approx_line": 41
+      },
+      "resolucao": {
+        "status": "resolvido",
+        "decisao": "DEC-001",
+        "data": "2026-03-20",
+        "descricao": "REQ-ACE-003 reescrito com terminologia canonica (operadorAlocadoId), modelo hibrido explicitado e dois cenarios Gherkin: um para adjacencia vs alocacao manual e outro para excecao auditavel fora da zona."
       }
     }
   ],
@@ -61,6 +67,12 @@
         "file": "docs/SPEC/03-fila-scoring-estados-sla.md",
         "section": "## Regra zero, hard filter, destaque e score",
         "approx_line": 13
+      },
+      "resolucao": {
+        "status": "resolvido",
+        "decisao": "DEC-001",
+        "data": "2026-03-20",
+        "descricao": "A Regra Zero agora explicita DEC-001: alocacao manual sobrepoe elegibilidade mas a demanda participa do scoring. A nota de rastreio de REQ-ACE-003 foi alinhada. O conflito com o cenario de aceite esta eliminado."
       }
     },
     {
@@ -113,9 +125,9 @@
       {
         "prd_id": "REQ-ACE-003",
         "spec_path": "docs/SPEC/03-fila-scoring-estados-sla.md",
-        "status": "Parcial",
-        "severidade": "bloqueante",
-        "comentario": "A SPEC cobre jurisdicao logistica, hard filters e formula de score, mas a `Regra Zero` e a nota de rastreio de `REQ-ACE-003` preservam a precedencia de `operadorAlocadoId`, conflitando com o cenario do PRD em que a preferencia manual deve perder para a demanda logisticamente favorecida."
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "PRD e SPEC alinhados pelo modelo hibrido DEC-001: alocacao manual determina o operador destinatario, mas a demanda participa do scoring normalmente. Cenarios Gherkin validam adjacencia vs alocacao manual e excecao auditavel fora da zona."
       },
       {
         "prd_id": "REQ-ACE-004",
@@ -162,7 +174,13 @@
         ],
         "descricao": "O PRD exige, no cenario de aceite, que uma demanda com preferencia manual de operador perca no ranking para outra com jurisdicao logistica favoravel. A SPEC, por outro lado, determina que demandas com `operadorAlocadoId` contornam as regras subsequentes e nao participam do score normal. Os dois documentos divergem sobre se a preferencia/alocacao manual participa ou nao da ordenacao priorizada.",
         "localizacao_prd": "docs/PRD/05-criterios-aceite.md :: ## Jurisdicao logistica sobre preferencias no score :: ~L43/~L50",
-        "localizacao_spec": "docs/SPEC/03-fila-scoring-estados-sla.md :: ## Regra zero, hard filter, destaque e score :: ~L13/~L29"
+        "localizacao_spec": "docs/SPEC/03-fila-scoring-estados-sla.md :: ## Regra zero, hard filter, destaque e score :: ~L13/~L29",
+        "resolucao": {
+          "status": "resolvido",
+          "decisao": "DEC-001",
+          "data": "2026-03-20",
+          "descricao": "PRD e SPEC alinhados: alocacao manual sobrepoe elegibilidade/distribuicao mas a demanda participa do scoring na fila do operador. Cenarios Gherkin reescritos com terminologia canonica."
+        }
       },
       {
         "id": "CROSS-M06-002",
@@ -180,16 +198,18 @@
   "decision_by_user": [],
   "executive_summary": {
     "total_findings": 7,
-    "bloqueantes": 2,
-    "importantes": 5,
+    "total_findings_pendentes": 4,
+    "total_findings_resolvidos": 3,
+    "bloqueantes": 1,
+    "importantes": 3,
     "menores": 0,
     "coverage": {
-      "coberto": 4,
-      "parcial": 4,
+      "coberto": 5,
+      "parcial": 3,
       "nao_coberto": 0
     },
-    "risco_geral": "alto",
-    "nota": "O M06 tem boa cobertura para isolamento RBAC, estado terminal, auditabilidade gerencial e restricoes cross-tenant, mas conserva dois desvios de aceite relevantes: a precedencia da alocacao manual face ao score/logistica e o encerramento automatico de cancelamentos sem revisao humana. Alem disso, `REQ-ACE-007` continua apenas parcialmente auditavel porque o criterio de token ainda nao foi migrado para o PRD modular."
+    "risco_geral": "medio",
+    "nota": "O conflito bloqueante entre alocacao manual e score/logistica (CROSS-M06-001) foi resolvido por DEC-001 (modelo hibrido). Resta 1 bloqueante: encerramento automatico de cancelamentos sem revisao humana (CROSS-M06-002, a tratar em Fase 1.2). Achados importantes pendentes: PRD-M06-001 (REQ-ACE-007 por migrar), SPEC-M06-002 (UI nao bloqueante), SPEC-M06-003 (cancelamento automatico 24h)."
   },
   "traceability_csv": "docs/audit/output/M06/traceability.csv",
   "traceability_stub_markdown": "docs/audit/output/M06/traceability-stub.md"

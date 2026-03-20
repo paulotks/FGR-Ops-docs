@@ -12,7 +12,7 @@ Uma demanda so pode avancar, retroceder, cancelar ou concluir seguindo rigorosam
 
 ### `REQ-FUNC-002` Filtro estrito por jurisdicao e compatibilidade
 
-Maquinas e operadores nao podem visualizar nem receber tarefas fora da jurisdicao logistica atribuida. A elegibilidade depende tambem da compatibilidade entre maquinario e servico.
+No fluxo automatico de distribuicao, maquinas e operadores nao podem visualizar nem receber tarefas fora da jurisdicao logistica atribuida. A elegibilidade depende tambem da compatibilidade entre maquinario e servico. A alocacao manual por `operadorAlocadoId` (ver `REQ-FUNC-006`) constitui excecao explicita e auditavel a estas regras de elegibilidade (DEC-001).
 
 -> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#regra-zero-hard-filter-destaque-e-score](../SPEC/03-fila-scoring-estados-sla.md#regra-zero-hard-filter-destaque-e-score)
 
@@ -37,7 +37,7 @@ O frontend deve permitir agrupar sequencias de servicos com logica estrutural pa
 
 ### `REQ-FUNC-006` Alocacao manual e agendamentos
 
-`AdminOperacional` e `UsuarioInternoFGR` podem criar demandas com atribuicao explicita de operador via `operadorAlocadoId` ou definir uma `dataAgendada` futura. Demandas agendadas permanecem em `AGENDADA` e entram automaticamente na fila pendente 60 minutos antes do horario alvo.
+`AdminOperacional` e `UsuarioInternoFGR` podem criar demandas com atribuicao explicita de operador via `operadorAlocadoId` ou definir uma `dataAgendada` futura. Demandas agendadas permanecem em `AGENDADA` e entram automaticamente na fila pendente 60 minutos antes do horario alvo. A alocacao via `operadorAlocadoId` sobrepoe as regras automaticas de distribuicao e elegibilidade (jurisdicao, proximidade e balanceamento) como excecao de gestao auditavel, mas nao remove o motor de priorizacao da fila do operador. A ordem resultante na fila constitui organizacao recomendada de atendimento, nao bloqueio rigido de execucao (DEC-001).
 
 -> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#regra-zero-hard-filter-destaque-e-score](../SPEC/03-fila-scoring-estados-sla.md#regra-zero-hard-filter-destaque-e-score)
 -> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#maquina-de-estados-da-demanda](../SPEC/03-fila-scoring-estados-sla.md#maquina-de-estados-da-demanda)

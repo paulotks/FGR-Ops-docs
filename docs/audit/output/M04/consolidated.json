@@ -51,6 +51,12 @@
         "file": "docs/PRD/03-requisitos-funcionais.md",
         "section": "### `REQ-FUNC-002` Filtro estrito por jurisdicao e compatibilidade / ### `REQ-FUNC-006` Alocacao manual e agendamentos",
         "approx_line": 13
+      },
+      "resolucao": {
+        "status": "resolvido",
+        "decisao": "DEC-001",
+        "data": "2026-03-20",
+        "descricao": "REQ-FUNC-002 agora qualifica o filtro estrito como aplicavel ao fluxo automatico e referencia REQ-FUNC-006 como excecao explicita e auditavel. REQ-FUNC-006 documenta o modelo hibrido: operadorAlocadoId sobrepoe distribuicao/elegibilidade mas nao remove o motor de priorizacao."
       }
     }
   ],
@@ -69,6 +75,12 @@
         "file": "docs/SPEC/03-fila-scoring-estados-sla.md",
         "section": "## Regra zero, hard filter, destaque e score",
         "approx_line": 13
+      },
+      "resolucao": {
+        "status": "resolvido",
+        "decisao": "DEC-001",
+        "data": "2026-03-20",
+        "descricao": "A Regra Zero agora documenta explicitamente DEC-001: a alocacao manual sobrepoe distribuicao/elegibilidade como excecao auditavel, mas a demanda participa normalmente do pipeline de destaque e scoring. O Hard Filter explicita que demandas via operadorAlocadoId nao passam por este filtro."
       }
     },
     {
@@ -129,9 +141,9 @@
       {
         "prd_id": "REQ-FUNC-002",
         "spec_path": "docs/SPEC/03-fila-scoring-estados-sla.md",
-        "status": "Parcial",
-        "severidade": "bloqueante",
-        "comentario": "O `Hard Filter` cobre jurisdicao e compatibilidade no fluxo normal, mas a `Regra Zero` permite atribuicao direta por `operadorAlocadoId`, deixando o requisito absoluto do PRD vulneravel em cenarios de alocacao manual."
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "O PRD qualifica o filtro estrito como aplicavel ao fluxo automatico e referencia REQ-FUNC-006 como excecao explicita (DEC-001). A SPEC documenta o modelo hibrido na Regra Zero e no Hard Filter, alinhando distribuicao e scoring."
       },
       {
         "prd_id": "REQ-FUNC-003",
@@ -200,7 +212,13 @@
         ],
         "descricao": "O PRD fixa que maquinas e operadores nao podem receber tarefas fora da jurisdicao logistica ou sem compatibilidade maquina-servico, enquanto a SPEC declara que a `Regra Zero` com `operadorAlocadoId` contorna as regras subsequentes e atribui diretamente ao operador. A redacao atual cria conflito direto sobre se a alocacao manual pode ou nao ultrapassar os filtros eliminatorios.",
         "localizacao_prd": "docs/PRD/03-requisitos-funcionais.md :: ### `REQ-FUNC-002` / ### `REQ-FUNC-006` :: ~L13 / ~L38",
-        "localizacao_spec": "docs/SPEC/03-fila-scoring-estados-sla.md :: ## Regra zero, hard filter, destaque e score :: ~L13"
+        "localizacao_spec": "docs/SPEC/03-fila-scoring-estados-sla.md :: ## Regra zero, hard filter, destaque e score :: ~L13",
+        "resolucao": {
+          "status": "resolvido",
+          "decisao": "DEC-001",
+          "data": "2026-03-20",
+          "descricao": "PRD e SPEC agora alinhados no modelo hibrido: alocacao manual sobrepoe elegibilidade como excecao auditavel, demanda participa do scoring normalmente na fila do operador."
+        }
       }
     ]
   },
@@ -208,16 +226,18 @@
   "decision_by_user": [],
   "executive_summary": {
     "total_findings": 7,
-    "bloqueantes": 1,
-    "importantes": 6,
+    "total_findings_pendentes": 4,
+    "total_findings_resolvidos": 3,
+    "bloqueantes": 0,
+    "importantes": 3,
     "menores": 0,
     "coverage": {
-      "coberto": 6,
-      "parcial": 4,
+      "coberto": 7,
+      "parcial": 3,
       "nao_coberto": 0
     },
-    "risco_geral": "alto",
-    "nota": "O M04 esta amplamente coberto para maquina de estados, expediente, agendamento, cancelamentos e modelagem espacial, mas permanece com um conflito bloqueante entre filtro logistico estrito e alocacao manual. Alem disso, agrupamento/bulk, `tempoExecucaoMs` e a garantia de UI nao bloqueante para prioridade maxima ainda dependem de inferencia entre varios ficheiros."
+    "risco_geral": "medio",
+    "nota": "O conflito bloqueante entre filtro logistico estrito e alocacao manual foi resolvido por DEC-001 (modelo hibrido). Restam 3 achados importantes: agrupamento/bulk (SPEC-M04-002), tempoExecucaoMs (SPEC-M04-003) e UI nao bloqueante para prioridade maxima (SPEC-M04-004). A cobertura de REQ-FUNC-002 passa a Coberto."
   },
   "traceability_csv": "docs/audit/output/M04/traceability.csv",
   "traceability_stub_markdown": "docs/audit/output/M04/traceability-stub.md"

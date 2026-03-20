@@ -10,8 +10,8 @@ O motor de distribuicao de demandas para maquinarios atua de forma dinamica. A c
 
 ## Regra zero, hard filter, destaque e score
 
-1. **Regra Zero (Alocacao Manual)**: demandas com `operadorAlocadoId` preenchido contornam as regras subsequentes e sao atribuidas diretamente ao operador indicado.
-2. **Hard Filter (Filtros Eliminatorios)**: demandas saem da fila elegivel do operador se pertencerem a `Setor Operacional` distinto ou se houver incompatibilidade entre equipamento e servico.
+1. **Regra Zero (Alocacao Manual)**: demandas com `operadorAlocadoId` preenchido sao atribuidas diretamente ao operador indicado, sobrepondo as regras automaticas de distribuicao e elegibilidade — jurisdicao territorial, proximidade e balanceamento de carga — como excecao explicita e auditavel. Uma vez na fila do operador, a demanda participa normalmente do pipeline de destaque e scoring (passos 3-5). A ordem resultante constitui organizacao recomendada de atendimento, nao bloqueio rigido de execucao, permitindo ajustes operacionais em campo com rastreabilidade (DEC-001).
+2. **Hard Filter (Filtros Eliminatorios)**: no fluxo automatico de distribuicao, demandas saem da fila elegivel do operador se pertencerem a `Setor Operacional` distinto ou se houver incompatibilidade entre equipamento e servico. Demandas atribuidas via `operadorAlocadoId` (passo 1) nao passam por este filtro.
 3. **Destaque Visual de Prioridade Maxima**: demandas classificadas com prioridade `MAXIMA` recebem destaque visual obrigatorio na interface antes da ordenacao final.
 4. **Scoring Multivalorado**: as restantes demandas elegiveis recebem uma pontuacao numerica calculada por:
 
@@ -26,7 +26,7 @@ O motor de distribuicao de demandas para maquinarios atua de forma dinamica. A c
 - **fator_material**: derivado de risco logistico, em `0.0` (`Normal`) ou `1.0` (`Critico/Perecivel`).
 5. **Ordenacao Final**: renderizacao decrescente pelo valor numerico do `score`, com desempate por ordem de chegada (`FIFO` cronologico).
 
-> Nota de rastreio: `REQ-ACE-003` valida o comportamento do ranking entre demandas elegiveis ao score. A atribuicao explicita por `operadorAlocadoId` continua a seguir a Regra Zero.
+> Nota de rastreio: `REQ-ACE-003` valida o comportamento do ranking para todas as demandas na fila do operador, incluindo as atribuidas via `operadorAlocadoId`. A alocacao manual determina o operador destinatario, mas nao isenta a demanda da priorizacao por score (DEC-001).
 
 ## Governanca de pesos e auditoria
 
@@ -131,7 +131,7 @@ Toda alteracao gerencial relevante sobre a `Demanda` exige registo nao destrutiv
 Se a `Regra Zero` atribuir manualmente uma nova demanda a um operador que ja possui uma demanda em `EM_ANDAMENTO`, o sistema aplica um modelo nao destrutivo:
 
 1. A demanda corrente nao retorna a `PENDENTE` nem e interrompida.
-2. A nova demanda entra na fila subsequente desse operador com prioridade absoluta sobre o motor de score.
+2. A nova demanda entra na fila do operador e participa do pipeline de priorizacao por score. O sistema sinaliza a demanda ao operador como atribuicao administrativa, e a ordem de atendimento pode ser ajustada em campo com rastreabilidade (DEC-001).
 3. O operador e notificado da nova carga, mas conclui a tarefa atual antes de assumir a seguinte.
 
 > Decisao: a plataforma rejeita qualquer abordagem que interrompa uma operacao fisica em curso apenas por sobreposicao administrativa em sistema.

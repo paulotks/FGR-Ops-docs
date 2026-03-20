@@ -40,16 +40,24 @@ Then o sistema deve rejeitar a transição e retornar uma mensagem de erro de pe
 
 ## Jurisdicao logistica sobre preferencias no score
 
-**REQ-ACE-003** O ranking da fila deve respeitar a jurisdição logística e os fatores de score definidos para as demandas elegíveis ao motor de priorização.
+**REQ-ACE-003** O ranking da fila do operador deve respeitar a jurisdição logística e os fatores de score definidos para todas as demandas presentes na fila, incluindo as atribuídas via `operadorAlocadoId`. A alocação manual determina a que operador a demanda é dirigida, mas não isenta a demanda da priorização por score. A ordem resultante é uma organização recomendada de atendimento, não um bloqueio rígido de execução (DEC-001).
 
 → SPEC: [../SPEC/03-fila-scoring-estados-sla.md#regra-zero-hard-filter-destaque-e-score](../SPEC/03-fila-scoring-estados-sla.md#regra-zero-hard-filter-destaque-e-score)
 
-**Cenário: Sobreposição de regras de priorização**
+**Cenário 1: Adjacência espacial supera demanda alocada manualmente na ordenação da fila**
 
 ```gherkin
-Given que uma demanda 'A' possui preferência manual de operador e uma demanda 'B' possui 'Adjacência Espacial' (jurisdição logística) favorável
-When o algoritmo de score de priorização é executado para a mesma categoria de máquina
+Given que um Operador possui na fila uma demanda 'A' atribuída via operadorAlocadoId cuja quadra é diferente da posição actual do operador e uma demanda 'B' com 'Adjacência Espacial' favorável (mesma quadra)
+When o motor de scoring calcula a pontuação para a fila deste Operador
 Then a demanda 'B' deve receber uma pontuação de ranking superior à demanda 'A'
+```
+
+**Cenário 2: Alocação manual a operador fora da zona é aceite como excepção auditável**
+
+```gherkin
+Given que um AdminOperacional cria uma demanda com operadorAlocadoId apontando para um Operador fora do SetorOperacional da demanda
+When a demanda é criada no sistema
+Then a demanda deve ser atribuída ao Operador indicado, entrar na sua fila para priorização normal por score e gerar registo auditável da excepção de jurisdição
 ```
 
 ## Audit log com justificativa em modificacoes gerenciais
