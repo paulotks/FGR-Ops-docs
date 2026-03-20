@@ -53,12 +53,17 @@ O sistema deve impor limites de requisicao para mitigar forca bruta, abuso e neg
 
 -> SPEC: [../SPEC/00-visao-arquitetura.md#arquitetura-plataforma](../SPEC/00-visao-arquitetura.md#arquitetura-plataforma)
 
-### `REQ-NFR-007` Politica de palavra-passe
+### `REQ-NFR-007` Politica de autenticacao segmentada por perfil
 
-Todos os perfis com credencial propria devem obedecer a uma politica minima de palavra-passe, com composicao forte e prevencao de reutilizacao recente.
+A politica de autenticacao e segmentada por perfil, equilibrando usabilidade operacional em campo e seguranca corporativa nos perfis de retaguarda (DEC-004).
 
+**Perfis de Campo** (`Empreiteiro`, `Operador`):
+- Autenticacao simplificada via `Usuario + PIN numerico` no app mobile.
+- Controlos compensatorios obrigatorios: lockout progressivo, resposta nao enumeravel, trilha auditavel e sessao curta.
+
+**Perfis Administrativos / Suporte** (demais perfis com credencial propria):
 - Minimo de 8 caracteres.
 - Inclusao obrigatoria de letras maiusculas, minusculas, numeros e caracteres especiais.
 - Bloqueio de reutilizacao das ultimas 3 palavras-passe.
 
--> SPEC: [../SPEC/00-visao-arquitetura.md#arquitetura-plataforma](../SPEC/00-visao-arquitetura.md#arquitetura-plataforma)
+-> SPEC: [../SPEC/00-visao-arquitetura.md#politica-autenticacao-senha](../SPEC/00-visao-arquitetura.md#politica-autenticacao-senha)

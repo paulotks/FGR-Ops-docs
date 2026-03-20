@@ -82,6 +82,10 @@ Este registo centraliza as decisões de produto necessárias antes das correçõ
 - **Justificação:** A segmentação equilibra usabilidade operacional em campo e segurança corporativa nos perfis de retaguarda. O PRD permanece como fonte dos critérios mínimos e da regra por perfil, enquanto a SPEC torna-se fonte canónica do contrato técnico de autenticação (fluxos, lockout, rate limiting por endpoint/perfil, auditoria e gestão de sessão), fechando a lacuna bloqueante identificada em `SPEC-M05-002`.
 - **Nota MVP:** Para login de Campo com `Usuário + PIN`, implementar no mínimo: limite de tentativas com bloqueio temporário progressivo, resposta de erro não enumerável, trilha auditável de autenticação e política de sessão curta. A SPEC deve explicitar os parâmetros operacionais.
 - **Achados resolvidos:** `SPEC-M05-002`
+- **Aplicação (Fase 1.4 — 2026-03-20):**
+  - `SPEC/00-visao-arquitetura.md`: Adicionada ADR D6 (Política de Autenticação e Palavra-passe — segmentação por perfil) com três subsecções: 6.1 Perfis de Campo (Empreiteiro, Operador) com autenticação simplificada por Usuário+PIN (lockout progressivo, sessão curta de 12h, trilha auditável, troca a cada 90 dias, hash bcrypt); 6.2 Perfis Administrativos/Suporte com palavra-passe forte (8 caracteres mínimos, 4 classes obrigatórias, bloqueio de reutilização das últimas 3, lockout de 15 min, troca a cada 180 dias); 6.3 Regras transversais (rate limiting por endpoint/perfil, gestão de sessão com idle timeout de 30 min para campo, tabela `AuthAuditLog`). Princípios arquitecturais (§1) actualizados para referenciar D6.
+  - `PRD/04-requisitos-nao-funcionais.md`: `REQ-NFR-007` actualizado — título alterado para "Política de autenticação segmentada por perfil"; texto reformulado para documentar dois grupos (Campo: Usuário+PIN com controlos compensatórios; Administrativo: palavra-passe forte); referência SPEC apontada para novo anchor `#politica-autenticacao-senha`.
+  - Artefactos regenerados: `M05/consolidated.json`, `M05/traceability.csv`, `M05/traceability-stub.md`.
 
 ---
 

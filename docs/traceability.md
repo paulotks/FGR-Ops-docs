@@ -28,7 +28,8 @@ Matriz global de rastreio entre os requisitos do PRD e os modulos da SPEC.
 | `REQ-NFR-001`, `REQ-NFR-003` | [PRD/04-requisitos-nao-funcionais.md](PRD/04-requisitos-nao-funcionais.md) | [SPEC/00-visao-arquitetura.md](SPEC/00-visao-arquitetura.md) | Monorepo, stack base, backend e decisoes arquiteturais. |
 | `REQ-NFR-002` | [PRD/04-requisitos-nao-funcionais.md](PRD/04-requisitos-nao-funcionais.md) | [SPEC/00-visao-arquitetura.md](SPEC/00-visao-arquitetura.md), [SPEC/06-definicoes-complementares.md](SPEC/06-definicoes-complementares.md) | Experiencia PWA mobile-first, conectividade e operacao offline. |
 | `REQ-NFR-004` | [PRD/04-requisitos-nao-funcionais.md](PRD/04-requisitos-nao-funcionais.md) | [SPEC/02-modelo-dados.md](SPEC/02-modelo-dados.md) | Persistencia relacional e isolamento multi-tenant. |
-| `REQ-NFR-005`, `REQ-NFR-006`, `REQ-NFR-007` | [PRD/04-requisitos-nao-funcionais.md](PRD/04-requisitos-nao-funcionais.md) | [SPEC/00-visao-arquitetura.md](SPEC/00-visao-arquitetura.md) | JWT, refresh tokens, rate limiting e politicas de autenticacao. |
+| `REQ-NFR-005`, `REQ-NFR-006` | [PRD/04-requisitos-nao-funcionais.md](PRD/04-requisitos-nao-funcionais.md) | [SPEC/00-visao-arquitetura.md](SPEC/00-visao-arquitetura.md) | JWT, refresh tokens e rate limiting. |
+| `REQ-NFR-007` | [PRD/04-requisitos-nao-funcionais.md](PRD/04-requisitos-nao-funcionais.md) | [SPEC/00-visao-arquitetura.md#politica-autenticacao-senha](SPEC/00-visao-arquitetura.md#politica-autenticacao-senha) | Politica de autenticacao segmentada por perfil (D6/DEC-004): Campo (Usuario+PIN) e Administrativo (palavra-passe forte). |
 | `REQ-ACE-001`, `REQ-ACE-008` | [PRD/05-criterios-aceite.md](PRD/05-criterios-aceite.md) | [SPEC/04-rbac-permissoes.md](SPEC/04-rbac-permissoes.md) | Isolamento RBAC e auditoria cross-tenant. |
 | `REQ-ACE-002`, `REQ-ACE-003`, `REQ-ACE-004`, `REQ-ACE-005`, `REQ-ACE-006` | [PRD/05-criterios-aceite.md](PRD/05-criterios-aceite.md) | [SPEC/03-fila-scoring-estados-sla.md](SPEC/03-fila-scoring-estados-sla.md) | Aceites ligados a estados, score, alocacao manual, UI e cancelamentos. |
 | `REQ-ACE-007` | [PRD/05-criterios-aceite.md](PRD/05-criterios-aceite.md) | [SPEC/00-visao-arquitetura.md](SPEC/00-visao-arquitetura.md) | Seguranca de token; cobertura marcada como alinhada a arquitetura base. |
@@ -121,14 +122,14 @@ Detalhes por modulo e JSON global em [docs/audit/output/global/consolidated-glob
 ### Auditoria M05 - bloco para `docs/traceability.md`
 
 - **Bloqueantes**
-  - `SPEC-M05-002` - `00-visao-arquitetura` nao especifica os criterios minimos da politica de palavra-passe de `REQ-NFR-007`, nem o bloqueio de reutilizacao das ultimas 3 credenciais.
+  - ~~`SPEC-M05-002`~~ — **Resolvido (Fase 1.4, DEC-004).** ADR D6 adicionada em `00-visao-arquitetura.md` com politica de autenticacao segmentada por perfil: Campo (Usuario+PIN com controlos compensatorios) e Administrativo (palavra-passe forte conforme `REQ-NFR-007`). PRD `REQ-NFR-007` actualizado para reflectir segmentacao. `REQ-NFR-007` passa de `Nao coberto` para `Coberto`.
 - **Importantes**
   - `SPEC-M05-001` - `00-visao-arquitetura` cobre thresholds de rate limiting, mas nao fecha endpoints exatos, `HTTP 429` e bloqueio temporario de 15 minutos exigidos por `REQ-NFR-006`.
   - `SPEC-M05-003` - `02-modelo-dados` cobre isolamento por `obraId` e auditabilidade transacional, mas deixa parcial a rastreabilidade consistente dos recursos operacionais pedida por `REQ-NFR-004`.
 - **Resumo de cobertura**
-  - `Coberto`: 4
+  - `Coberto`: 5 (era 4)
   - `Parcial`: 2
-  - `Nao coberto`: 1
+  - `Nao coberto`: 0 (era 1)
 
 ---
 

@@ -19,7 +19,7 @@ O foco inicial (MVP) é restrito ao módulo **Machinery Link**, responsável por
 - **Ecossistema unificado**: Monorepo gerenciado via Turborepo compartilhando tipos (TypeScript) entre Frontend e Backend.
 - **Isolamento e Escalabilidade**: Separação clara entre o core de regras de negócio lógicas (DDD puro) e frameworks/adapters técnicos.
 - **Multi-tenancy lógico**: Segregação de dados por obra no mesmo banco de dados (SQL Server), filtrado automaticamente via middleware.
-- **Segurança por design**: Autenticação JWT com access token de curta expiração e refresh token rotativo. Controle de acesso granular baseado em perfis (RBAC) cobrindo transições de estado, endpoints e verbos HTTP. Rate limiting nos endpoints de autenticação e criação de demanda. Bypass de multi-tenancy para perfis cross-tenant (SuperAdmin, Board) implementado via lógica condicional no middleware, com auditoria dedicada. Política de senha aplicada a todos os perfis com credencial própria.
+- **Segurança por design**: Autenticação JWT com access token de curta expiração e refresh token rotativo. Controle de acesso granular baseado em perfis (RBAC) cobrindo transições de estado, endpoints e verbos HTTP. Rate limiting nos endpoints de autenticação e criação de demanda. Bypass de multi-tenancy para perfis cross-tenant (SuperAdmin, Board) implementado via lógica condicional no middleware, com auditoria dedicada. Política de autenticação segmentada por perfil (Campo vs Administrativo) conforme D6, cobrindo palavra-passe forte, autenticação simplificada por PIN e controlos compensatórios de segurança.
 
 ## 2. Arquitetura da Plataforma {#arquitetura-plataforma}
 
@@ -52,6 +52,52 @@ O sistema é estruturado num Monorepo (Turborepo):
    - O acesso cross-tenant de SuperAdmin e Board é registrado em log de auditoria distinto (AuditLogCrossTenant) com userId, role, endpoint, obraIdAlvo (quando inferível do payload) e timestamp.
 
 > Decisão: O modelo de bypass condicional no middleware foi preferido ao modelo de "supertenant" (tenant especial que contém todos os dados) por manter a lógica de isolamento centralizada em um único ponto da infraestrutura, reduzindo risco de vazamento por query mal construída.
+
+6. **D6: Política de Autenticação e Palavra-passe — segmentação por perfil** {#politica-autenticacao-senha}
+
+   **Rastreio PRD:** REQ-NFR-007 | **Decisão de produto:** DEC-004
+
+   A política de autenticação é segmentada em dois grupos de perfil, equilibrando usabilidade operacional em campo e segurança corporativa nos perfis de retaguarda.
+
+   #### 6.1 Perfis de Campo (`Empreiteiro`, `Operador`) — Autenticação simplificada
+
+   Acesso via **Usuário + PIN numérico** no app mobile (PWA).
+
+   | Parâmetro | Valor |
+   |---|---|
+   | Formato do PIN | Numérico, mínimo 6 dígitos |
+   | Lockout progressivo | 3 falhas → bloqueio 1 min; 5 falhas → 5 min; 10 falhas → 15 min |
+   | Resposta de erro | Mensagem genérica não enumerável (não revela se o usuário existe) |
+   | Trilha auditável | Registro obrigatório de cada tentativa: `userId`, `endpoint`, `resultado` (sucesso/falha), `IP`, `userAgent`, `timestamp` |
+   | Sessão | Access token de 15 min (conforme D3); refresh token com TTL reduzido de 12 h para dispositivos de campo |
+   | Política de troca | PIN deve ser trocado a cada 90 dias; sistema força redefinição no próximo login após expiração |
+   | Armazenamento do PIN | Hash com bcrypt (cost factor ≥ 10); PIN em texto claro nunca é persistido |
+
+   > Decisão: A autenticação simplificada por PIN foi adotada para perfis de campo por reconhecer que operadores em obra acessam o sistema em condições adversas (luvas, tela suja, pressa operacional). Controlos compensatórios (lockout progressivo, sessão curta, trilha auditável) mitigam o risco de credencial fraca.
+
+   #### 6.2 Perfis Administrativos / Suporte (`UsuarioInternoFGR`, `AdminOperacional`, `SuperAdmin`, `Board`) — Palavra-passe forte
+
+   Acesso via **Usuário + Palavra-passe** conforme critérios mínimos de `REQ-NFR-007`.
+
+   | Parâmetro | Valor |
+   |---|---|
+   | Comprimento mínimo | 8 caracteres |
+   | Classes obrigatórias | Letras maiúsculas, minúsculas, números e caracteres especiais (mínimo 1 de cada) |
+   | Histórico de reutilização | Bloqueio das últimas 3 palavras-passe (comparação via hash) |
+   | Lockout | 5 falhas consecutivas → bloqueio temporário de 15 min por conta |
+   | Resposta de erro | Mensagem genérica não enumerável |
+   | Trilha auditável | Mesmo contrato da secção 6.1 |
+   | Sessão | Access token de 15 min; refresh token de 7 dias (conforme D3) |
+   | Política de troca | Palavra-passe deve ser redefinida a cada 180 dias; troca obrigatória no primeiro login |
+   | Armazenamento | Hash com bcrypt (cost factor ≥ 10); palavra-passe em texto claro nunca é persistida |
+
+   > Decisão: A política de palavra-passe forte para perfis administrativos segue os critérios mínimos definidos no PRD (`REQ-NFR-007`) e adiciona lockout, trilha auditável e rotação periódica como camadas complementares de segurança corporativa.
+
+   #### 6.3 Regras transversais de autenticação
+
+   - **Rate limiting por endpoint/perfil**: O rate limiting de D3 (5 req/min para `/auth/login`) aplica-se a ambos os grupos. Para endpoints de PIN (`/auth/pin`), aplica-se o mesmo limite de 5 req/min por IP ou identificador de dispositivo.
+   - **Gestão de sessão**: Logout explícito invalida access e refresh tokens via blacklist por `jti` em Redis (conforme D3). Em dispositivos de campo, a sessão expira automaticamente após 30 min de inactividade (idle timeout), forçando re-autenticação por PIN.
+   - **Auditoria de autenticação**: Todos os eventos de autenticação (login, logout, falha, lockout, troca de credencial) são registados em tabela dedicada `AuthAuditLog` com campos: `id`, `userId`, `perfil`, `evento`, `resultado`, `ip`, `userAgent`, `timestamp`.
 
 ### Arquitetura Tática (DDD) {#arquitetura-tatica-ddd}
 

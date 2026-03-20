@@ -42,11 +42,17 @@
       "req_ids": [
         "REQ-NFR-007"
       ],
-      "descricao": "Nao foi localizada especificacao tecnica para a politica minima de palavra-passe exigida no PRD. O modulo arquitetural apenas afirma genericamente que a politica de senha se aplica aos perfis com credencial propria, sem definir comprimento minimo, combinacao obrigatoria de classes de caracteres nem bloqueio de reutilizacao das ultimas 3 palavras-passe.",
+      "descricao": "Achado resolvido na Fase 1.4 (2026-03-20). A SPEC agora documenta a politica de autenticacao segmentada por perfil em D6 (secao 6.1 para perfis de Campo com PIN, secao 6.2 para perfis Administrativos com palavra-passe forte, secao 6.3 para regras transversais), cobrindo comprimento minimo, classes obrigatorias, historico de reutilizacao, lockout, trilha auditavel, gestao de sessao e armazenamento seguro. Alinhado com DEC-004.",
       "localizacao": {
         "file": "docs/SPEC/00-visao-arquitetura.md",
-        "section": "### Principios arquiteturais adotados",
-        "approx_line": 18
+        "section": "### Decisoes Arquiteturais (ADRs) > D6",
+        "approx_line": 56
+      },
+      "resolucao": {
+        "status": "resolvido",
+        "data": "2026-03-20",
+        "decisao": "DEC-004",
+        "correcao_aplicada": "Adicionada ADR D6 com politica de autenticacao segmentada (Campo: Usuario+PIN com controlos compensatorios; Administrativo: palavra-passe forte conforme REQ-NFR-007). PRD REQ-NFR-007 actualizado para reflectir segmentacao."
       }
     },
     {
@@ -72,49 +78,49 @@
         "spec_path": "docs/SPEC/00-visao-arquitetura.md",
         "status": "Coberto",
         "severidade": "menor",
-        "comentario": "A SPEC documenta monorepo em `Turborepo`, separacao entre `apps/` e `packages/` e a adocao explicita de arquitetura tatica alinhada a DDD."
+        "comentario": "A SPEC documenta monorepo em Turborepo separacao entre apps e packages e adocao explicita de arquitetura tatica alinhada a DDD."
       },
       {
         "prd_id": "REQ-NFR-002",
         "spec_path": "docs/SPEC/00-visao-arquitetura.md + docs/SPEC/06-definicoes-complementares.md",
         "status": "Coberto",
         "severidade": "menor",
-        "comentario": "A visao arquitetural fixa a estrategia mobile-first em PWA e o modulo complementar detalha cache, `offline-queue`, sincronizacao e comportamento sob conectividade instavel."
+        "comentario": "A visao arquitetural fixa a estrategia mobile-first em PWA e o modulo complementar detalha cache offline-queue sincronizacao e comportamento sob conectividade instavel."
       },
       {
         "prd_id": "REQ-NFR-003",
         "spec_path": "docs/SPEC/00-visao-arquitetura.md",
         "status": "Coberto",
         "severidade": "menor",
-        "comentario": "O backend em `NestJS` com separacao entre dominio e framework e a autenticacao baseada em `JWT` estao explicitamente descritos."
+        "comentario": "O backend em NestJS com separacao entre dominio e framework e a autenticacao baseada em JWT estao explicitamente descritos."
       },
       {
         "prd_id": "REQ-NFR-004",
         "spec_path": "docs/SPEC/00-visao-arquitetura.md + docs/SPEC/02-modelo-dados.md",
         "status": "Parcial",
         "severidade": "importante",
-        "comentario": "Ha cobertura clara para `SQL Server`, `Prisma` e isolamento logico multi-tenant por `obraId`, mas a rastreabilidade consistente dos recursos operacionais nao fica uniformemente especificada para todas as entidades."
+        "comentario": "Ha cobertura clara para SQL Server Prisma e isolamento logico multi-tenant por obraId mas a rastreabilidade consistente dos recursos operacionais nao fica uniformemente especificada para todas as entidades."
       },
       {
         "prd_id": "REQ-NFR-005",
         "spec_path": "docs/SPEC/00-visao-arquitetura.md",
         "status": "Coberto",
         "severidade": "menor",
-        "comentario": "A SPEC fecha expiracao de access token em 15 minutos, refresh token com TTL de 7 dias, rotacao a cada uso e blacklist por `jti` em `Redis`."
+        "comentario": "A SPEC fecha expiracao de access token em 15 minutos refresh token com TTL de 7 dias rotacao a cada uso e blacklist por jti em Redis."
       },
       {
         "prd_id": "REQ-NFR-006",
         "spec_path": "docs/SPEC/00-visao-arquitetura.md",
         "status": "Parcial",
         "severidade": "importante",
-        "comentario": "Os limites numericos aparecem na arquitectura, mas faltam os endpoints exatos, o contrato de `HTTP 429` e a regra de bloqueio temporario por IP ou utilizador descritos no PRD."
+        "comentario": "Os limites numericos aparecem na arquitetura mas faltam os endpoints exatos o contrato de HTTP 429 e a regra de bloqueio temporario por IP ou utilizador descritos no PRD."
       },
       {
         "prd_id": "REQ-NFR-007",
         "spec_path": "docs/SPEC/00-visao-arquitetura.md",
-        "status": "Nao coberto",
-        "severidade": "bloqueante",
-        "comentario": "Nao foi localizada cobertura tecnica para os criterios minimos de palavra-passe nem para o historico de reutilizacao das ultimas 3 credenciais."
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "A ADR D6 documenta politica de autenticacao segmentada por perfil: Campo (Usuario+PIN com lockout progressivo, sessao curta, trilha auditavel) e Administrativo (palavra-passe forte com 8 caracteres minimos, 4 classes obrigatorias, bloqueio de reutilizacao das ultimas 3, lockout por conta). Cobertura completa de REQ-NFR-007 conforme DEC-004."
       }
     ],
     "blocking_conflicts": []
@@ -123,16 +129,17 @@
   "decision_by_user": [],
   "executive_summary": {
     "total_findings": 3,
-    "bloqueantes": 1,
+    "bloqueantes": 0,
     "importantes": 2,
     "menores": 0,
+    "resolved": 1,
     "coverage": {
-      "coberto": 4,
+      "coberto": 5,
       "parcial": 2,
-      "nao_coberto": 1
+      "nao_coberto": 0
     },
-    "risco_geral": "alto",
-    "nota": "O M05 tem boa cobertura para stack base, PWA/offline, backend e politica de tokens JWT, mas fica fragilizado em dois pontos de seguranca operacional: rate limiting incompletamente normatizado e ausencia de especificacao tecnica para a politica minima de palavra-passe. Alem disso, a rastreabilidade dos recursos operacionais fica apenas parcialmente fechada no modelo tecnico."
+    "risco_geral": "medio",
+    "nota": "O bloqueante SPEC-M05-002 foi resolvido na Fase 1.4 com a adicao da ADR D6 (politica de autenticacao segmentada por perfil conforme DEC-004). REQ-NFR-007 passa de 'Nao coberto' para 'Coberto'. Permanecem dois achados importantes: rate limiting incompleto (SPEC-M05-001) e rastreabilidade parcial dos recursos operacionais (SPEC-M05-003)."
   },
   "traceability_csv": "docs/audit/output/M05/traceability.csv",
   "traceability_stub_markdown": "docs/audit/output/M05/traceability-stub.md"
