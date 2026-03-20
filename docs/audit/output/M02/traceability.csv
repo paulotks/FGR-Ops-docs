@@ -3,5 +3,5 @@ REQ-RBAC-001,docs/SPEC/04-rbac-permissoes.md,Coberto,menor,A SPEC define bypass 
 REQ-RBAC-002,docs/SPEC/04-rbac-permissoes.md,Coberto,menor,O perfil Board esta limitado a leitura com bypass cross-tenant passivo e foco em analytics e dashboards.
 REQ-RBAC-003,docs/SPEC/04-rbac-permissoes.md,Coberto,menor,A SPEC cobre atribuicao explicita por obra cadastros operacionais e alocacao manual de demandas para AdminOperacional.
 REQ-RBAC-004,docs/SPEC/04-rbac-permissoes.md,Coberto,menor,A SPEC documenta visibilidade gerencial no tenant contestacoes e selecao manual de operador na criacao de demanda.
-REQ-RBAC-005,docs/SPEC/04-rbac-permissoes.md,Parcial,importante,A autoria propria das demandas esta preservada mas a matriz tambem abre leituras de obra cadastros territoriais e catalogos operacionais alem da formulacao do PRD.
-REQ-RBAC-006,docs/SPEC/04-rbac-permissoes.md,Parcial,importante,A SPEC restringe o operador a propria fila expediente e demandas alocadas mas nao explicita prioridades maximas em destaque no topo e adiciona leituras auxiliares.
+REQ-RBAC-005,docs/SPEC/04-rbac-permissoes.md,Coberto,resolvido,Fase 2.6 PRD explicita leitura auxiliar para abertura de demanda. Fase 3 SPEC justifica leituras de contexto nas Decisoes de design.
+REQ-RBAC-006,docs/SPEC/04-rbac-permissoes.md,Coberto,resolvido,Fase 2.6 PRD explicita leitura de contexto auxiliar para fila operacional. Fase 3 SPEC justifica leituras e fixa sinonimia Operador/Operador de Maquinario.

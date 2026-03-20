@@ -1,5 +1,5 @@
 ﻿{
-    "generated_at":  "2026-03-20T16:06:54",
+    "generated_at":  "2026-03-20T16:15:56",
     "input_root":  "C:\\dev\\FGR-Ops-Requisitos\\docs\\audit\\output",
     "total_modules":  7,
     "module_ids":  [
@@ -14,8 +14,8 @@
     "aggregate_executive_summary":  {
                                         "total_findings":  37,
                                         "bloqueantes":  0,
-                                        "importantes":  1,
-                                        "menores":  2,
+                                        "importantes":  0,
+                                        "menores":  0,
                                         "coverage":  {
                                                          "coberto":  62,
                                                          "parcial":  2,
@@ -399,6 +399,8 @@
                                                                            "id":  "PRD-M02-002",
                                                                            "severity":  "menor",
                                                                            "type":  "inconsistencia_nomenclatura",
+                                                                           "status":  "resolvido",
+                                                                           "resolucao":  "Fase 3 â€” 2026-03-20. Adicionada nota de nomenclatura em PRD/01-usuarios-rbac.md (secÃ§Ã£o PrincÃ­pios de autorizaÃ§Ã£o do produto) fixando \u0027Operador de MaquinÃ¡rio\u0027 e \u0027Operador\u0027 como sinÃ³nimos oficiais do mesmo perfil (REQ-RBAC-006).",
                                                                            "req_ids":  [
                                                                                            "REQ-RBAC-006"
                                                                                        ],
@@ -415,6 +417,8 @@
                                                                             "id":  "SPEC-M02-001",
                                                                             "severity":  "importante",
                                                                             "type":  "decisao_sem_justificativa",
+                                                                            "status":  "resolvido",
+                                                                            "resolucao":  "Fase 3 â€” 2026-03-20. Adicionada decisÃ£o de design em SPEC/04-rbac-permissoes.md (secÃ§Ã£o DecisÃµes de design) justificando a leitura de contexto para Empreiteiro e Operador: estritamente funcional, aderente a REQ-RBAC-005/REQ-RBAC-006, limitada ao tenant da obra atribuÃ­da, sem bypass cross-tenant nem capacidade de mutaÃ§Ã£o.",
                                                                             "spec_path":  "docs/SPEC/04-rbac-permissoes.md",
                                                                             "req_ids":  [
                                                                                             "REQ-RBAC-005",
@@ -431,6 +435,8 @@
                                                                             "id":  "SPEC-M02-002",
                                                                             "severity":  "menor",
                                                                             "type":  "inconsistencia_nomenclatura",
+                                                                            "status":  "resolvido",
+                                                                            "resolucao":  "Fase 3 â€” 2026-03-20. Adicionada nota de nomenclatura em SPEC/04-rbac-permissoes.md (secÃ§Ã£o Perfis de acesso) e anotaÃ§Ã£o \u0027(sinÃ³nimo: Operador de MaquinÃ¡rio)\u0027 no item 6 da lista de perfis, alinhando terminologia com o PRD.",
                                                                             "spec_path":  "docs/SPEC/04-rbac-permissoes.md",
                                                                             "req_ids":  [
                                                                                             "REQ-RBAC-006"
@@ -478,14 +484,14 @@
                                                                                                 "spec_path":  "docs/SPEC/04-rbac-permissoes.md",
                                                                                                 "status":  "Coberto",
                                                                                                 "severidade":  "resolvido",
-                                                                                                "comentario":  "Fase 2.6 (2026-03-20): REQ-RBAC-005 no PRD explicita leitura de obra, hierarquia territorial e catalogos na medida necessaria para abertura de demanda; cobre a fronteira com a matriz SPEC."
+                                                                                                "comentario":  "Fase 2.6 (2026-03-20): PRD explicita leitura auxiliar para abertura de demanda. Fase 3 (2026-03-20): SPEC justifica leituras de contexto nas DecisÃµes de design, com aderÃªncia a REQ-RBAC-005."
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-RBAC-006",
                                                                                                 "spec_path":  "docs/SPEC/04-rbac-permissoes.md",
                                                                                                 "status":  "Coberto",
                                                                                                 "severidade":  "resolvido",
-                                                                                                "comentario":  "Fase 2.6 (2026-03-20): REQ-RBAC-006 no PRD explicita leitura de contexto auxiliar na medida necessaria para visualizacao da fila operacional; cobre a fronteira com a matriz SPEC."
+                                                                                                "comentario":  "Fase 2.6 (2026-03-20): PRD explicita leitura de contexto auxiliar para fila operacional. Fase 3 (2026-03-20): SPEC justifica leituras e fixa sinonÃ­mia \u0027Operador\u0027/\u0027Operador de MaquinÃ¡rio\u0027 nas DecisÃµes de design e Perfis de acesso."
                                                                                             }
                                                                                         ],
                                                                       "blocking_conflicts":  [
@@ -501,16 +507,16 @@
                                                   "executive_summary":  {
                                                                             "total_findings":  4,
                                                                             "bloqueantes":  0,
-                                                                            "importantes":  1,
-                                                                            "menores":  2,
-                                                                            "resolvidos":  1,
+                                                                            "importantes":  0,
+                                                                            "menores":  0,
+                                                                            "resolvidos":  4,
                                                                             "coverage":  {
                                                                                              "coberto":  6,
                                                                                              "parcial":  0,
                                                                                              "nao_coberto":  0
                                                                                          },
-                                                                            "risco_geral":  "medio",
-                                                                            "nota":  "Fase 2.6 (2026-03-20) resolveu PRD-M02-001: o PRD clarifica leituras auxiliares para Empreiteiro e Operador (REQ-RBAC-005 e REQ-RBAC-006), e a cross-check passa a 6/6 requisitos Cobertos. Permanecem em aberto SPEC-M02-001 (justificativa SPEC face ao escopo de produto) e os achados menores de nomenclatura (PRD-M02-002, SPEC-M02-002)."
+                                                                            "risco_geral":  "baixo",
+                                                                            "nota":  "Fase 3 (2026-03-20) resolveu os 3 achados restantes: PRD-M02-002 e SPEC-M02-002 (nomenclatura \u0027Operador\u0027 vs \u0027Operador de MaquinÃ¡rio\u0027 fixada com notas de sinonÃ­mia em ambos os documentos) e SPEC-M02-001 (justificativa de leitura de contexto para perfis de campo adicionada Ã s DecisÃµes de design). Todos os 4 achados do mÃ³dulo estÃ£o resolvidos. Cobertura: 6/6 requisitos Cobertos."
                                                                         },
                                                   "traceability_csv":  "docs/audit/output/M02/traceability.csv",
                                                   "traceability_stub_markdown":  "docs/audit/output/M02/traceability-stub.md"

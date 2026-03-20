@@ -15,12 +15,14 @@ Este módulo consolida as regras técnicas de autorização, o isolamento multi-
 
 A herança está suprimida em prol de garantias granulares imutavelmente pré-fornecidas:
 
+> **Nota de nomenclatura:** O perfil `Operador` neste documento corresponde a `Operador de Maquinário` (`REQ-RBAC-006`) no PRD. O nome curto `Operador` é o identificador canónico adoptado pela SPEC.
+
 1. **SuperAdmin**: bypass multi-tenant; visão panóptica do ecossistema.
 2. **Board (Diretoria)**: perfil focado na macrogestão (`Role: BOARD`). Bypass multi-tenant passivo via relatórios e dashboards; guard-access aos verbos HTTP restritos prioritariamente a `GET` e analytics/reports.
 3. **AdminOperacional**: administra uma ou N obras. Capaz de realizar alocações manuais em `CreateDemandaDto` e lote `CreateMultipleDemandasDto`.
 4. **UsuarioInternoFGR**: visualiza relatórios, gere contestações na máquina de estados dentro do seu tenant e pode escolher operadores manualmente na criação de demanda.
 5. **Empreiteiro**: enclausurado nas demandas da sua autoria.
-6. **Operador**: PWA em campo via expediente focado, ordenação fluida e sem travas de interface cega ("blindagem"). Vê apenas a fila do motor preordenada dinamicamente.
+6. **Operador** (sinónimo: Operador de Maquinário): PWA em campo via expediente focado, ordenação fluida e sem travas de interface cega ("blindagem"). Vê apenas a fila do motor preordenada dinamicamente.
 
 ## Matriz completa de permissões por recurso (Lacuna 1)
 
@@ -250,3 +252,5 @@ A tabela abaixo exibe exaustivamente o cruzamento do recurso `demanda` por `Esta
 > Decisão: O recurso `solicitacao-cancelamento` foi blindado para manter design coeso de REST API de cancel-requests independentes por ID, exposto sob os verbos `approve` e `reject`, afetando inerentemente o aggregate root `Demanda`.
 >
 > Decisão: A matriz explicita ações inativas/inexistentes com `—` para anular inferências indevidas no momento de instanciar metadados de Guards e decorators.
+>
+> Decisão (leitura de contexto para perfis de campo): `Empreiteiro` e `Operador` possuem permissão de leitura (`read`) em recursos de contexto como `core:obra`, `core:setor-operacional`, `core:quadra`, `core:lote`, `core:rua`, `machinery:maquinario`, `machinery:servico` e `machinery:material`. Essa abertura é estritamente funcional e aderente ao escopo restrito definido no PRD (`REQ-RBAC-005` e `REQ-RBAC-006`): o `Empreiteiro` necessita consultar obra, hierarquia territorial e catálogos para preencher o formulário de abertura de demanda; o `Operador` necessita consultar obra, setor operacional, quadra, lote, maquinário e serviços para visualizar a fila operacional e executar demandas. Todas estas leituras são limitadas ao tenant da obra atribuída — não há bypass cross-tenant — e servem exclusivamente como contexto auxiliar de preenchimento ou visualização, sem conceder capacidade de mutação, exportação ou acesso a dados de outros perfis.

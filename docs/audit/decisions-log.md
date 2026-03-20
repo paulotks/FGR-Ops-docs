@@ -158,3 +158,24 @@ As correcoes abaixo nao exigiram decisao de produto nova; derivam directamente d
   - `SPEC/00-visao-arquitetura.md` §Arquitetura Tática (DDD): adicionado `REQ-SCO-003` ao rastreio PRD; texto expandido para documentar cadastro de `Maquinario` (placa, TipoMaquinario, Servico vinculado, propriedade FGR/Terceiro) e `Ajudante` (recurso humano sem credencial própria), com referência cruzada a `02-modelo-dados.md`.
 - **Artefactos regenerados:** `M01/consolidated.json`, `M01/traceability.csv`, `M01/traceability-stub.md`.
 - **Achado resolvido:** `SPEC-M01-001` (bloqueante → resolvido)
+
+---
+
+## Fase 3 — Correcção de achados menores e revalidação global
+
+### Fase 3.1 — Nomenclatura e justificativa de leitura de contexto (M02)
+
+- **Data:** 2026-03-20
+- **Tipo:** Correcção documental — nomenclatura inconsistente e decisão de design sem justificativa.
+- **Achados resolvidos:** `PRD-M02-002`, `SPEC-M02-002`, `SPEC-M02-001`
+- **Correcções aplicadas:**
+  - **PRD-M02-002 (menor):** `PRD/01-usuarios-rbac.md` — adicionada nota de nomenclatura na secção "Princípios de autorização do produto" fixando `Operador de Maquinário` (nome completo na matriz base) e `Operador` (nome curto) como sinónimos oficiais do perfil `REQ-RBAC-006`.
+  - **SPEC-M02-002 (menor):** `SPEC/04-rbac-permissoes.md` — adicionada nota de nomenclatura na secção "Perfis de acesso" e anotação `(sinónimo: Operador de Maquinário)` no item 6 da lista de perfis, alinhando terminologia com o PRD.
+  - **SPEC-M02-001 (importante):** `SPEC/04-rbac-permissoes.md` — adicionada decisão de design na secção "Decisões de design" justificando a permissão de leitura (`read`) em recursos de contexto para `Empreiteiro` e `Operador`: estritamente funcional, aderente a `REQ-RBAC-005` e `REQ-RBAC-006`, limitada ao tenant da obra atribuída, sem bypass cross-tenant nem capacidade de mutação ou exportação.
+- **Artefactos regenerados:** `M02/consolidated.json`, `M02/traceability.csv`, `M02/traceability-stub.md`.
+
+### Fase 3.2 — Revalidação global
+
+- **Data:** 2026-03-20
+- **Resultado:** Todos os 37 achados resolvidos (7 bloqueantes, 28 importantes, 2 menores). Cobertura: 62 requisitos cobertos, 2 parciais (M01), 0 não cobertos. Risco geral: baixo.
+- **Artefactos regenerados:** `consolidated-global.json`, `traceability.md`.

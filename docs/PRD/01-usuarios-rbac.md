@@ -15,6 +15,8 @@ Esta secção consolida os perfis do produto, o respetivo escopo de atuação e 
 
 ## Princípios de autorização do produto
 
+> **Nota de nomenclatura:** Neste documento, os termos `Operador de Maquinário` (nome completo usado na matriz base) e `Operador` (nome curto) são sinónimos oficiais e referem-se ao mesmo perfil (`REQ-RBAC-006`). A SPEC adopta o nome curto `Operador` como identificador canónico.
+
 - A plataforma adota uma matriz rígida de perfis e permissões; capacidades administrativas e operacionais não são inferidas fora das regras explícitas do papel atribuído.
 - O escopo por obra é a regra padrão. Apenas perfis `cross-tenant` podem operar fora do isolamento por obra.
 - O perfil `Board` existe para leitura analítica e comparativa, não para execução operacional nem mutações de dados.
