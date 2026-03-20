@@ -1,0 +1,49 @@
+# Metricas e riscos
+
+Esta secao consolida os indicadores de sucesso do MVP e os principais riscos operacionais a acompanhar na implantacao do FGR-OPS.
+
+## Metricas de sucesso
+
+### `REQ-MET-001` Tempo ocioso em campo
+
+Percentual de horas em que a maquina esta disponivel mas sem demanda vinculada em `EM_ANDAMENTO`, calculado por `(Horas Disponiveis - Horas em Operacao) / Horas Disponiveis`.
+
+- Baseline: recolha manual durante 2 semanas pre-go-live, com planilha de acompanhamento de frota preenchida pelos encarregados de obra.
+- Meta MVP: reducao de 15% no tempo ocioso nos primeiros 60 dias de uso.
+
+-> SPEC: [../SPEC/02-modelo-dados.md#entidades-principais](../SPEC/02-modelo-dados.md#entidades-principais)
+
+### `REQ-MET-002` Adocao e engajamento operacional
+
+Razao entre o numero de operadores que realizaram pelo menos 1 check-in ou acao no app e o numero total de operadores ativos na folha da quinzena.
+
+- Baseline: `0%`, dado que o processo atual e analogico ou via radio.
+- Meta MVP: `100%` dos operadores das obras-piloto a registar todas as movimentacoes via sistema em ate 2 meses.
+
+-> SPEC: [../SPEC/01-modulos-plataforma.md#modulo-machinery-link-mvp](../SPEC/01-modulos-plataforma.md#modulo-machinery-link-mvp)
+
+### `REQ-MET-003` Tempo de espera critica para prioridade `MAXIMA`
+
+Tempo decorrido entre a entrada da demanda em `PENDENTE` (ou o marco zero do agendamento) e a transicao para `EM_ANDAMENTO` em demandas de prioridade `MAXIMA`.
+
+- Baseline: recolha durante 3 semanas pre-go-live por amostragem em diario de obra, com minimo de 20 ocorrencias criticas.
+- Meta MVP: `90%` das demandas `MAXIMA` atendidas dentro de SLA de 15 minutos.
+- Governanca: atrasos superiores a 5 minutos apos o SLA (`T+20`) geram escalacao automatica para `SuperAdmin`.
+
+-> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#sla-de-atendimento-e-governanca](../SPEC/03-fila-scoring-estados-sla.md#sla-de-atendimento-e-governanca)
+-> SPEC: [../SPEC/06-definicoes-complementares.md#comportamento-de-dataagendada](../SPEC/06-definicoes-complementares.md#comportamento-de-dataagendada)
+
+## Riscos e mitigacoes
+
+### `REQ-RISK-001` Governanca da taxonomia operacional
+
+A evolucao da fila depende da manutencao coerente da taxonomia de `Lote`, `Quadra` e `SetorOperacional`. Sem governanca administrativa consistente, a obra pode criar gargalos cadastrais e adjacencias incorretas, degradando a atribuicao automatica.
+
+-> SPEC: [../SPEC/02-modelo-dados.md#entidades-principais](../SPEC/02-modelo-dados.md#entidades-principais)
+-> SPEC: [../SPEC/05-backlog-mvp-glossario.md#glossario-tecnico](../SPEC/05-backlog-mvp-glossario.md#glossario-tecnico)
+
+### `REQ-RISK-002` Conectividade restrita em campo
+
+Quedas de latencia ou indisponibilidade celular exigem uma experiencia `offline-first` no PWA, com `Service Workers`, persistencia local e sincronizacao posterior. A resolucao de conflitos deve seguir prioridade temporal sobre `iniciadoEm` e `finalizadoEm`, restringindo a interface apenas em operacoes transacionais criticas como check-in e check-out do turno.
+
+-> SPEC: [../SPEC/06-definicoes-complementares.md#estrategia-pwa-offline](../SPEC/06-definicoes-complementares.md#estrategia-pwa-offline)

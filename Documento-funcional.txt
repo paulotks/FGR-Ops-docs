@@ -1,0 +1,343 @@
+Documento Funcional
+FGR Operation System (FGR-OPS)
+Módulo 01: Logística de Maquinário — Machinery Link
+1. Contexto
+O FGR Operation System (FGR-OPS) é uma plataforma centralizada, modular e escalável, concebida para suportar a operação das obras da FGR Incorporações em uma arquitetura única, substituindo o modelo atual de replicação de sistemas por obra.
+
+O primeiro módulo funcional da plataforma será o Machinery Link, evolução do sistema atualmente utilizado para solicitação e atendimento de maquinários nas obras. Hoje, esse sistema opera de forma isolada por obra, sem padronização arquitetural, com nomenclaturas inconsistentes e forte dependência operacional de administração manual.
+
+A proposta do FGR-OPS é transformar esse sistema em um módulo funcional padronizado, reutilizável entre obras e preparado para convivência com futuros módulos da plataforma, como almoxarifado, movimentação de materiais, rastreamento de ativos e demais frentes operacionais.
+
+2. Objetivo do módulo Machinery Link
+O módulo Machinery Link tem como objetivo digitalizar, organizar e monitorar o fluxo de solicitação, despacho, execução e acompanhamento de demandas operacionais de maquinário dentro das obras.
+
+Ele deve permitir que empreiteiros ou solicitantes autorizados registrem demandas diretamente no sistema, que operadores de máquinas executem essas demandas por meio de uma fila operacional e que gestores internos da FGR acompanhem em tempo real a operação, os gargalos e os indicadores de desempenho.
+
+3. Problemas que o módulo resolve
+O módulo busca resolver os seguintes problemas do cenário atual:
+
+comunicação informal e descentralizada entre solicitantes e operadores
+dependência de intermediação humana para acionar maquinários
+ausência de padronização entre obras
+dificuldade de consolidar dados operacionais
+pouca governança sobre cadastro de usuários e permissões
+baixa rastreabilidade do ciclo de vida das demandas
+dificuldade de mensurar produtividade de operadores e utilização de máquinas
+limitações de usabilidade do sistema atual
+dificuldade de evoluir o sistema existente para novos cenários operacionais
+4. Escopo funcional do módulo
+O Machinery Link deve contemplar, em sua visão funcional, os seguintes blocos:
+
+cadastro e gestão de usuários
+cadastro e gestão de perfis de acesso
+cadastro e gestão de empreiteiras
+cadastro e gestão de operadores
+cadastro e gestão de maquinários
+vínculo entre operadores e maquinários
+cadastro de localizações operacionais da obra
+abertura de demandas operacionais
+fila operacional de atendimento
+monitoramento em tempo real
+controle administrativo sobre demandas
+registro de expediente de equipamentos
+priorização de demandas
+agrupamento de demandas
+cadastro de serviços
+cadastro de materiais e características operacionais
+suporte a serviços dinâmicos
+relatórios operacionais e gerenciais
+5. Perfis de usuário
+5.1 Super Admin
+Responsável por administração global da plataforma, parametrizações amplas, governança de acesso e gestão superior do ambiente.
+
+5.2 Usuários internos FGR
+Perfis internos como engenheiros, líderes, coordenadores, encarregados e gestores logísticos. Devem possuir visão gerencial e operacional, com permissões variando conforme função.
+
+5.3 Empreiteiros / solicitantes externos
+Responsáveis por abertura e acompanhamento de demandas operacionais relacionadas às suas frentes de trabalho.
+
+5.4 Operadores de maquinário
+Responsáveis por receber, iniciar, executar e finalizar demandas operacionais relacionadas ao equipamento sob sua responsabilidade.
+
+5.5 Administradores operacionais
+Perfis com poder de intervenção sobre demandas, filas, cadastros e ajustes operacionais, sem necessariamente serem administradores globais da plataforma.
+
+6. Visão funcional geral do fluxo
+O fluxo operacional principal do módulo é o seguinte:
+
+Um solicitante registra uma nova demanda informando local, serviço, material, observações e demais informações aplicáveis.
+A demanda entra no fluxo operacional e se torna visível para atendimento conforme as regras definidas.
+O operador recebe a demanda em sua fila operacional.
+O operador inicia a demanda quando começar o atendimento.
+A demanda passa para o estado em andamento.
+Ao concluir o atendimento, o operador finaliza a demanda.
+Gestores acompanham as demandas em painéis de monitoramento e relatórios.
+Perfis administrativos podem intervir em situações excepcionais, como cancelamentos, reversões e ações em lote.
+7. Funcionalidades principais
+7.1 Cadastro de usuários e controle de acesso
+O sistema deve permitir cadastro de usuários com segmentação por perfis e permissões. Deve existir diferenciação clara entre usuários internos da FGR, empreiteiros, operadores e administradores operacionais.
+
+O novo sistema deve eliminar as ambiguidades do sistema atual, onde termos como operador e técnico são usados sem padronização.
+
+7.2 Cadastro de empreiteiras e solicitantes
+O sistema deve permitir cadastro de empreiteiras e de seus respectivos responsáveis ou solicitantes autorizados.
+
+7.3 Cadastro de operadores e maquinários
+O sistema deve permitir cadastro dos operadores, cadastro dos maquinários e associação entre ambos conforme a necessidade operacional.
+
+Também deve ser possível relacionar quais serviços cada tipo de maquinário é capaz de executar.
+
+7.4 Cadastro de localização operacional
+O sistema deve permitir o cadastro estruturado da localização operacional da obra, considerando ao menos quadras, lotes e organização funcional por ruas ou zonas.
+
+Neste momento, o foco é tratar localização como estrutura operacional da obra, e não como geolocalização avançada em mapa.
+
+7.5 Abertura de demanda
+O sistema deve permitir que o solicitante registre uma nova demanda, incluindo:
+
+local da demanda
+tipo de serviço
+maquinário necessário, quando aplicável
+observações
+ações desejadas
+materiais envolvidos
+prioridade, quando permitida
+agrupamento, quando aplicável
+A tela inicial do perfil empreiteiro deve ser simplificada e priorizar visualmente a ação de Nova Demanda.
+
+7.6 Criação única e criação em lote
+O sistema deve permitir:
+
+criação de demanda única
+criação de múltiplas demandas em uma única entrada operacional
+Essa funcionalidade visa reduzir tempo de cadastro em cenários onde o solicitante precise registrar diversas demandas sequenciais.
+
+7.7 Dados do solicitante na demanda
+Toda demanda deve exibir, de forma visível, os dados do solicitante responsável pela abertura, garantindo rastreabilidade e contexto operacional.
+
+7.8 Fila operacional do operador
+O operador deve possuir uma visão simplificada das demandas atribuídas ou disponíveis para sua execução, organizadas em fila operacional.
+
+A fila deve refletir a ordenação definida pelas regras de negócio e permitir ao operador executar o fluxo operacional esperado.
+
+7.9 Ações contextuais conforme o status da demanda
+O sistema deve exibir ações disponíveis conforme o status da demanda e o perfil do usuário.
+
+Exemplos:
+
+demanda pendente: iniciar demanda, cancelar demanda
+demanda em andamento: finalizar demanda, cancelar demanda
+A disponibilidade exata dessas ações deve respeitar as permissões do perfil.
+
+7.10 Monitoramento operacional
+O sistema deve possuir uma visão de monitoramento operacional semelhante a um quadro de acompanhamento, permitindo visualizar:
+
+demandas pendentes
+demandas em andamento
+demandas concluídas
+demandas canceladas
+status operacional dos recursos
+7.11 Ações administrativas sobre demandas
+Perfis administrativos devem poder:
+
+cancelar demandas
+retornar demanda concluída
+retornar demanda em andamento
+realizar ações em lote
+reclassificar ou reorganizar demandas quando necessário
+Toda ação administrativa relevante deve ser registrada e justificada.
+
+7.12 Controle de expediente
+O sistema deve permitir o registro do início e do fim do expediente de cada equipamento ou operação associada, viabilizando análises de:
+
+atraso no início da operação
+disponibilidade operacional
+jornada executada
+necessidade de controle de hora extra
+7.13 Agrupamento de demandas
+O sistema deve permitir o agrupamento de demandas relacionadas, facilitando tratamento operacional, visualização e gestão.
+
+7.14 Cadastro de serviços
+O sistema deve permitir gerenciar uma base de serviços operacionais, incluindo possibilidade de definir prioridades e compatibilidade com tipos de maquinário.
+
+7.15 Cadastro de materiais
+O sistema deve permitir manter uma base de materiais utilizados nas demandas, com características operacionais relevantes para a lógica do sistema.
+
+7.16 Serviços dinâmicos
+O sistema deve suportar serviços dinâmicos, entendidos como demandas agendadas ou serviços mais complexos que não estejam previamente padronizados e que possam demandar um ou mais equipamentos.
+
+8. User Stories
+8.1 Solicitante / Empreiteiro
+Como solicitante, eu quero abrir uma nova demanda rapidamente para registrar minha necessidade operacional sem depender de intermediação manual.
+Como solicitante, eu quero visualizar meus chamados e seus status para acompanhar o andamento das solicitações.
+Como solicitante, eu quero registrar múltiplas ações e múltiplos materiais em uma mesma demanda para representar corretamente a necessidade da frente de trabalho.
+Como solicitante, eu quero criar várias demandas em uma única entrada para agilizar meu processo operacional.
+Como solicitante, eu quero ver os dados do responsável pela solicitação no chamado para garantir rastreabilidade.
+8.2 Operador
+Como operador, eu quero visualizar minha fila de demandas para executar os atendimentos conforme a prioridade definida.
+Como operador, eu quero iniciar e finalizar demandas pelo aplicativo para registrar corretamente meu trabalho.
+Como operador, eu quero ter clareza sobre demandas prioritárias para atender corretamente serviços críticos.
+Como operador, eu quero registrar início e fim do expediente para refletir minha disponibilidade operacional.
+8.3 Gestão interna / Administração operacional
+Como gestor, eu quero acompanhar em tempo real as demandas em aberto, em andamento e concluídas para controlar a operação.
+Como gestor, eu quero cancelar ou retornar demandas quando ocorrer erro operacional ou necessidade de ajuste.
+Como gestor, eu quero executar ações em lote para reduzir trabalho administrativo.
+Como gestor, eu quero priorizar demandas para atender frentes críticas da obra.
+Como gestor, eu quero agrupar demandas relacionadas para melhorar o controle operacional.
+Como gestor, eu quero comparar desempenho de operadores, utilização de maquinários e concentração de demandas para apoiar decisões.
+8.4 Administração do sistema
+Como administrador do sistema, eu quero cadastrar serviços e definir sua prioridade para que o sistema organize corretamente a fila operacional.
+Como administrador do sistema, eu quero manter o cadastro de materiais e serviços para padronizar a operação.
+Como administrador do sistema, eu quero configurar quais serviços podem ser executados por quais maquinários para garantir coerência operacional.
+9. Requisitos funcionais
+9.1 Cadastros e perfis
+O sistema deve permitir cadastro de usuários com perfis distintos.
+O sistema deve permitir gestão de perfis de acesso e permissões.
+O sistema deve permitir cadastro de empreiteiras e seus responsáveis.
+O sistema deve permitir cadastro de operadores.
+O sistema deve permitir cadastro de maquinários.
+O sistema deve permitir vínculo entre operador e maquinário.
+O sistema deve permitir associar serviços aos maquinários aptos a executá-los.
+O sistema deve permitir classificar maquinários por porte operacional.
+O sistema deve permitir cadastro de quadras, lotes, ruas ou zonas operacionais da obra.
+O sistema deve permitir cadastro de serviços.
+O sistema deve permitir cadastro de materiais e suas características operacionais.
+9.2 Demandas
+O sistema deve permitir abertura de demanda única.
+O sistema deve permitir criação de múltiplas demandas em uma única entrada.
+O sistema deve permitir incluir ações e materiais em uma demanda.
+O sistema deve permitir exibir os dados do solicitante na demanda.
+O sistema deve permitir agrupar demandas relacionadas.
+O sistema deve permitir registrar serviços dinâmicos.
+O sistema deve permitir definir ou aplicar prioridade às demandas.
+O sistema deve permitir diferenciar demandas comuns de demandas com prioridade máxima.
+9.3 Operação
+O sistema deve permitir visualização de fila operacional pelo operador.
+O sistema deve permitir iniciar demandas.
+O sistema deve permitir finalizar demandas.
+O sistema deve permitir cancelamento de demandas por perfis autorizados.
+O sistema deve permitir retorno de demandas concluídas ou em andamento por perfis autorizados.
+O sistema deve permitir ações em lote sobre demandas por perfis autorizados.
+O sistema deve permitir registrar início e fim do expediente de equipamentos ou operações.
+9.4 Monitoramento e gestão
+O sistema deve permitir monitoramento operacional em tempo real.
+O sistema deve permitir visualizar demandas por status.
+O sistema deve permitir analisar desempenho por operador.
+O sistema deve permitir analisar utilização de maquinário.
+O sistema deve permitir identificar regiões com maior concentração de solicitações.
+O sistema deve permitir comparar indicadores em tabela detalhada.
+10. Requisitos não funcionais
+O sistema deve ser modular e preparado para receber novos módulos da plataforma FGR-OPS.
+O sistema deve permitir reutilização do mesmo ambiente operacional para diferentes módulos futuros.
+O sistema deve suportar múltiplas obras em uma única plataforma.
+O sistema deve oferecer boa usabilidade para operação em campo.
+O sistema deve possuir interface responsiva para uso em dispositivos móveis e desktop.
+O sistema deve priorizar simplicidade para perfis operacionais.
+O sistema deve garantir rastreabilidade das ações relevantes.
+O sistema deve possibilitar consolidação gerencial entre obras.
+O sistema deve ser preparado para futura evolução com geolocalização, rastreamento de ativos e regras operacionais mais avançadas.
+11. Regras de negócio
+11.1 Regras gerais de operação
+Toda demanda deve estar associada a uma obra e a uma localização operacional.
+Toda demanda deve possuir um solicitante identificado.
+O sistema deve manter segregação entre obras dentro da plataforma.
+As ações disponíveis na demanda devem depender do perfil do usuário e do status atual da demanda.
+Toda alteração administrativa relevante deve ser registrada com justificativa.
+Demandas não devem ser excluídas fisicamente quando houver necessidade de preservação histórica; o tratamento deve ocorrer por cancelamento ou equivalente administrativo.
+Uma demanda pode possuir múltiplas ações e múltiplos materiais associados.
+O sistema deve permitir agrupamento lógico de demandas.
+11.2 Regras da fila operacional
+A fila operacional do operador deve obedecer às regras de priorização definidas pelo sistema.
+Demandas comuns devem seguir a lógica operacional estabelecida para ordenação de atendimento.
+Demandas com prioridade máxima devem assumir precedência sobre demandas comuns.
+Quando o operador receber uma demanda de prioridade máxima, sua fila operacional deve permanecer bloqueada para a continuidade do fluxo comum até que essa demanda seja tratada.
+Demandas com prioridade máxima não devem gerar bloqueio lógico entre si.
+11.3 Regras de prioridade por serviço e material
+O sistema deve permitir definir quais serviços possuem prioridade.
+Determinados materiais ou serviços críticos devem influenciar a ordem de atendimento.
+A priorização por serviço ou material deve respeitar a compatibilidade entre maquinário e serviço.
+11.4 Regras de compatibilidade operacional
+Nem todo maquinário pode executar qualquer serviço.
+O sistema deve considerar a relação entre maquinário e serviços habilitados.
+O sistema deve considerar o porte do maquinário para aplicação de regras operacionais.
+11.5 Regras de localização e circulação
+O sistema deve considerar zonas operacionais associadas às ruas e áreas da obra.
+Deve existir lógica para apoiar a organização de atendimento por ruas, quadras e lotes.
+Demandas em lote adjacente ao atendimento atual devem receber prioridade especial.
+Quando a nova demanda não estiver em lote adjacente, a priorização deve considerar material ou serviço.
+Para maquinários grandes, a regra de proximidade tem relevância operacional maior por conta do impacto na circulação.
+Para serviços de transporte, a prioridade pode considerar o lote de destino conforme o tipo de maquinário envolvido.
+11.6 Regras de expediente
+O sistema deve permitir registrar o início e o fim do expediente de equipamentos ou operadores.
+Esses registros devem subsidiar análises de atraso, disponibilidade e hora extra.
+11.7 Regras de serviços dinâmicos
+O sistema deve permitir registrar serviços não previamente padronizados.
+Serviços dinâmicos podem envolver um ou mais equipamentos.
+Serviços dinâmicos podem exigir tratamento diferenciado em relação a descrição, agendamento e acompanhamento.
+12. Relatórios e indicadores esperados
+O módulo deve suportar, ao menos, os seguintes acompanhamentos:
+
+quantidade de demandas por período
+distribuição de demandas por status
+tempo médio de conclusão
+desempenho por operador
+comparativo entre operadores
+utilização por tipo de maquinário
+comparação entre maquinários
+concentração de demandas por quadra e lote
+análise comparativa em tabelas detalhadas
+monitoramento das demandas em andamento
+acompanhamento de pendências e gargalos operacionais
+indicadores de disponibilidade operacional por equipamento
+13. Diretrizes de experiência do usuário
+13.1 Perfil empreiteiro / solicitante
+A experiência deve ser simples, objetiva e rápida. A tela inicial deve priorizar a ação de abertura de nova demanda, com visual limpo e reduzido número de passos.
+
+13.2 Perfil operador
+A experiência deve ser orientada à execução operacional. A fila de demandas deve ser clara, destacando prioridade, local e ação principal.
+
+13.3 Perfil gestão
+A experiência deve oferecer visão consolidada, monitoramento em tempo real, filtros operacionais e leitura gerencial da operação.
+
+14. Limites atuais de escopo e preparação para evolução
+Para a primeira fase funcional do módulo, o foco está na estruturação da operação com base em localizações operacionais como quadra, lote, rua e zona.
+
+Alguns pontos ficam reconhecidos como importantes para evolução futura da plataforma, mas não são obrigatórios para o momento inicial deste documento funcional:
+
+geolocalização avançada em mapa
+upload automatizado de plantas geográficas
+rastreamento em tempo real por GPS
+telemetria
+horímetro
+automações mais avançadas de roteirização
+inteligência ampliada entre módulos da plataforma
+Ainda assim, o módulo deve nascer funcionalmente preparado para conviver com essas evoluções no FGR-OPS.
+
+15. Papel do módulo dentro do FGR-OPS
+O Machinery Link deve ser entendido como o primeiro módulo operacional do FGR-OPS e como base funcional para expansão futura da plataforma.
+
+Ele deverá conviver com módulos posteriores, como:
+
+almoxarifado
+movimentação de materiais
+rastreamento de ativos
+manutenção
+outros módulos operacionais e gerenciais
+A visão futura é que a plataforma ofereça uma experiência integrada, especialmente para perfis operacionais em campo, reutilizando o mesmo ambiente de uso para diferentes fluxos de trabalho.
+
+16. Conclusão
+O módulo Machinery Link representa a transição do modelo atual, fragmentado e dependente de replicação por obra, para uma visão de produto estruturado dentro do FGR-OPS.
+
+Seu papel é organizar a logística de maquinário nas obras da FGR com mais rastreabilidade, controle, governança e capacidade de evolução, preservando o valor operacional já validado em campo, mas eliminando limitações do sistema atual.
+
+Este documento consolida a visão funcional do módulo e estabelece a base para a próxima etapa do desenvolvimento do sistema: definição técnica da solução.
+
+Se quiser, na próxima etapa eu posso organizar o trabalho técnico em uma ordem bem prática, por exemplo:
+
+Visão técnica da arquitetura do FGR-OPS
+Definição dos módulos do Core
+Modelo conceitual das entidades
+Perfis e matriz de permissões
+Fluxos principais em formato de diagrama
+Backlog MVP vs Fase 2
+Se quiser, eu já posso começar pelo documento de arquitetura técnica inicial do FGR-OPS.
