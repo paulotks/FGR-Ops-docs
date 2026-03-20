@@ -21,6 +21,8 @@
       "id": "PRD-M01-001",
       "severity": "importante",
       "type": "referencia_cruzada_incompleta",
+      "status": "resolvido",
+      "resolucao": "Fase 2.6 — 2026-03-20. Apontadores SPEC adicionados em REQ-OBJ-003, REQ-OBJ-004, REQ-SCO-003 e REQ-SCO-004 de docs/PRD/00-visao-escopo.md para incluir 00-visao-arquitetura.md#arquitetura-tatica-ddd, fechando a trilha documental dentro do modulo.",
       "req_ids": [
         "REQ-OBJ-003",
         "REQ-OBJ-004",
@@ -39,6 +41,8 @@
       "id": "PRD-M01-002",
       "severity": "importante",
       "type": "referencia_cruzada_incompleta",
+      "status": "resolvido",
+      "resolucao": "Fase 2.6 — 2026-03-20. Apontador SPEC adicionado na seccao Fora do Escopo (Fase 2+) para 05-backlog-mvp-glossario.md e na subseccao Criterios de Promocao para 05-backlog-mvp-glossario.md#criterios-de-promocao-para-fase-2.",
       "req_ids": [
         "REQ-SCO-F2-001",
         "REQ-SCO-F2-002",
@@ -81,6 +85,8 @@
       "id": "SPEC-M01-002",
       "severity": "importante",
       "type": "lacuna",
+      "status": "resolvido",
+      "resolucao": "Fase 2.3 — 2026-03-20. Adicionada seccao 'Criterios de promocao para Fase 2' em 05-backlog-mvp-glossario.md com tabela cobrindo REQ-SCO-GAT-001..004, incluindo gatilhos de telemetria/IoT, almoxarifado, apps nativos e servicos dinamicos. Linha de rastreio PRD actualizada.",
       "spec_path": "docs/SPEC/05-backlog-mvp-glossario.md",
       "req_ids": [
         "REQ-SCO-GAT-001",
@@ -99,6 +105,8 @@
       "id": "SPEC-M01-003",
       "severity": "importante",
       "type": "lacuna",
+      "status": "resolvido",
+      "resolucao": "Fase 2.3 — 2026-03-20. Adicionado item explicito para REQ-SCO-F2-005 (migracao de dados legados e roteirizacao geocolocada) na lista de itens adiados para Fase 2 em 05-backlog-mvp-glossario.md.",
       "spec_path": "docs/SPEC/05-backlog-mvp-glossario.md",
       "req_ids": [
         "REQ-SCO-F2-005"
@@ -114,6 +122,8 @@
       "id": "SPEC-M01-004",
       "severity": "importante",
       "type": "ambiguidade",
+      "status": "resolvido",
+      "resolucao": "Fase 2.2 — 2026-03-20. Texto expandido na seccao Arquitetura Tatica (DDD) de 00-visao-arquitetura.md para explicitar Checkpoint Manual como mecanismo de localizacao declarada sem GPS/IoT, posicao neutra na primeira demanda do turno e relacao com REQ-OBJ-004/REQ-SCO-004.",
       "spec_path": "docs/SPEC/00-visao-arquitetura.md",
       "req_ids": [
         "REQ-OBJ-004",
@@ -174,9 +184,9 @@
       {
         "prd_id": "REQ-OBJ-004",
         "spec_path": "docs/SPEC/00-visao-arquitetura.md",
-        "status": "Parcial",
-        "severidade": "importante",
-        "comentario": "Existe evidencia de algoritmo de fila e jurisdicao logistica, mas nao da localizacao declarada sem GPS."
+        "status": "Coberto",
+        "severidade": "resolvido",
+        "comentario": "Seccao Arquitetura Tatica (DDD) agora explicita Checkpoint Manual como mecanismo de localizacao declarada sem GPS/IoT, posicao neutra na primeira demanda do turno e eficiencia da frota fundada em jurisdicao logistica e proximidade espacial declarada (Fase 2.2)."
       },
       {
         "prd_id": "REQ-OBJ-005",
@@ -209,9 +219,9 @@
       {
         "prd_id": "REQ-SCO-004",
         "spec_path": "docs/SPEC/00-visao-arquitetura.md",
-        "status": "Parcial",
-        "severidade": "importante",
-        "comentario": "A arquitetura tatica menciona setor logistico e score, mas nao detalha checkpoint manual, habilitacao e urgencia."
+        "status": "Coberto",
+        "severidade": "resolvido",
+        "comentario": "Seccao Arquitetura Tatica (DDD) agora explicita Checkpoint Manual, localizacao declarada sem dependencia de GPS e relacao com o motor de score (Fase 2.2)."
       },
       {
         "prd_id": "REQ-SCO-005",
@@ -251,9 +261,9 @@
       {
         "prd_id": "REQ-SCO-F2-005",
         "spec_path": "docs/SPEC/05-backlog-mvp-glossario.md",
-        "status": "Nao coberto",
-        "severidade": "importante",
-        "comentario": "Nao foi localizada mencao a migracao de dados legados nem a roteirizacao em mapas geocolocados."
+        "status": "Coberto",
+        "severidade": "resolvido",
+        "comentario": "Item explicito adicionado na lista de itens adiados para Fase 2 com descricao de dependencias de migracao e roteirizacao (Fase 2.3)."
       },
       {
         "prd_id": "REQ-SCO-F2-006",
@@ -265,30 +275,30 @@
       {
         "prd_id": "REQ-SCO-GAT-001",
         "spec_path": "docs/SPEC/05-backlog-mvp-glossario.md",
-        "status": "Nao coberto",
-        "severidade": "importante",
-        "comentario": "O gatilho de telemetria/IoT nao esta documentado no backlog tecnico revisto."
+        "status": "Coberto",
+        "severidade": "resolvido",
+        "comentario": "Tabela de criterios de promocao adicionada em 05-backlog-mvp-glossario.md com gatilho de telemetria/IoT (Fase 2.3)."
       },
       {
         "prd_id": "REQ-SCO-GAT-002",
         "spec_path": "docs/SPEC/05-backlog-mvp-glossario.md",
-        "status": "Nao coberto",
-        "severidade": "importante",
-        "comentario": "O gatilho do modulo de Almoxarifado nao esta documentado no backlog tecnico revisto."
+        "status": "Coberto",
+        "severidade": "resolvido",
+        "comentario": "Tabela de criterios de promocao adicionada em 05-backlog-mvp-glossario.md com gatilho de almoxarifado (Fase 2.3)."
       },
       {
         "prd_id": "REQ-SCO-GAT-003",
         "spec_path": "docs/SPEC/05-backlog-mvp-glossario.md",
-        "status": "Nao coberto",
-        "severidade": "importante",
-        "comentario": "O gatilho para aplicacoes nativas nao esta documentado no backlog tecnico revisto."
+        "status": "Coberto",
+        "severidade": "resolvido",
+        "comentario": "Tabela de criterios de promocao adicionada em 05-backlog-mvp-glossario.md com gatilho de apps nativos (Fase 2.3)."
       },
       {
         "prd_id": "REQ-SCO-GAT-004",
         "spec_path": "docs/SPEC/05-backlog-mvp-glossario.md",
-        "status": "Nao coberto",
-        "severidade": "importante",
-        "comentario": "O gatilho para Servicos Dinamicos nao esta documentado no backlog tecnico revisto."
+        "status": "Coberto",
+        "severidade": "resolvido",
+        "comentario": "Tabela de criterios de promocao adicionada em 05-backlog-mvp-glossario.md com gatilho de servicos dinamicos (Fase 2.3)."
       }
     ],
     "blocking_conflicts": []
@@ -298,16 +308,16 @@
   "executive_summary": {
     "total_findings": 6,
     "bloqueantes": 0,
-    "importantes": 5,
+    "importantes": 0,
     "menores": 0,
-    "resolvidos": 1,
+    "resolvidos": 6,
     "coverage": {
-      "coberto": 14,
-      "parcial": 4,
-      "nao_coberto": 5
+      "coberto": 21,
+      "parcial": 2,
+      "nao_coberto": 0
     },
-    "risco_geral": "medio",
-    "nota": "O M01 tem boa cobertura para contexto, objetivos centrais e fundacao arquitetural do MVP. O bloqueante SPEC-M01-001 (REQ-SCO-003) foi resolvido na Fase 1.3. Permanecem achados importantes na SPEC secundaria para backlog/gatilhos de Fase 2."
+    "risco_geral": "baixo",
+    "nota": "Todos os achados do M01 foram resolvidos. Fase 1.3 resolveu SPEC-M01-001 (REQ-SCO-003). Fase 2 resolveu os 5 achados importantes restantes: SPEC-M01-002 e SPEC-M01-003 (gatilhos e backlog F2), SPEC-M01-004 (checkpoint manual/GPS), PRD-M01-001 e PRD-M01-002 (referencias cruzadas)."
   },
   "traceability_csv": "docs/audit/output/M01/traceability.csv",
   "traceability_stub_markdown": "docs/audit/output/M01/traceability-stub.md"

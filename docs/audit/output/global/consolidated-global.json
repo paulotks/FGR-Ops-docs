@@ -1,5 +1,5 @@
 ﻿{
-    "generated_at":  "2026-03-20T15:47:53",
+    "generated_at":  "2026-03-20T16:06:54",
     "input_root":  "C:\\dev\\FGR-Ops-Requisitos\\docs\\audit\\output",
     "total_modules":  7,
     "module_ids":  [
@@ -13,13 +13,13 @@
                    ],
     "aggregate_executive_summary":  {
                                         "total_findings":  37,
-                                        "bloqueantes":  2,
-                                        "importantes":  21,
+                                        "bloqueantes":  0,
+                                        "importantes":  1,
                                         "menores":  2,
                                         "coverage":  {
-                                                         "coberto":  42,
-                                                         "parcial":  17,
-                                                         "nao_coberto":  5
+                                                         "coberto":  62,
+                                                         "parcial":  2,
+                                                         "nao_coberto":  0
                                                      }
                                     },
     "modules":  [
@@ -49,6 +49,8 @@
                                                                            "id":  "PRD-M01-001",
                                                                            "severity":  "importante",
                                                                            "type":  "referencia_cruzada_incompleta",
+                                                                           "status":  "resolvido",
+                                                                           "resolucao":  "Fase 2.6 â€” 2026-03-20. Apontadores SPEC adicionados em REQ-OBJ-003, REQ-OBJ-004, REQ-SCO-003 e REQ-SCO-004 de docs/PRD/00-visao-escopo.md para incluir 00-visao-arquitetura.md#arquitetura-tatica-ddd, fechando a trilha documental dentro do modulo.",
                                                                            "req_ids":  [
                                                                                            "REQ-OBJ-003",
                                                                                            "REQ-OBJ-004",
@@ -67,6 +69,8 @@
                                                                            "id":  "PRD-M01-002",
                                                                            "severity":  "importante",
                                                                            "type":  "referencia_cruzada_incompleta",
+                                                                           "status":  "resolvido",
+                                                                           "resolucao":  "Fase 2.6 â€” 2026-03-20. Apontador SPEC adicionado na seccao Fora do Escopo (Fase 2+) para 05-backlog-mvp-glossario.md e na subseccao Criterios de Promocao para 05-backlog-mvp-glossario.md#criterios-de-promocao-para-fase-2.",
                                                                            "req_ids":  [
                                                                                            "REQ-SCO-F2-001",
                                                                                            "REQ-SCO-F2-002",
@@ -109,6 +113,8 @@
                                                                             "id":  "SPEC-M01-002",
                                                                             "severity":  "importante",
                                                                             "type":  "lacuna",
+                                                                            "status":  "resolvido",
+                                                                            "resolucao":  "Fase 2.3 â€” 2026-03-20. Adicionada seccao \u0027Criterios de promocao para Fase 2\u0027 em 05-backlog-mvp-glossario.md com tabela cobrindo REQ-SCO-GAT-001..004, incluindo gatilhos de telemetria/IoT, almoxarifado, apps nativos e servicos dinamicos. Linha de rastreio PRD actualizada.",
                                                                             "spec_path":  "docs/SPEC/05-backlog-mvp-glossario.md",
                                                                             "req_ids":  [
                                                                                             "REQ-SCO-GAT-001",
@@ -127,6 +133,8 @@
                                                                             "id":  "SPEC-M01-003",
                                                                             "severity":  "importante",
                                                                             "type":  "lacuna",
+                                                                            "status":  "resolvido",
+                                                                            "resolucao":  "Fase 2.3 â€” 2026-03-20. Adicionado item explicito para REQ-SCO-F2-005 (migracao de dados legados e roteirizacao geocolocada) na lista de itens adiados para Fase 2 em 05-backlog-mvp-glossario.md.",
                                                                             "spec_path":  "docs/SPEC/05-backlog-mvp-glossario.md",
                                                                             "req_ids":  [
                                                                                             "REQ-SCO-F2-005"
@@ -142,6 +150,8 @@
                                                                             "id":  "SPEC-M01-004",
                                                                             "severity":  "importante",
                                                                             "type":  "ambiguidade",
+                                                                            "status":  "resolvido",
+                                                                            "resolucao":  "Fase 2.2 â€” 2026-03-20. Texto expandido na seccao Arquitetura Tatica (DDD) de 00-visao-arquitetura.md para explicitar Checkpoint Manual como mecanismo de localizacao declarada sem GPS/IoT, posicao neutra na primeira demanda do turno e relacao com REQ-OBJ-004/REQ-SCO-004.",
                                                                             "spec_path":  "docs/SPEC/00-visao-arquitetura.md",
                                                                             "req_ids":  [
                                                                                             "REQ-OBJ-004",
@@ -202,9 +212,9 @@
                                                                                             {
                                                                                                 "prd_id":  "REQ-OBJ-004",
                                                                                                 "spec_path":  "docs/SPEC/00-visao-arquitetura.md",
-                                                                                                "status":  "Parcial",
-                                                                                                "severidade":  "importante",
-                                                                                                "comentario":  "Existe evidencia de algoritmo de fila e jurisdicao logistica, mas nao da localizacao declarada sem GPS."
+                                                                                                "status":  "Coberto",
+                                                                                                "severidade":  "resolvido",
+                                                                                                "comentario":  "Seccao Arquitetura Tatica (DDD) agora explicita Checkpoint Manual como mecanismo de localizacao declarada sem GPS/IoT, posicao neutra na primeira demanda do turno e eficiencia da frota fundada em jurisdicao logistica e proximidade espacial declarada (Fase 2.2)."
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-OBJ-005",
@@ -237,9 +247,9 @@
                                                                                             {
                                                                                                 "prd_id":  "REQ-SCO-004",
                                                                                                 "spec_path":  "docs/SPEC/00-visao-arquitetura.md",
-                                                                                                "status":  "Parcial",
-                                                                                                "severidade":  "importante",
-                                                                                                "comentario":  "A arquitetura tatica menciona setor logistico e score, mas nao detalha checkpoint manual, habilitacao e urgencia."
+                                                                                                "status":  "Coberto",
+                                                                                                "severidade":  "resolvido",
+                                                                                                "comentario":  "Seccao Arquitetura Tatica (DDD) agora explicita Checkpoint Manual, localizacao declarada sem dependencia de GPS e relacao com o motor de score (Fase 2.2)."
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-SCO-005",
@@ -279,9 +289,9 @@
                                                                                             {
                                                                                                 "prd_id":  "REQ-SCO-F2-005",
                                                                                                 "spec_path":  "docs/SPEC/05-backlog-mvp-glossario.md",
-                                                                                                "status":  "Nao coberto",
-                                                                                                "severidade":  "importante",
-                                                                                                "comentario":  "Nao foi localizada mencao a migracao de dados legados nem a roteirizacao em mapas geocolocados."
+                                                                                                "status":  "Coberto",
+                                                                                                "severidade":  "resolvido",
+                                                                                                "comentario":  "Item explicito adicionado na lista de itens adiados para Fase 2 com descricao de dependencias de migracao e roteirizacao (Fase 2.3)."
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-SCO-F2-006",
@@ -293,30 +303,30 @@
                                                                                             {
                                                                                                 "prd_id":  "REQ-SCO-GAT-001",
                                                                                                 "spec_path":  "docs/SPEC/05-backlog-mvp-glossario.md",
-                                                                                                "status":  "Nao coberto",
-                                                                                                "severidade":  "importante",
-                                                                                                "comentario":  "O gatilho de telemetria/IoT nao esta documentado no backlog tecnico revisto."
+                                                                                                "status":  "Coberto",
+                                                                                                "severidade":  "resolvido",
+                                                                                                "comentario":  "Tabela de criterios de promocao adicionada em 05-backlog-mvp-glossario.md com gatilho de telemetria/IoT (Fase 2.3)."
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-SCO-GAT-002",
                                                                                                 "spec_path":  "docs/SPEC/05-backlog-mvp-glossario.md",
-                                                                                                "status":  "Nao coberto",
-                                                                                                "severidade":  "importante",
-                                                                                                "comentario":  "O gatilho do modulo de Almoxarifado nao esta documentado no backlog tecnico revisto."
+                                                                                                "status":  "Coberto",
+                                                                                                "severidade":  "resolvido",
+                                                                                                "comentario":  "Tabela de criterios de promocao adicionada em 05-backlog-mvp-glossario.md com gatilho de almoxarifado (Fase 2.3)."
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-SCO-GAT-003",
                                                                                                 "spec_path":  "docs/SPEC/05-backlog-mvp-glossario.md",
-                                                                                                "status":  "Nao coberto",
-                                                                                                "severidade":  "importante",
-                                                                                                "comentario":  "O gatilho para aplicacoes nativas nao esta documentado no backlog tecnico revisto."
+                                                                                                "status":  "Coberto",
+                                                                                                "severidade":  "resolvido",
+                                                                                                "comentario":  "Tabela de criterios de promocao adicionada em 05-backlog-mvp-glossario.md com gatilho de apps nativos (Fase 2.3)."
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-SCO-GAT-004",
                                                                                                 "spec_path":  "docs/SPEC/05-backlog-mvp-glossario.md",
-                                                                                                "status":  "Nao coberto",
-                                                                                                "severidade":  "importante",
-                                                                                                "comentario":  "O gatilho para Servicos Dinamicos nao esta documentado no backlog tecnico revisto."
+                                                                                                "status":  "Coberto",
+                                                                                                "severidade":  "resolvido",
+                                                                                                "comentario":  "Tabela de criterios de promocao adicionada em 05-backlog-mvp-glossario.md com gatilho de servicos dinamicos (Fase 2.3)."
                                                                                             }
                                                                                         ],
                                                                       "blocking_conflicts":  [
@@ -332,16 +342,16 @@
                                                   "executive_summary":  {
                                                                             "total_findings":  6,
                                                                             "bloqueantes":  0,
-                                                                            "importantes":  5,
+                                                                            "importantes":  0,
                                                                             "menores":  0,
-                                                                            "resolvidos":  1,
+                                                                            "resolvidos":  6,
                                                                             "coverage":  {
-                                                                                             "coberto":  14,
-                                                                                             "parcial":  4,
-                                                                                             "nao_coberto":  5
+                                                                                             "coberto":  21,
+                                                                                             "parcial":  2,
+                                                                                             "nao_coberto":  0
                                                                                          },
-                                                                            "risco_geral":  "medio",
-                                                                            "nota":  "O M01 tem boa cobertura para contexto, objetivos centrais e fundacao arquitetural do MVP. O bloqueante SPEC-M01-001 (REQ-SCO-003) foi resolvido na Fase 1.3. Permanecem achados importantes na SPEC secundaria para backlog/gatilhos de Fase 2."
+                                                                            "risco_geral":  "baixo",
+                                                                            "nota":  "Todos os achados do M01 foram resolvidos. Fase 1.3 resolveu SPEC-M01-001 (REQ-SCO-003). Fase 2 resolveu os 5 achados importantes restantes: SPEC-M01-002 e SPEC-M01-003 (gatilhos e backlog F2), SPEC-M01-004 (checkpoint manual/GPS), PRD-M01-001 e PRD-M01-002 (referencias cruzadas)."
                                                                         },
                                                   "traceability_csv":  "docs/audit/output/M01/traceability.csv",
                                                   "traceability_stub_markdown":  "docs/audit/output/M01/traceability-stub.md"
@@ -372,6 +382,8 @@
                                                                            "id":  "PRD-M02-001",
                                                                            "severity":  "importante",
                                                                            "type":  "ambiguidade",
+                                                                           "status":  "resolvido",
+                                                                           "resolucao":  "Fase 2.6 â€” 2026-03-20. PRD/01-usuarios-rbac.md actualizado: REQ-RBAC-005 e REQ-RBAC-006 agora explicitam que Empreiteiro e Operador podem ler contexto auxiliar (obra, hierarquia territorial, catalogos) na medida necessaria para preencher formularios de abertura de demanda ou visualizar a fila operacional.",
                                                                            "req_ids":  [
                                                                                            "REQ-RBAC-005",
                                                                                            "REQ-RBAC-006"
@@ -464,16 +476,16 @@
                                                                                             {
                                                                                                 "prd_id":  "REQ-RBAC-005",
                                                                                                 "spec_path":  "docs/SPEC/04-rbac-permissoes.md",
-                                                                                                "status":  "Parcial",
-                                                                                                "severidade":  "importante",
-                                                                                                "comentario":  "A autoria propria das demandas esta preservada, mas a matriz tambem abre leituras de obra, cadastros territoriais e catalogos operacionais alem da formulacao do PRD sobre visibilidade restrita as suas demandas."
+                                                                                                "status":  "Coberto",
+                                                                                                "severidade":  "resolvido",
+                                                                                                "comentario":  "Fase 2.6 (2026-03-20): REQ-RBAC-005 no PRD explicita leitura de obra, hierarquia territorial e catalogos na medida necessaria para abertura de demanda; cobre a fronteira com a matriz SPEC."
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-RBAC-006",
                                                                                                 "spec_path":  "docs/SPEC/04-rbac-permissoes.md",
-                                                                                                "status":  "Parcial",
-                                                                                                "severidade":  "importante",
-                                                                                                "comentario":  "A SPEC restringe o operador a propria fila, expediente e demandas alocadas, mas nao explicita o requisito de prioridades maximas em destaque no topo e ainda adiciona leituras auxiliares fora da formulacao estrita do PRD."
+                                                                                                "status":  "Coberto",
+                                                                                                "severidade":  "resolvido",
+                                                                                                "comentario":  "Fase 2.6 (2026-03-20): REQ-RBAC-006 no PRD explicita leitura de contexto auxiliar na medida necessaria para visualizacao da fila operacional; cobre a fronteira com a matriz SPEC."
                                                                                             }
                                                                                         ],
                                                                       "blocking_conflicts":  [
@@ -489,15 +501,16 @@
                                                   "executive_summary":  {
                                                                             "total_findings":  4,
                                                                             "bloqueantes":  0,
-                                                                            "importantes":  2,
+                                                                            "importantes":  1,
                                                                             "menores":  2,
+                                                                            "resolvidos":  1,
                                                                             "coverage":  {
-                                                                                             "coberto":  4,
-                                                                                             "parcial":  2,
+                                                                                             "coberto":  6,
+                                                                                             "parcial":  0,
                                                                                              "nao_coberto":  0
                                                                                          },
                                                                             "risco_geral":  "medio",
-                                                                            "nota":  "O M02 esta tecnicamente bem coberto para perfis centrais e isolamento cross-tenant, mas permanece com fronteira pouco nitida para os acessos auxiliares de `Empreiteiro` e `Operador`, o que reduz a precisao da rastreabilidade entre narrativa de produto e matriz tecnica."
+                                                                            "nota":  "Fase 2.6 (2026-03-20) resolveu PRD-M02-001: o PRD clarifica leituras auxiliares para Empreiteiro e Operador (REQ-RBAC-005 e REQ-RBAC-006), e a cross-check passa a 6/6 requisitos Cobertos. Permanecem em aberto SPEC-M02-001 (justificativa SPEC face ao escopo de produto) e os achados menores de nomenclatura (PRD-M02-002, SPEC-M02-002)."
                                                                         },
                                                   "traceability_csv":  "docs/audit/output/M02/traceability.csv",
                                                   "traceability_stub_markdown":  "docs/audit/output/M02/traceability-stub.md"
@@ -537,7 +550,14 @@
                                                                                                "file":  "docs/PRD/02-jornada-usuario.md",
                                                                                                "section":  "### `REQ-JOR-001` Requisicao inicial pelo Empreiteiro",
                                                                                                "approx_line":  9
-                                                                                           }
+                                                                                           },
+                                                                           "status":  "resolvido",
+                                                                           "resolucao":  {
+                                                                                             "status":  "resolvido",
+                                                                                             "fase":  "2.6",
+                                                                                             "data":  "2026-03-20",
+                                                                                             "descricao":  "PRD/02-jornada-usuario.md REQ-JOR-001 passou a especificar que o Empreiteiro selecciona SetorOperacional (obrigatorio) e opcionalmente Quadra/Lote da malha espacial do Core para ancorar o pedido."
+                                                                                         }
                                                                        }
                                                                    ],
                                                   "spec_findings":  [
@@ -554,7 +574,14 @@
                                                                                                 "file":  "docs/SPEC/01-modulos-plataforma.md",
                                                                                                 "section":  "### Capacidades operacionais do Machinery Link / ## Dependencias sobre o Core",
                                                                                                 "approx_line":  48
-                                                                                            }
+                                                                                            },
+                                                                            "status":  "resolvido",
+                                                                            "resolucao":  {
+                                                                                              "status":  "resolvido",
+                                                                                              "fase":  "2.4",
+                                                                                              "data":  "2026-03-20",
+                                                                                              "descricao":  "SPEC/01-modulos-plataforma.md: capacidade #1 (Solicitacao) alargada para explicitar que o Empreiteiro informa a localizacao de trabalho seleccionando SetorOperacional (obrigatorio) e opcionalmente Quadra/Lote da malha espacial do Core, ancorando o pedido ao contexto logistico que alimenta o filtro de jurisdicao e o factor de adjacencia."
+                                                                                          }
                                                                         },
                                                                         {
                                                                             "id":  "SPEC-M03-002",
@@ -569,7 +596,14 @@
                                                                                                 "file":  "docs/SPEC/03-fila-scoring-estados-sla.md",
                                                                                                 "section":  "## Regra zero, hard filter, destaque e score / ## Regra de conflito: alocacao manual sobre demanda `EM_ANDAMENTO`",
                                                                                                 "approx_line":  13
-                                                                                            }
+                                                                                            },
+                                                                            "status":  "resolvido",
+                                                                            "resolucao":  {
+                                                                                              "status":  "resolvido",
+                                                                                              "fase":  "2.1",
+                                                                                              "data":  "2026-03-20",
+                                                                                              "descricao":  "SPEC/03-fila-scoring-estados-sla.md passo 3 (Destaque Visual de Prioridade Maxima) alargado para explicitar UI nao bloqueante: as restantes demandas permanecem visiveis e com scroll abaixo da demanda destacada na UI movel; constitui contrato de experiencia da fila do operador (REQ-FUNC-008, REQ-ACE-005, REQ-JOR-004)."
+                                                                                          }
                                                                         },
                                                                         {
                                                                             "id":  "SPEC-M03-003",
@@ -598,9 +632,9 @@
                                                                                             {
                                                                                                 "prd_id":  "REQ-JOR-001",
                                                                                                 "spec_path":  "docs/SPEC/01-modulos-plataforma.md",
-                                                                                                "status":  "Parcial",
-                                                                                                "severidade":  "importante",
-                                                                                                "comentario":  "A SPEC cobre abertura de demandas simples e agrupadas, mas nao deixa explicito como a localizacao de trabalho e capturada nem qual entidade do Core ancora esse dado na requisicao."
+                                                                                                "status":  "Coberto",
+                                                                                                "severidade":  "menor",
+                                                                                                "comentario":  "A capacidade #1 (Solicitacao) explicita captura por SetorOperacional (obrigatorio) e Quadra/Lote opcionais da malha do Core, alinhada ao REQ-JOR-001 no PRD."
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-JOR-002",
@@ -619,9 +653,9 @@
                                                                                             {
                                                                                                 "prd_id":  "REQ-JOR-004",
                                                                                                 "spec_path":  "docs/SPEC/03-fila-scoring-estados-sla.md",
-                                                                                                "status":  "Parcial",
-                                                                                                "severidade":  "importante",
-                                                                                                "comentario":  "Ha evidencia para destaque visual, alocacao manual e empilhamento nao destrutivo, com suporte contextual em `01-modulos-plataforma`, mas a exigencia de UI sem bloqueio e de fila estrita fica apenas implicita."
+                                                                                                "status":  "Coberto",
+                                                                                                "severidade":  "menor",
+                                                                                                "comentario":  "O passo 3 documenta UI nao bloqueante e fila scrollavel com demandas visiveis abaixo do destaque de prioridade maxima em mobile, fechando o contrato de experiencia do operador."
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-JOR-005",
@@ -643,18 +677,18 @@
                                                                        ],
                                                   "executive_summary":  {
                                                                             "total_findings":  4,
-                                                                            "total_findings_pendentes":  3,
-                                                                            "total_findings_resolvidos":  1,
+                                                                            "total_findings_pendentes":  0,
+                                                                            "total_findings_resolvidos":  4,
                                                                             "bloqueantes":  0,
-                                                                            "importantes":  3,
+                                                                            "importantes":  0,
                                                                             "menores":  0,
                                                                             "coverage":  {
-                                                                                             "coberto":  3,
-                                                                                             "parcial":  2,
+                                                                                             "coberto":  5,
+                                                                                             "parcial":  0,
                                                                                              "nao_coberto":  0
                                                                                          },
-                                                                            "risco_geral":  "medio",
-                                                                            "nota":  "O achado SPEC-M03-003 (cancelamento automatico sem justificacao) foi resolvido por DEC-002 (auto-encerramento por estouro de SLA no fim do expediente, parametrizavel por obra). REQ-JOR-005 passa a Coberto. Achados importantes pendentes: PRD-M03-001 (localizacao), SPEC-M03-001 (captura de localizacao), SPEC-M03-002 (UX de fila)."
+                                                                            "risco_geral":  "baixo",
+                                                                            "nota":  "Todos os achados M03 estao resolvidos: SPEC-M03-003 via DEC-002 (SLA fim de expediente); PRD-M03-001 e SPEC-M03-001 com ancoragem espacial SetorOperacional/Quadra/Lote no PRD e na SPEC; SPEC-M03-002 com contrato de fila nao bloqueante e scroll em mobile. Cobertura PRD-SPEC: cinco requisitos JOR cobertos; risco geral baixo."
                                                                         },
                                                   "traceability_csv":  "docs/audit/output/M03/traceability.csv",
                                                   "traceability_stub_markdown":  "docs/audit/output/M03/traceability-stub.md"
@@ -701,7 +735,13 @@
                                                                                                "file":  "docs/PRD/03-requisitos-funcionais.md",
                                                                                                "section":  "### `REQ-FUNC-003` Gestao de maquinario e ajudantes / ### `REQ-FUNC-010` Adjacencias e localizacao operacional",
                                                                                                "approx_line":  19
-                                                                                           }
+                                                                                           },
+                                                                           "resolucao":  {
+                                                                                             "status":  "resolvido",
+                                                                                             "fase":  "2.6",
+                                                                                             "data":  "2026-03-20",
+                                                                                             "descricao":  "PRD/03-requisitos-funcionais.md â€” apontadores SPEC adicionados: REQ-FUNC-003 (02-modelo-dados.md), REQ-FUNC-004 (02-modelo-dados.md + 06-definicoes-complementares.md), REQ-FUNC-005 (02-modelo-dados.md), REQ-FUNC-007 (02-modelo-dados.md + 06-definicoes-complementares.md), REQ-FUNC-010 (02-modelo-dados.md)."
+                                                                                         }
                                                                        },
                                                                        {
                                                                            "id":  "PRD-M04-002",
@@ -761,7 +801,13 @@
                                                                                                 "file":  "docs/SPEC/01-modulos-plataforma.md",
                                                                                                 "section":  "### Capacidades operacionais do Machinery Link",
                                                                                                 "approx_line":  46
-                                                                                            }
+                                                                                            },
+                                                                            "resolucao":  {
+                                                                                              "status":  "resolvido",
+                                                                                              "fase":  "2.4",
+                                                                                              "data":  "2026-03-20",
+                                                                                              "descricao":  "SPEC/01-modulos-plataforma.md expandido com nova capacidade #2 \"Agrupamento e criacao multipla\": payload bulk gera demandas independentes a partir da mesma experiencia de formulario, cada uma com ID proprio, participacao individual no pipeline da fila, conclusao/cancelamento autonomos, relacao logica preservada em DemandaGrupo para rastreio sem orquestracao de execucao (REQ-FUNC-005)."
+                                                                                          }
                                                                         },
                                                                         {
                                                                             "id":  "SPEC-M04-003",
@@ -776,7 +822,13 @@
                                                                                                 "file":  "docs/SPEC/06-definicoes-complementares.md",
                                                                                                 "section":  "## Estrategia PWA offline / ## Rastreabilidade de ajudantes",
                                                                                                 "approx_line":  14
-                                                                                            }
+                                                                                            },
+                                                                            "resolucao":  {
+                                                                                              "status":  "resolvido",
+                                                                                              "fase":  "2.4",
+                                                                                              "data":  "2026-03-20",
+                                                                                              "descricao":  "SPEC/02-modelo-dados.md â€” secao \"Relacionamentos e regras de integridade\" expandida: tempoExecucaoMs como campo calculado (finalizadoEm - iniciadoEm em ms), persistido no momento da conclusao; timestamps offline do dispositivo prevalecem (REQ-FUNC-007)."
+                                                                                          }
                                                                         },
                                                                         {
                                                                             "id":  "SPEC-M04-004",
@@ -791,7 +843,13 @@
                                                                                                 "file":  "docs/SPEC/03-fila-scoring-estados-sla.md",
                                                                                                 "section":  "## Regra zero, hard filter, destaque e score",
                                                                                                 "approx_line":  15
-                                                                                            }
+                                                                                            },
+                                                                            "resolucao":  {
+                                                                                              "status":  "resolvido",
+                                                                                              "fase":  "2.1",
+                                                                                              "data":  "2026-03-20",
+                                                                                              "descricao":  "SPEC/03-fila-scoring-estados-sla.md passo 3 expandido: UI nao bloqueante; demandas restantes permanecem visiveis e com scroll abaixo da demanda destacada na UI movel (REQ-FUNC-008)."
+                                                                                          }
                                                                         }
                                                                     ],
                                                   "cross_check":  {
@@ -827,9 +885,9 @@
                                                                                             {
                                                                                                 "prd_id":  "REQ-FUNC-005",
                                                                                                 "spec_path":  "docs/SPEC/01-modulos-plataforma.md + docs/SPEC/02-modelo-dados.md",
-                                                                                                "status":  "Parcial",
-                                                                                                "severidade":  "importante",
-                                                                                                "comentario":  "A SPEC reconhece demandas agrupadas, lote multiplo e a existencia de `DemandaGrupo`, mas nao fecha como a logica estrutural partilhada e o envio bulk de demandas independentes sao representados e distinguidos no contrato funcional."
+                                                                                                "status":  "Coberto",
+                                                                                                "severidade":  "menor",
+                                                                                                "comentario":  "01-modulos-plataforma documenta capacidade de agrupamento/criacao multipla: bulk gera demandas independentes com ID proprio, pipeline individual, DemandaGrupo para rastreio. 02-modelo-dados sustenta a entidade."
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-FUNC-006",
@@ -840,17 +898,17 @@
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-FUNC-007",
-                                                                                                "spec_path":  "docs/SPEC/03-fila-scoring-estados-sla.md + docs/SPEC/06-definicoes-complementares.md",
-                                                                                                "status":  "Parcial",
-                                                                                                "severidade":  "importante",
-                                                                                                "comentario":  "Ha evidencia para os timestamps operacionais e para a reconciliacao temporal, mas `tempoExecucaoMs` nao aparece como atributo explicitamente persistido/calculado no dominio revisado."
+                                                                                                "spec_path":  "docs/SPEC/02-modelo-dados.md + docs/SPEC/03-fila-scoring-estados-sla.md + docs/SPEC/06-definicoes-complementares.md",
+                                                                                                "status":  "Coberto",
+                                                                                                "severidade":  "menor",
+                                                                                                "comentario":  "02-modelo-dados especifica tempoExecucaoMs como campo calculado (finalizadoEm - iniciadoEm em ms) persistido na conclusao; offline do dispositivo prevalece. Complementar em 03 e 06."
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-FUNC-008",
                                                                                                 "spec_path":  "docs/SPEC/03-fila-scoring-estados-sla.md",
-                                                                                                "status":  "Parcial",
-                                                                                                "severidade":  "importante",
-                                                                                                "comentario":  "A prioridade `MAXIMA` tem destaque visual obrigatorio, mas o texto nao afirma explicitamente que a UI continua nao bloqueante e sem ocultar as restantes demandas."
+                                                                                                "status":  "Coberto",
+                                                                                                "severidade":  "menor",
+                                                                                                "comentario":  "Passo 3 da SPEC afirma UI nao bloqueante: demandas restantes visiveis e com scroll abaixo do destaque em mobile."
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-FUNC-009",
@@ -895,18 +953,18 @@
                                                                        ],
                                                   "executive_summary":  {
                                                                             "total_findings":  7,
-                                                                            "total_findings_pendentes":  4,
-                                                                            "total_findings_resolvidos":  3,
+                                                                            "total_findings_pendentes":  0,
+                                                                            "total_findings_resolvidos":  7,
                                                                             "bloqueantes":  0,
-                                                                            "importantes":  3,
+                                                                            "importantes":  0,
                                                                             "menores":  0,
                                                                             "coverage":  {
-                                                                                             "coberto":  7,
-                                                                                             "parcial":  3,
+                                                                                             "coberto":  10,
+                                                                                             "parcial":  0,
                                                                                              "nao_coberto":  0
                                                                                          },
-                                                                            "risco_geral":  "medio",
-                                                                            "nota":  "O conflito bloqueante entre filtro logistico estrito e alocacao manual foi resolvido por DEC-001 (modelo hibrido). Restam 3 achados importantes: agrupamento/bulk (SPEC-M04-002), tempoExecucaoMs (SPEC-M04-003) e UI nao bloqueante para prioridade maxima (SPEC-M04-004). A cobertura de REQ-FUNC-002 passa a Coberto."
+                                                                            "risco_geral":  "baixo",
+                                                                            "nota":  "Conflito bloqueante resolvido por DEC-001. Todos os achados do modulo estao resolvidos: referencias cruzadas PRD (PRD-M04-001, Fase 2.6), agrupamento/bulk (SPEC-M04-002, Fase 2.4), tempoExecucaoMs (SPEC-M04-003, Fase 2.4), UI nao bloqueante MAXIMA (SPEC-M04-004, Fase 2.1). Cobertura PRD-SPEC: 10/10 requisitos Cobertos."
                                                                         },
                                                   "traceability_csv":  "docs/audit/output/M04/traceability.csv",
                                                   "traceability_stub_markdown":  "docs/audit/output/M04/traceability-stub.md"
@@ -951,7 +1009,14 @@
                                                                                                 "file":  "docs/SPEC/00-visao-arquitetura.md",
                                                                                                 "section":  "### Decisoes Arquiteturais (ADRs)",
                                                                                                 "approx_line":  42
-                                                                                            }
+                                                                                            },
+                                                                            "status":  "resolvido",
+                                                                            "resolucao":  {
+                                                                                              "status":  "resolvido",
+                                                                                              "fase":  "2.2",
+                                                                                              "data":  "2026-03-20",
+                                                                                              "correcao_aplicada":  "SPEC/00-visao-arquitetura.md: ADR de Rate Limiting alargada com contrato normativo alinhado a REQ-NFR-006 â€” endpoints exactos (/auth/login, /auth/pin a 5 req/min; POST /demandas e POST /demandas/bulk a 20 req/min), resposta HTTP 429 Too Many Requests com cabecalho Retry-After, bloqueio temporario de 15 minutos por IP ou utilizador."
+                                                                                          }
                                                                         },
                                                                         {
                                                                             "id":  "SPEC-M05-002",
@@ -987,7 +1052,14 @@
                                                                                                 "file":  "docs/SPEC/02-modelo-dados.md",
                                                                                                 "section":  "## Relacionamentos e regras de integridade",
                                                                                                 "approx_line":  30
-                                                                                            }
+                                                                                            },
+                                                                            "status":  "resolvido",
+                                                                            "resolucao":  {
+                                                                                              "status":  "resolvido",
+                                                                                              "fase":  "2.5",
+                                                                                              "data":  "2026-03-20",
+                                                                                              "correcao_aplicada":  "SPEC/06-definicoes-complementares.md: nova seccao \"Politica de rastreabilidade dos recursos operacionais (REQ-NFR-004)\" com politica uniforme â€” tabela para Maquinario, Ajudante, Servico, TipoMaquinario, Material, SetorOperacional, Quadra, Lote, Rua, RegistroExpediente (soft-delete, auditoria de mutacoes, requisitos obraId). Regras transversais: ResourceAuditLog com userId, entityType, entityId, obraId, action, oldValues, newValues, timestamp."
+                                                                                          }
                                                                         }
                                                                     ],
                                                   "cross_check":  {
@@ -1015,10 +1087,10 @@
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-NFR-004",
-                                                                                                "spec_path":  "docs/SPEC/00-visao-arquitetura.md + docs/SPEC/02-modelo-dados.md",
-                                                                                                "status":  "Parcial",
-                                                                                                "severidade":  "importante",
-                                                                                                "comentario":  "Ha cobertura clara para SQL Server Prisma e isolamento logico multi-tenant por obraId mas a rastreabilidade consistente dos recursos operacionais nao fica uniformemente especificada para todas as entidades."
+                                                                                                "spec_path":  "docs/SPEC/00-visao-arquitetura.md + docs/SPEC/02-modelo-dados.md + docs/SPEC/06-definicoes-complementares.md",
+                                                                                                "status":  "Coberto",
+                                                                                                "severidade":  "menor",
+                                                                                                "comentario":  "Politica de rastreabilidade dos recursos operacionais formalizada em 06-definicoes-complementares (REQ-NFR-004): entidades operacionais com soft-delete, auditoria de mutacoes e obraId; ResourceAuditLog transversal conforme Fase 2.5."
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-NFR-005",
@@ -1030,9 +1102,9 @@
                                                                                             {
                                                                                                 "prd_id":  "REQ-NFR-006",
                                                                                                 "spec_path":  "docs/SPEC/00-visao-arquitetura.md",
-                                                                                                "status":  "Parcial",
-                                                                                                "severidade":  "importante",
-                                                                                                "comentario":  "Os limites numericos aparecem na arquitetura mas faltam os endpoints exatos o contrato de HTTP 429 e a regra de bloqueio temporario por IP ou utilizador descritos no PRD."
+                                                                                                "status":  "Coberto",
+                                                                                                "severidade":  "menor",
+                                                                                                "comentario":  "ADR de Rate Limiting em 00-visao-arquitetura com contrato normativo: /auth/login e /auth/pin (5 req/min), POST /demandas e POST /demandas/bulk (20 req/min), HTTP 429 com Retry-After, bloqueio 15 min por IP ou utilizador (Fase 2.2)."
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-NFR-007",
@@ -1055,16 +1127,17 @@
                                                   "executive_summary":  {
                                                                             "total_findings":  3,
                                                                             "bloqueantes":  0,
-                                                                            "importantes":  2,
+                                                                            "importantes":  0,
                                                                             "menores":  0,
-                                                                            "resolved":  1,
+                                                                            "resolved":  3,
+                                                                            "resolvidos_fase2":  2,
                                                                             "coverage":  {
-                                                                                             "coberto":  5,
-                                                                                             "parcial":  2,
+                                                                                             "coberto":  7,
+                                                                                             "parcial":  0,
                                                                                              "nao_coberto":  0
                                                                                          },
-                                                                            "risco_geral":  "medio",
-                                                                            "nota":  "O bloqueante SPEC-M05-002 foi resolvido na Fase 1.4 com a adicao da ADR D6 (politica de autenticacao segmentada por perfil conforme DEC-004). REQ-NFR-007 passa de \u0027Nao coberto\u0027 para \u0027Coberto\u0027. Permanecem dois achados importantes: rate limiting incompleto (SPEC-M05-001) e rastreabilidade parcial dos recursos operacionais (SPEC-M05-003)."
+                                                                            "risco_geral":  "baixo",
+                                                                            "nota":  "Risco geral baixo: SPEC-M05-002 (Fase 1.4), SPEC-M05-001 (Fase 2.2, rate limiting REQ-NFR-006) e SPEC-M05-003 (Fase 2.5, rastreabilidade REQ-NFR-004) resolvidos; cobertura PRD vs SPEC completa para os NFR do modulo."
                                                                         },
                                                   "traceability_csv":  "docs/audit/output/M05/traceability.csv",
                                                   "traceability_stub_markdown":  "docs/audit/output/M05/traceability-stub.md"
@@ -1105,7 +1178,12 @@
                                                                                                "file":  "docs/PRD/05-criterios-aceite.md",
                                                                                                "section":  "## Pendentes de migracao",
                                                                                                "approx_line":  123
-                                                                                           }
+                                                                                           },
+                                                                           "resolucao":  {
+                                                                                             "status":  "resolvido",
+                                                                                             "data":  "2026-03-20",
+                                                                                             "descricao":  "Resolvido na Fase 2.6 (2026-03-20). REQ-ACE-007 migrado integralmente de \"Pendentes de migracao\" para a nova secao \"Seguranca de token e gestao de sessao\" com 3 cenarios Gherkin: expiracao/renovacao de token, invalidacao imediata no logout e deteccao de reuso de refresh token. Referencia SPEC: docs/SPEC/00-visao-arquitetura.md#decisoes-arquiteturais-adrs."
+                                                                                         }
                                                                        },
                                                                        {
                                                                            "id":  "PRD-M06-002",
@@ -1163,7 +1241,12 @@
                                                                                                 "file":  "docs/SPEC/03-fila-scoring-estados-sla.md",
                                                                                                 "section":  "## Regra zero, hard filter, destaque e score",
                                                                                                 "approx_line":  15
-                                                                                            }
+                                                                                            },
+                                                                            "resolucao":  {
+                                                                                              "status":  "resolvido",
+                                                                                              "data":  "2026-03-20",
+                                                                                              "descricao":  "Resolvido na Fase 2.1 (2026-03-20). O passo 3 de docs/SPEC/03-fila-scoring-estados-sla.md foi expandido para afirmar explicitamente que a UI e nao bloqueante, as demais demandas permanecem simultaneamente visiveis e rolaveis abaixo da demanda destacada na UI mobile. Constitui contrato de experiencia da fila do operador (REQ-FUNC-008, REQ-ACE-005, REQ-JOR-004)."
+                                                                                          }
                                                                         },
                                                                         {
                                                                             "id":  "SPEC-M06-003",
@@ -1220,9 +1303,9 @@
                                                                                             {
                                                                                                 "prd_id":  "REQ-ACE-005",
                                                                                                 "spec_path":  "docs/SPEC/03-fila-scoring-estados-sla.md",
-                                                                                                "status":  "Parcial",
-                                                                                                "severidade":  "importante",
-                                                                                                "comentario":  "O destaque visual de prioridade `MAXIMA` esta especificado, mas a manutencao explicita das restantes demandas visiveis e rolaveis na UI mobile nao foi localizada no texto tecnico."
+                                                                                                "status":  "Coberto",
+                                                                                                "severidade":  "menor",
+                                                                                                "comentario":  "SPEC passo 3 explicita UI nao bloqueante: demais demandas visiveis e rolaveis abaixo do destaque na mobile; alinhado a REQ-FUNC-008 e REQ-JOR-004 (contrato de experiencia da fila)."
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-ACE-006",
@@ -1234,9 +1317,9 @@
                                                                                             {
                                                                                                 "prd_id":  "REQ-ACE-007",
                                                                                                 "spec_path":  "docs/SPEC/00-visao-arquitetura.md",
-                                                                                                "status":  "Parcial",
-                                                                                                "severidade":  "importante",
-                                                                                                "comentario":  "A arquitetura documenta access token de 15 minutos, refresh token rotativo de 7 dias e blacklist por jti em Redis, mas o criterio de aceite correspondente ainda nao esta migrado no PRD como requisito testavel dentro do modulo."
+                                                                                                "status":  "Coberto",
+                                                                                                "severidade":  "menor",
+                                                                                                "comentario":  "PRD secao \"Seguranca de token e gestao de sessao\" com cenarios Gherkin para token, logout e reuso de refresh; SPEC mantem decisoes em 00-visao-arquitetura.md#decisoes-arquiteturais-adrs."
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-ACE-008",
@@ -1289,18 +1372,18 @@
                                                                        ],
                                                   "executive_summary":  {
                                                                             "total_findings":  7,
-                                                                            "total_findings_pendentes":  2,
-                                                                            "total_findings_resolvidos":  5,
+                                                                            "total_findings_pendentes":  0,
+                                                                            "total_findings_resolvidos":  7,
                                                                             "bloqueantes":  0,
-                                                                            "importantes":  2,
+                                                                            "importantes":  0,
                                                                             "menores":  0,
                                                                             "coverage":  {
-                                                                                             "coberto":  6,
-                                                                                             "parcial":  2,
+                                                                                             "coberto":  8,
+                                                                                             "parcial":  0,
                                                                                              "nao_coberto":  0
                                                                                          },
                                                                             "risco_geral":  "baixo",
-                                                                            "nota":  "Os dois conflitos bloqueantes do M06 foram resolvidos: CROSS-M06-001 por DEC-001 (modelo hibrido) e CROSS-M06-002 por DEC-002 (auto-encerramento por estouro de SLA). REQ-ACE-006 passa a Coberto. Achados importantes pendentes: PRD-M06-001 (REQ-ACE-007 por migrar), SPEC-M06-002 (UI nao bloqueante para REQ-ACE-005)."
+                                                                            "nota":  "Risco baixo: todos os 7 achados do M06 estao resolvidos. Conflitos bloqueantes fechados por DEC-001 e DEC-002. PRD-M06-001 (Fase 2.6): REQ-ACE-007 migrado com cenarios Gherkin e referencia a ADRs. SPEC-M06-002 (Fase 2.1): contrato de fila mobile nao bloqueante no passo 3 da SPEC. Cobertura PRD-SPEC: 8 criterios Cobertos, 0 Parciais."
                                                                         },
                                                   "traceability_csv":  "docs/audit/output/M06/traceability.csv",
                                                   "traceability_stub_markdown":  "docs/audit/output/M06/traceability-stub.md"
@@ -1353,6 +1436,7 @@
                                                                        },
                                                                        {
                                                                            "id":  "PRD-M07-002",
+                                                                           "status":  "resolvido",
                                                                            "severity":  "importante",
                                                                            "type":  "campo_em_aberto",
                                                                            "req_ids":  [
@@ -1363,12 +1447,19 @@
                                                                                                "file":  "docs/PRD/06-metricas-riscos.md",
                                                                                                "section":  "### `REQ-RISK-001` Governanca da taxonomia operacional",
                                                                                                "approx_line":  38
-                                                                                           }
+                                                                                           },
+                                                                           "resolucao":  {
+                                                                                             "status":  "resolvido",
+                                                                                             "fase":  "2.6",
+                                                                                             "data":  "2026-03-20",
+                                                                                             "descricao":  "PRD/06-metricas-riscos.md â€” REQ-RISK-001 passou a incluir mitigacao explicita com responsavel (AdminOperacional), regras de validacao, trilha de auditoria, restricoes de eliminacao e relatorio de consistencia. Ponteiro SPEC actualizado para 05-backlog-mvp-glossario.md#governanca-da-taxonomia-espacial-req-risk-001."
+                                                                                         }
                                                                        }
                                                                    ],
                                                   "spec_findings":  [
                                                                         {
                                                                             "id":  "SPEC-M07-001",
+                                                                            "status":  "resolvido",
                                                                             "severity":  "importante",
                                                                             "type":  "lacuna",
                                                                             "spec_path":  "docs/SPEC/02-modelo-dados.md",
@@ -1380,7 +1471,13 @@
                                                                                                 "file":  "docs/SPEC/02-modelo-dados.md",
                                                                                                 "section":  "## Entidades principais",
                                                                                                 "approx_line":  20
-                                                                                            }
+                                                                                            },
+                                                                            "resolucao":  {
+                                                                                              "status":  "resolvido",
+                                                                                              "fase":  "2.4",
+                                                                                              "data":  "2026-03-20",
+                                                                                              "descricao":  "SPEC/02-modelo-dados.md â€” adicionada seccao \"Medicao canonica de tempo operacional (REQ-MET-001)\" com definicoes explicitas: Horas Disponiveis (soma das duracoes de RegistroExpediente), Horas em Operacao (soma de tempoExecucaoMs de demandas CONCLUIDA), formula de consulta de referencia. REQ-MET-001 integrado na linha de rastreio."
+                                                                                          }
                                                                         },
                                                                         {
                                                                             "id":  "SPEC-M07-002",
@@ -1406,6 +1503,7 @@
                                                                         },
                                                                         {
                                                                             "id":  "SPEC-M07-003",
+                                                                            "status":  "resolvido",
                                                                             "severity":  "importante",
                                                                             "type":  "lacuna",
                                                                             "spec_path":  "docs/SPEC/05-backlog-mvp-glossario.md",
@@ -1417,7 +1515,13 @@
                                                                                                 "file":  "docs/SPEC/05-backlog-mvp-glossario.md",
                                                                                                 "section":  "## Glossario tecnico",
                                                                                                 "approx_line":  20
-                                                                                            }
+                                                                                            },
+                                                                            "resolucao":  {
+                                                                                              "status":  "resolvido",
+                                                                                              "fase":  "2.3",
+                                                                                              "data":  "2026-03-20",
+                                                                                              "descricao":  "SPEC/05-backlog-mvp-glossario.md â€” adicionada seccao \"Governanca da taxonomia espacial (REQ-RISK-001)\" com 4 regras tecnicas de governanca: validacao de integridade referencial em criacao/edicao, trilha de auditoria cadastral, restricao de eliminacao com demandas activas, relatorio de consistencia para AdminOperacional/SuperAdmin."
+                                                                                          }
                                                                         }
                                                                     ],
                                                   "cross_check":  {
@@ -1425,9 +1529,9 @@
                                                                                             {
                                                                                                 "prd_id":  "REQ-MET-001",
                                                                                                 "spec_path":  "docs/SPEC/02-modelo-dados.md + docs/SPEC/03-fila-scoring-estados-sla.md",
-                                                                                                "status":  "Parcial",
-                                                                                                "severidade":  "importante",
-                                                                                                "comentario":  "A SPEC fornece entidades operacionais, `RegistroExpediente`, `Demanda` e o marco de `EM_ANDAMENTO`, mas nao fecha uma medicao canonica para `Horas Disponiveis` versus `Horas em Operacao` nem explicita extracao do indicador de tempo ocioso."
+                                                                                                "status":  "Coberto",
+                                                                                                "severidade":  "resolvido",
+                                                                                                "comentario":  "Seccao \"Medicao canonica de tempo operacional (REQ-MET-001)\" em SPEC/02-modelo-dados.md (Fase 2.4): Horas Disponiveis (soma duracoes RegistroExpediente), Horas em Operacao (soma tempoExecucaoMs de demandas CONCLUIDA), formula de consulta de referencia; REQ-MET-001 na linha de rastreio."
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-MET-002",
@@ -1446,9 +1550,9 @@
                                                                                             {
                                                                                                 "prd_id":  "REQ-RISK-001",
                                                                                                 "spec_path":  "docs/SPEC/05-backlog-mvp-glossario.md + docs/SPEC/02-modelo-dados.md",
-                                                                                                "status":  "Parcial",
-                                                                                                "severidade":  "importante",
-                                                                                                "comentario":  "A taxonomia espacial e os conceitos de `SetorOperacional`, `Quadra`, `Lote` e adjacencia aparecem na SPEC, mas a governanca administrativa coerente citada no PRD nao se traduz em fluxo tecnico de manutencao, validacao ou auditoria cadastral."
+                                                                                                "status":  "Coberto",
+                                                                                                "severidade":  "resolvido",
+                                                                                                "comentario":  "Governanca tecnica em SPEC/05-backlog-mvp-glossario.md (Fase 2.3) e mitigacao explicita no PRD/06-metricas-riscos.md (Fase 2.6): validacao referencial, auditoria cadastral, restricoes de eliminacao, relatorio de consistencia; responsavel AdminOperacional; ponteiro SPEC no PRD actualizado."
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-RISK-002",
@@ -1486,18 +1590,18 @@
                                                                        ],
                                                   "executive_summary":  {
                                                                             "total_findings":  6,
-                                                                            "bloqueantes":  2,
+                                                                            "bloqueantes":  0,
                                                                             "bloqueantes_resolvidos":  2,
-                                                                            "importantes":  4,
-                                                                            "importantes_resolvidos":  1,
+                                                                            "importantes":  0,
+                                                                            "importantes_resolvidos":  4,
                                                                             "menores":  0,
                                                                             "coverage":  {
-                                                                                             "coberto":  3,
-                                                                                             "parcial":  2,
+                                                                                             "coberto":  5,
+                                                                                             "parcial":  0,
                                                                                              "nao_coberto":  0
                                                                                          },
                                                                             "risco_geral":  "medio",
-                                                                            "nota":  "Os 2 achados bloqueantes de M07 (CROSS-M07-001 e SPEC-M07-002) foram resolvidos na Fase 1.5 com aplicacao de DEC-003: a SPEC agora contem contrato analitico canonico para REQ-MET-002 e a referencia PRD foi corrigida. O achado importante PRD-M07-001 foi igualmente resolvido pela mesma correccao de referencia. Permanecem 3 achados importantes em aberto: SPEC-M07-001 (lacuna de medicao canonica para REQ-MET-001), PRD-M07-002 (mitigacao de REQ-RISK-001 nao explicitada no PRD) e SPEC-M07-003 (governanca de taxonomia sem fluxo tecnico). A cobertura de REQ-MET-002 passou de Nao coberto para Coberto."
+                                                                            "nota":  "Bloqueantes CROSS-M07-001 e SPEC-M07-002 resolvidos na Fase 1.5 (DEC-003). Achados importantes resolvidos: PRD-M07-001 (Fase 1.5), SPEC-M07-001 com medicao canonica REQ-MET-001 em SPEC/02-modelo-dados.md (Fase 2.4), SPEC-M07-003 com governanca da taxonomia em SPEC/05-backlog-mvp-glossario.md (Fase 2.3), PRD-M07-002 com mitigacao explicita de REQ-RISK-001 em PRD/06-metricas-riscos.md (Fase 2.6). Cobertura cruzada: 5 requisitos Cobertos, 0 Parciais."
                                                                         },
                                                   "traceability_csv":  "docs/audit/output/M07/traceability.csv",
                                                   "traceability_stub_markdown":  "docs/audit/output/M07/traceability-stub.md"

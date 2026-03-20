@@ -1,6 +1,6 @@
 # Fila, scoring, estados e SLA
 
-**Rastreio PRD:** `REQ-JOR-002`, `REQ-JOR-003`, `REQ-JOR-005`, `REQ-FUNC-001`, `REQ-FUNC-002`, `REQ-FUNC-004`, `REQ-FUNC-006`, `REQ-FUNC-007`, `REQ-FUNC-008`, `REQ-FUNC-009`, `REQ-FUNC-010`, `REQ-ACE-002`, `REQ-ACE-003`, `REQ-ACE-004`, `REQ-ACE-005`, `REQ-ACE-006`
+**Rastreio PRD:** `REQ-JOR-002`, `REQ-JOR-003`, `REQ-JOR-004`, `REQ-JOR-005`, `REQ-FUNC-001`, `REQ-FUNC-002`, `REQ-FUNC-004`, `REQ-FUNC-006`, `REQ-FUNC-007`, `REQ-FUNC-008`, `REQ-FUNC-009`, `REQ-FUNC-010`, `REQ-ACE-002`, `REQ-ACE-003`, `REQ-ACE-004`, `REQ-ACE-005`, `REQ-ACE-006`
 
 Este modulo detalha o motor operacional que governa a atribuicao de demandas, o score de prioridade, os limites de SLA e a maquina de estados aplicada ao ciclo de vida da demanda.
 
@@ -12,7 +12,7 @@ O motor de distribuicao de demandas para maquinarios atua de forma dinamica. A c
 
 1. **Regra Zero (Alocacao Manual)**: demandas com `operadorAlocadoId` preenchido sao atribuidas diretamente ao operador indicado, sobrepondo as regras automaticas de distribuicao e elegibilidade — jurisdicao territorial, proximidade e balanceamento de carga — como excecao explicita e auditavel. Uma vez na fila do operador, a demanda participa normalmente do pipeline de destaque e scoring (passos 3-5). A ordem resultante constitui organizacao recomendada de atendimento, nao bloqueio rigido de execucao, permitindo ajustes operacionais em campo com rastreabilidade (DEC-001).
 2. **Hard Filter (Filtros Eliminatorios)**: no fluxo automatico de distribuicao, demandas saem da fila elegivel do operador se pertencerem a `Setor Operacional` distinto ou se houver incompatibilidade entre equipamento e servico. Demandas atribuidas via `operadorAlocadoId` (passo 1) nao passam por este filtro.
-3. **Destaque Visual de Prioridade Maxima**: demandas classificadas com prioridade `MAXIMA` recebem destaque visual obrigatorio na interface antes da ordenacao final.
+3. **Destaque Visual de Prioridade Maxima**: demandas classificadas com prioridade `MAXIMA` recebem destaque visual obrigatorio (borda pulsante, cor de alerta) no topo da fila do operador, antes da ordenacao final. O destaque nao deve bloquear a interface nem ocultar as restantes demandas: todas as demandas da fila permanecem simultaneamente visiveis e rolaveis abaixo da demanda destacada na UI mobile. Este comportamento constitui contrato de experiencia da fila do operador (`REQ-FUNC-008`, `REQ-ACE-005`, `REQ-JOR-004`).
 4. **Scoring Multivalorado**: as restantes demandas elegiveis recebem uma pontuacao numerica calculada por:
 
 `score = (W_adj x fator_adjacencia) + (W_srv x fator_servico) + (W_mat x fator_material)`

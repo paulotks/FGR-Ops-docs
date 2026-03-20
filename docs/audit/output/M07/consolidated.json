@@ -42,6 +42,7 @@
     },
     {
       "id": "PRD-M07-002",
+      "status": "resolvido",
       "severity": "importante",
       "type": "campo_em_aberto",
       "req_ids": [
@@ -52,12 +53,19 @@
         "file": "docs/PRD/06-metricas-riscos.md",
         "section": "### `REQ-RISK-001` Governanca da taxonomia operacional",
         "approx_line": 38
+      },
+      "resolucao": {
+        "status": "resolvido",
+        "fase": "2.6",
+        "data": "2026-03-20",
+        "descricao": "PRD/06-metricas-riscos.md — REQ-RISK-001 passou a incluir mitigacao explicita com responsavel (AdminOperacional), regras de validacao, trilha de auditoria, restricoes de eliminacao e relatorio de consistencia. Ponteiro SPEC actualizado para 05-backlog-mvp-glossario.md#governanca-da-taxonomia-espacial-req-risk-001."
       }
     }
   ],
   "spec_findings": [
     {
       "id": "SPEC-M07-001",
+      "status": "resolvido",
       "severity": "importante",
       "type": "lacuna",
       "spec_path": "docs/SPEC/02-modelo-dados.md",
@@ -69,6 +77,12 @@
         "file": "docs/SPEC/02-modelo-dados.md",
         "section": "## Entidades principais",
         "approx_line": 20
+      },
+      "resolucao": {
+        "status": "resolvido",
+        "fase": "2.4",
+        "data": "2026-03-20",
+        "descricao": "SPEC/02-modelo-dados.md — adicionada seccao \"Medicao canonica de tempo operacional (REQ-MET-001)\" com definicoes explicitas: Horas Disponiveis (soma das duracoes de RegistroExpediente), Horas em Operacao (soma de tempoExecucaoMs de demandas CONCLUIDA), formula de consulta de referencia. REQ-MET-001 integrado na linha de rastreio."
       }
     },
     {
@@ -95,6 +109,7 @@
     },
     {
       "id": "SPEC-M07-003",
+      "status": "resolvido",
       "severity": "importante",
       "type": "lacuna",
       "spec_path": "docs/SPEC/05-backlog-mvp-glossario.md",
@@ -106,6 +121,12 @@
         "file": "docs/SPEC/05-backlog-mvp-glossario.md",
         "section": "## Glossario tecnico",
         "approx_line": 20
+      },
+      "resolucao": {
+        "status": "resolvido",
+        "fase": "2.3",
+        "data": "2026-03-20",
+        "descricao": "SPEC/05-backlog-mvp-glossario.md — adicionada seccao \"Governanca da taxonomia espacial (REQ-RISK-001)\" com 4 regras tecnicas de governanca: validacao de integridade referencial em criacao/edicao, trilha de auditoria cadastral, restricao de eliminacao com demandas activas, relatorio de consistencia para AdminOperacional/SuperAdmin."
       }
     }
   ],
@@ -114,9 +135,9 @@
       {
         "prd_id": "REQ-MET-001",
         "spec_path": "docs/SPEC/02-modelo-dados.md + docs/SPEC/03-fila-scoring-estados-sla.md",
-        "status": "Parcial",
-        "severidade": "importante",
-        "comentario": "A SPEC fornece entidades operacionais, `RegistroExpediente`, `Demanda` e o marco de `EM_ANDAMENTO`, mas nao fecha uma medicao canonica para `Horas Disponiveis` versus `Horas em Operacao` nem explicita extracao do indicador de tempo ocioso."
+        "status": "Coberto",
+        "severidade": "resolvido",
+        "comentario": "Seccao \"Medicao canonica de tempo operacional (REQ-MET-001)\" em SPEC/02-modelo-dados.md (Fase 2.4): Horas Disponiveis (soma duracoes RegistroExpediente), Horas em Operacao (soma tempoExecucaoMs de demandas CONCLUIDA), formula de consulta de referencia; REQ-MET-001 na linha de rastreio."
       },
       {
         "prd_id": "REQ-MET-002",
@@ -135,9 +156,9 @@
       {
         "prd_id": "REQ-RISK-001",
         "spec_path": "docs/SPEC/05-backlog-mvp-glossario.md + docs/SPEC/02-modelo-dados.md",
-        "status": "Parcial",
-        "severidade": "importante",
-        "comentario": "A taxonomia espacial e os conceitos de `SetorOperacional`, `Quadra`, `Lote` e adjacencia aparecem na SPEC, mas a governanca administrativa coerente citada no PRD nao se traduz em fluxo tecnico de manutencao, validacao ou auditoria cadastral."
+        "status": "Coberto",
+        "severidade": "resolvido",
+        "comentario": "Governanca tecnica em SPEC/05-backlog-mvp-glossario.md (Fase 2.3) e mitigacao explicita no PRD/06-metricas-riscos.md (Fase 2.6): validacao referencial, auditoria cadastral, restricoes de eliminacao, relatorio de consistencia; responsavel AdminOperacional; ponteiro SPEC no PRD actualizado."
       },
       {
         "prd_id": "REQ-RISK-002",
@@ -171,18 +192,18 @@
   "decision_by_user": [],
   "executive_summary": {
     "total_findings": 6,
-    "bloqueantes": 2,
+    "bloqueantes": 0,
     "bloqueantes_resolvidos": 2,
-    "importantes": 4,
-    "importantes_resolvidos": 1,
+    "importantes": 0,
+    "importantes_resolvidos": 4,
     "menores": 0,
     "coverage": {
-      "coberto": 3,
-      "parcial": 2,
+      "coberto": 5,
+      "parcial": 0,
       "nao_coberto": 0
     },
     "risco_geral": "medio",
-    "nota": "Os 2 achados bloqueantes de M07 (CROSS-M07-001 e SPEC-M07-002) foram resolvidos na Fase 1.5 com aplicacao de DEC-003: a SPEC agora contem contrato analitico canonico para REQ-MET-002 e a referencia PRD foi corrigida. O achado importante PRD-M07-001 foi igualmente resolvido pela mesma correccao de referencia. Permanecem 3 achados importantes em aberto: SPEC-M07-001 (lacuna de medicao canonica para REQ-MET-001), PRD-M07-002 (mitigacao de REQ-RISK-001 nao explicitada no PRD) e SPEC-M07-003 (governanca de taxonomia sem fluxo tecnico). A cobertura de REQ-MET-002 passou de Nao coberto para Coberto."
+    "nota": "Bloqueantes CROSS-M07-001 e SPEC-M07-002 resolvidos na Fase 1.5 (DEC-003). Achados importantes resolvidos: PRD-M07-001 (Fase 1.5), SPEC-M07-001 com medicao canonica REQ-MET-001 em SPEC/02-modelo-dados.md (Fase 2.4), SPEC-M07-003 com governanca da taxonomia em SPEC/05-backlog-mvp-glossario.md (Fase 2.3), PRD-M07-002 com mitigacao explicita de REQ-RISK-001 em PRD/06-metricas-riscos.md (Fase 2.6). Cobertura cruzada: 5 requisitos Cobertos, 0 Parciais."
   },
   "traceability_csv": "docs/audit/output/M07/traceability.csv",
   "traceability_stub_markdown": "docs/audit/output/M07/traceability-stub.md"

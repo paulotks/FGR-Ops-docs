@@ -32,6 +32,13 @@
         "file": "docs/SPEC/00-visao-arquitetura.md",
         "section": "### Decisoes Arquiteturais (ADRs)",
         "approx_line": 42
+      },
+      "status": "resolvido",
+      "resolucao": {
+        "status": "resolvido",
+        "fase": "2.2",
+        "data": "2026-03-20",
+        "correcao_aplicada": "SPEC/00-visao-arquitetura.md: ADR de Rate Limiting alargada com contrato normativo alinhado a REQ-NFR-006 — endpoints exactos (/auth/login, /auth/pin a 5 req/min; POST /demandas e POST /demandas/bulk a 20 req/min), resposta HTTP 429 Too Many Requests com cabecalho Retry-After, bloqueio temporario de 15 minutos por IP ou utilizador."
       }
     },
     {
@@ -68,6 +75,13 @@
         "file": "docs/SPEC/02-modelo-dados.md",
         "section": "## Relacionamentos e regras de integridade",
         "approx_line": 30
+      },
+      "status": "resolvido",
+      "resolucao": {
+        "status": "resolvido",
+        "fase": "2.5",
+        "data": "2026-03-20",
+        "correcao_aplicada": "SPEC/06-definicoes-complementares.md: nova seccao \"Politica de rastreabilidade dos recursos operacionais (REQ-NFR-004)\" com politica uniforme — tabela para Maquinario, Ajudante, Servico, TipoMaquinario, Material, SetorOperacional, Quadra, Lote, Rua, RegistroExpediente (soft-delete, auditoria de mutacoes, requisitos obraId). Regras transversais: ResourceAuditLog com userId, entityType, entityId, obraId, action, oldValues, newValues, timestamp."
       }
     }
   ],
@@ -96,10 +110,10 @@
       },
       {
         "prd_id": "REQ-NFR-004",
-        "spec_path": "docs/SPEC/00-visao-arquitetura.md + docs/SPEC/02-modelo-dados.md",
-        "status": "Parcial",
-        "severidade": "importante",
-        "comentario": "Ha cobertura clara para SQL Server Prisma e isolamento logico multi-tenant por obraId mas a rastreabilidade consistente dos recursos operacionais nao fica uniformemente especificada para todas as entidades."
+        "spec_path": "docs/SPEC/00-visao-arquitetura.md + docs/SPEC/02-modelo-dados.md + docs/SPEC/06-definicoes-complementares.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "Politica de rastreabilidade dos recursos operacionais formalizada em 06-definicoes-complementares (REQ-NFR-004): entidades operacionais com soft-delete, auditoria de mutacoes e obraId; ResourceAuditLog transversal conforme Fase 2.5."
       },
       {
         "prd_id": "REQ-NFR-005",
@@ -111,9 +125,9 @@
       {
         "prd_id": "REQ-NFR-006",
         "spec_path": "docs/SPEC/00-visao-arquitetura.md",
-        "status": "Parcial",
-        "severidade": "importante",
-        "comentario": "Os limites numericos aparecem na arquitetura mas faltam os endpoints exatos o contrato de HTTP 429 e a regra de bloqueio temporario por IP ou utilizador descritos no PRD."
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "ADR de Rate Limiting em 00-visao-arquitetura com contrato normativo: /auth/login e /auth/pin (5 req/min), POST /demandas e POST /demandas/bulk (20 req/min), HTTP 429 com Retry-After, bloqueio 15 min por IP ou utilizador (Fase 2.2)."
       },
       {
         "prd_id": "REQ-NFR-007",
@@ -130,16 +144,17 @@
   "executive_summary": {
     "total_findings": 3,
     "bloqueantes": 0,
-    "importantes": 2,
+    "importantes": 0,
     "menores": 0,
-    "resolved": 1,
+    "resolved": 3,
+    "resolvidos_fase2": 2,
     "coverage": {
-      "coberto": 5,
-      "parcial": 2,
+      "coberto": 7,
+      "parcial": 0,
       "nao_coberto": 0
     },
-    "risco_geral": "medio",
-    "nota": "O bloqueante SPEC-M05-002 foi resolvido na Fase 1.4 com a adicao da ADR D6 (politica de autenticacao segmentada por perfil conforme DEC-004). REQ-NFR-007 passa de 'Nao coberto' para 'Coberto'. Permanecem dois achados importantes: rate limiting incompleto (SPEC-M05-001) e rastreabilidade parcial dos recursos operacionais (SPEC-M05-003)."
+    "risco_geral": "baixo",
+    "nota": "Risco geral baixo: SPEC-M05-002 (Fase 1.4), SPEC-M05-001 (Fase 2.2, rate limiting REQ-NFR-006) e SPEC-M05-003 (Fase 2.5, rastreabilidade REQ-NFR-004) resolvidos; cobertura PRD vs SPEC completa para os NFR do modulo."
   },
   "traceability_csv": "docs/audit/output/M05/traceability.csv",
   "traceability_stub_markdown": "docs/audit/output/M05/traceability-stub.md"

@@ -45,11 +45,12 @@ Gerir o ciclo de vida completo e estrito de solicitacoes, filas, agrupamentos e 
 
 ### Capacidades operacionais do Machinery Link
 
-1. **Solicitacao**: abertura de demandas simples, agrupadas, em lote multiplo e programacoes agendadas.
-2. **Gestao da fila**: distribuicao transparente filtrada por setores, jurisdicao logistica e score.
-3. **Execucao**: fluxo de campo para assumir, concluir, devolver ou contestar tarefas via maquina de estados.
-4. **Expediente**: controlo de inicio e fim da jornada operacional do maquinario, com maquina e ajudante ativos.
-5. **Operacoes dinamicas**: alocacao manual, empilhamento nao destrutivo e trilha de auditoria obrigatoria.
+1. **Solicitacao**: abertura de demandas simples, agrupadas, em lote multiplo e programacoes agendadas. Na abertura, o `Empreiteiro` informa obrigatoriamente a localizacao de trabalho seleccionando a entidade espacial do Core — `SetorOperacional` e, opcionalmente, `Quadra` e `Lote` — que ancora o pedido ao contexto logistico. Esta seleccao alimenta o hard filter de jurisdicao e o fator de adjacencia do motor de score (`REQ-JOR-001`).
+2. **Agrupamento e criacao multipla**: o frontend permite agrupar sequencias de servicos com logica estrutural partilhada (mesmo local, mesmo tipo de maquinario) e submeter um payload bulk que gera demandas independentes a partir da mesma experiencia de formulario. Cada demanda gerada pelo bulk recebe ID proprio, participa individualmente do pipeline de fila e pode ser concluida ou cancelada de forma autonoma. A relacao logica entre demandas do mesmo lote e preservada em `DemandaGrupo` para rastreabilidade, sem implicar orquestracao de execucao (`REQ-FUNC-005`).
+3. **Gestao da fila**: distribuicao transparente filtrada por setores, jurisdicao logistica e score.
+4. **Execucao**: fluxo de campo para assumir, concluir, devolver ou contestar tarefas via maquina de estados.
+5. **Expediente**: controlo de inicio e fim da jornada operacional do maquinario, com maquina e ajudante ativos.
+6. **Operacoes dinamicas**: alocacao manual, empilhamento nao destrutivo e trilha de auditoria obrigatoria.
 
 ## Dependencias sobre o Core
 

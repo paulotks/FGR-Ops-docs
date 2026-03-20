@@ -39,8 +39,15 @@ Tempo decorrido entre a entrada da demanda em `PENDENTE` (ou o marco zero do age
 
 A evolucao da fila depende da manutencao coerente da taxonomia de `Lote`, `Quadra` e `SetorOperacional`. Sem governanca administrativa consistente, a obra pode criar gargalos cadastrais e adjacencias incorretas, degradando a atribuicao automatica.
 
+**Mitigacao esperada:**
+- **Responsavel:** `AdminOperacional` da obra, com supervisao de `SuperAdmin`.
+- **Validacao na criacao/edicao:** integridade referencial obrigatoria (entidades espaciais coerentes dentro da mesma obra).
+- **Auditoria cadastral:** toda criacao, edicao ou exclusao logica de entidades espaciais gera registo auditavel com ator, timestamp e valores antigos/novos.
+- **Restricao de exclusao:** entidades espaciais referenciadas por demandas activas nao podem ser removidas.
+- **Relatorio de consistencia:** painel consultivo que identifica lotes sem adjacencia, quadras vazias e setores sem operador vinculado.
+
 -> SPEC: [../SPEC/02-modelo-dados.md#entidades-principais](../SPEC/02-modelo-dados.md#entidades-principais)
--> SPEC: [../SPEC/05-backlog-mvp-glossario.md#glossario-tecnico](../SPEC/05-backlog-mvp-glossario.md#glossario-tecnico)
+-> SPEC: [../SPEC/05-backlog-mvp-glossario.md#governanca-da-taxonomia-espacial-req-risk-001](../SPEC/05-backlog-mvp-glossario.md#governanca-da-taxonomia-espacial-req-risk-001)
 
 ### `REQ-RISK-002` Conectividade restrita em campo
 

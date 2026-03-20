@@ -1,6 +1,6 @@
 # Definicoes complementares
 
-**Rastreio PRD:** `REQ-NFR-002`, `REQ-FUNC-004`, `REQ-FUNC-006`, `REQ-FUNC-009`, `REQ-RISK-002`, `REQ-MET-002`, `REQ-MET-003`
+**Rastreio PRD:** `REQ-NFR-002`, `REQ-NFR-004`, `REQ-FUNC-004`, `REQ-FUNC-006`, `REQ-FUNC-009`, `REQ-RISK-002`, `REQ-MET-002`, `REQ-MET-003`
 
 Este modulo fecha lacunas operacionais do MVP com decisoes tecnicas complementares sobre offline, agendamento, exclusao mutua adiada e rastreabilidade de ajudantes.
 
@@ -118,6 +118,26 @@ Para cada quinzena consolidada, o sistema deve gerar um artefato auditavel conte
 | `gerado_em` | Timestamp de geracao (`America/Sao_Paulo`) |
 
 Este artefato deve ser persistido e acessivel via painel administrativo para `AdminOperacional`, `UsuarioInternoFGR` e `SuperAdmin`.
+
+## Politica de rastreabilidade dos recursos operacionais (`REQ-NFR-004`)
+
+O PRD exige rastreabilidade consistente dos recursos operacionais em modelo relacional multi-tenant. Alem da auditabilidade transacional de `Demanda` (via `DemandaLog`) ja documentada em [02-modelo-dados.md](02-modelo-dados.md), o MVP aplica as seguintes regras uniformes a todas as entidades operacionais relevantes:
+
+| Entidade | Soft-delete (`deletadoEm`) | Auditoria de mutacao | Campo `obraId` obrigatorio |
+| :--- | :--- | :--- | :--- |
+| `Maquinario` | Sim | Sim — criacao, edicao e exclusao logica geram registo com `userId`, `timestamp`, valores antigos/novos | Sim |
+| `Ajudante` | Sim | Sim — mesmo contrato | Sim |
+| `Servico` | Sim | Sim — mesmo contrato | Sim |
+| `TipoMaquinario` | Sim | Sim — mesmo contrato | Nao (catalogo global) |
+| `Material` | Sim | Sim — mesmo contrato | Sim |
+| `SetorOperacional` | Sim (com restricao de demandas activas — ver [05-backlog-mvp-glossario.md](05-backlog-mvp-glossario.md#governanca-da-taxonomia-espacial-req-risk-001)) | Sim — mesmo contrato | Sim |
+| `Quadra`, `Lote`, `Rua` | Sim (com restricao de demandas activas) | Sim — mesmo contrato | Sim |
+| `RegistroExpediente` | Nao (imutavel apos encerramento) | Sim — criacao e encerramento | Sim |
+
+Regras transversais:
+- Toda mutacao relevante e registada em tabela de auditoria dedicada (`ResourceAuditLog`) ou, quando ja existente, em `DemandaLog`. O registo preserva `userId`, `entityType`, `entityId`, `obraId`, `action`, `oldValues`, `newValues` e `timestamp`.
+- Entidades com `deletadoEm` preenchido permanecem consultaveis para efeitos de historico e auditoria, mas sao excluidas das listas operacionais activas.
+- A politica garante que qualquer recurso operacional envolvido numa demanda pode ser rastreado desde a criacao ate ao estado actual, assegurando a rastreabilidade consistente exigida por `REQ-NFR-004`.
 
 ## Rastreabilidade de ajudantes
 

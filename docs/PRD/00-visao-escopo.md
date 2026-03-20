@@ -21,10 +21,10 @@ Documento migrado a partir de `PRD-FGR-OPS.md` (secções 1–3). Rastreio técn
 → SPEC: [../SPEC/00-visao-arquitetura.md#principios-arquiteturais](../SPEC/00-visao-arquitetura.md#principios-arquiteturais), [../SPEC/04-rbac-permissoes.md](../SPEC/04-rbac-permissoes.md)
 
 **REQ-OBJ-003** Digitalizar e otimizar 100% o fluxo de requisição, despacho e execução de maquinários (módulo Machinery Link).  
-→ SPEC: [../SPEC/01-modulos-plataforma.md](../SPEC/01-modulos-plataforma.md)
+→ SPEC: [../SPEC/01-modulos-plataforma.md](../SPEC/01-modulos-plataforma.md), [../SPEC/00-visao-arquitetura.md#visao-geral](../SPEC/00-visao-arquitetura.md#visao-geral)
 
 **REQ-OBJ-004** Aumentar a eficiência da frota reduzindo deslocamentos ociosos através de um algoritmo de fila inteligente, fundamentado em jurisdição logística e localização declarada (sem dependência de GPS).  
-→ SPEC: [../SPEC/03-fila-scoring-estados-sla.md](../SPEC/03-fila-scoring-estados-sla.md)
+→ SPEC: [../SPEC/03-fila-scoring-estados-sla.md](../SPEC/03-fila-scoring-estados-sla.md), [../SPEC/00-visao-arquitetura.md#arquitetura-tatica-ddd](../SPEC/00-visao-arquitetura.md#arquitetura-tatica-ddd)
 
 **REQ-OBJ-005** Prover uma ferramenta nativamente desenhada para o uso fluido de operadores em campo via smartphone.
 
@@ -43,15 +43,17 @@ O produto viável mínimo concentra-se estritamente no fluxo operacional de máq
 → SPEC: [../SPEC/01-modulos-plataforma.md](../SPEC/01-modulos-plataforma.md), [../SPEC/02-modelo-dados.md](../SPEC/02-modelo-dados.md)
 
 **REQ-SCO-003** **Gestão de Recursos:** Cadastro de Maquinário (Placa, Tipo, Serviços e Propriedade) e Cadastro de Ajudantes (sem acesso ao sistema).  
-→ SPEC: [../SPEC/02-modelo-dados.md](../SPEC/02-modelo-dados.md)
+→ SPEC: [../SPEC/02-modelo-dados.md](../SPEC/02-modelo-dados.md), [../SPEC/00-visao-arquitetura.md#arquitetura-tatica-ddd](../SPEC/00-visao-arquitetura.md#arquitetura-tatica-ddd)
 
 **REQ-SCO-004** **Fila Operacional Inteligente:** Algoritmo dinâmico governado primariamente pelo **Setor Operacional (Jurisdição Logística)** e priorizado com base em proximidade espacial (Checkpoint Manual), habilitação do operador e urgência.  
-→ SPEC: [../SPEC/03-fila-scoring-estados-sla.md](../SPEC/03-fila-scoring-estados-sla.md)
+→ SPEC: [../SPEC/03-fila-scoring-estados-sla.md](../SPEC/03-fila-scoring-estados-sla.md), [../SPEC/00-visao-arquitetura.md#arquitetura-tatica-ddd](../SPEC/00-visao-arquitetura.md#arquitetura-tatica-ddd)
 
 **REQ-SCO-005** **Interface Operacional (Mobile):** Progressive Web App (PWA) responsivo para operadores realizarem check-in (seleção de máquina e ajudante) e executarem demandas.  
 → SPEC: [../SPEC/00-visao-arquitetura.md#principios-arquiteturais](../SPEC/00-visao-arquitetura.md#principios-arquiteturais)
 
 ### Fora do Escopo (Fase 2+)
+
+→ SPEC: [../SPEC/05-backlog-mvp-glossario.md](../SPEC/05-backlog-mvp-glossario.md)
 
 **REQ-SCO-F2-001** **Telemetria Básica**: Campos de Horímetro, KM e similares no cadastro de máquinas.
 
@@ -66,6 +68,8 @@ O produto viável mínimo concentra-se estritamente no fluxo operacional de máq
 **REQ-SCO-F2-006** **Serviços Dinâmicos Automáticos (Fase 2)**: Algoritmos de resolução automática de deadlocks transacionais ou co-dependência entre múltiplas frentes de serviço sem intervenção humana. O MVP utiliza apenas agrupamentos passivos via `DemandaGrupo`.
 
 #### Critérios de Promoção para Fase 2
+
+→ SPEC: [../SPEC/05-backlog-mvp-glossario.md#criterios-de-promocao-para-fase-2](../SPEC/05-backlog-mvp-glossario.md#criterios-de-promocao-para-fase-2)
 
 A transição de itens do "Fora de Escopo" para o desenvolvimento ativo (Fase 2) ocorrerá mediante o atendimento dos seguintes gatilhos:
 

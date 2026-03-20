@@ -138,6 +138,35 @@ When o Guard de segurança avalia a requisição
 Then o sistema deve retornar HTTP 403 independentemente do payload ou tenant
 ```
 
-## Pendentes de migração
+## Seguranca de token e gestao de sessao
 
-O critério `REQ-ACE-007` (segurança de token) permanece por migrar em etapa posterior.
+**REQ-ACE-007** O sistema deve garantir que tokens JWT seguem politica de sessao curta, rotacao de refresh token e capacidade de invalidacao imediata, conforme a arquitectura de autenticacao definida.
+
+→ SPEC: [../SPEC/00-visao-arquitetura.md#decisoes-arquiteturais-adrs](../SPEC/00-visao-arquitetura.md#decisoes-arquiteturais-adrs)
+
+**Cenário 1: Expiração e renovação de token**
+
+```gherkin
+Given que um utilizador autenticado possui um access token valido
+When o access token expira apos 15 minutos
+Then o sistema deve rejeitar requisicoes com HTTP 401
+  And permitir renovacao silenciosa via refresh token rotativo (TTL de 7 dias)
+  And invalidar o refresh token anterior apos uso
+```
+
+**Cenário 2: Invalidação imediata por logout**
+
+```gherkin
+Given que um utilizador autenticado realiza logout explicito
+When o pedido de logout e processado pelo backend
+Then o sistema deve adicionar o jti do access token e do refresh token a blacklist em Redis
+  And rejeitar qualquer requisicao subsequente com os tokens invalidados
+```
+
+**Cenário 3: Detecção de reuso de refresh token**
+
+```gherkin
+Given que um refresh token ja foi utilizado para obter um novo par de tokens
+When um atacante tenta reutilizar o mesmo refresh token
+Then o sistema deve rejeitar a requisicao, invalidar toda a cadeia de tokens do utilizador e registar o evento em AuthAuditLog
+```

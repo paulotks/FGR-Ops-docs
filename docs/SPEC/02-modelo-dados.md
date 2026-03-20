@@ -1,6 +1,6 @@
 # Modelo de dados
 
-**Rastreio PRD:** `REQ-FUNC-003`, `REQ-FUNC-004`, `REQ-FUNC-006`, `REQ-FUNC-007`, `REQ-FUNC-010`, `REQ-NFR-004`
+**Rastreio PRD:** `REQ-FUNC-003`, `REQ-FUNC-004`, `REQ-FUNC-006`, `REQ-FUNC-007`, `REQ-FUNC-010`, `REQ-NFR-004`, `REQ-MET-001`
 
 Este modulo consolida as entidades principais do dominio, as relacoes entre recursos operacionais e as regras de integridade que sustentam o isolamento por obra e a rastreabilidade do Machinery Link.
 
@@ -33,6 +33,15 @@ O sistema permite troca de ajudante durante o turno atraves de registos cronolog
 - **Escopo de tenant**: toda entidade tenant-scoped contem obrigatoriamente `obraId`.
 - **Soft-delete**: `Demanda`, `Maquinario` e `Empreiteira` nunca sao purgados fisicamente; o sistema utiliza `deletadoEm` para preservar historico.
 - **Auditabilidade transacional**: qualquer manipulacao, avanco, cancelamento ou alteracao da `Demanda` gera escrita nao destrutiva em `DemandaLog`.
+- **Atributos temporais da demanda** (`REQ-FUNC-007`): a `Demanda` persiste obrigatoriamente `iniciadoEm` (timestamp de transicao para `EM_ANDAMENTO`), `finalizadoEm` (timestamp de transicao para `CONCLUIDA`) e `tempoExecucaoMs` (campo calculado como `finalizadoEm - iniciadoEm` em milissegundos, persistido no momento da conclusao). Em cenarios offline, os timestamps de origem do dispositivo prevalecem sobre os de sincronizacao (conforme estrategia PWA em [06-definicoes-complementares.md](06-definicoes-complementares.md#estrategia-pwa-offline)).
+
+### Medicao canonica de tempo operacional (`REQ-MET-001`)
+
+Para suportar o indicador de tempo ocioso definido no PRD, o modelo de dados expoe os seguintes atributos e derivacoes:
+
+- **Horas Disponiveis**: soma de `(RegistroExpediente.fimExpediente - RegistroExpediente.inicioExpediente)` para cada expediente do operador/maquina no periodo de medicao. Apenas expedientes com `inicioExpediente` e `fimExpediente` preenchidos sao contabilizados.
+- **Horas em Operacao**: soma de `tempoExecucaoMs` de todas as `Demandas` com estado terminal `CONCLUIDA` vinculadas ao mesmo operador/maquina no periodo, convertida para horas.
+- **Consulta de referencia**: `(Horas Disponiveis - Horas em Operacao) / Horas Disponiveis` por `obraId`, operador e periodo. O resultado alimenta o painel de metricas acessivel a `AdminOperacional` e `SuperAdmin`.
 
 ## Lacunas resolvidas no modelo
 

@@ -29,6 +29,13 @@
         "file": "docs/PRD/02-jornada-usuario.md",
         "section": "### `REQ-JOR-001` Requisicao inicial pelo Empreiteiro",
         "approx_line": 9
+      },
+      "status": "resolvido",
+      "resolucao": {
+        "status": "resolvido",
+        "fase": "2.6",
+        "data": "2026-03-20",
+        "descricao": "PRD/02-jornada-usuario.md REQ-JOR-001 passou a especificar que o Empreiteiro selecciona SetorOperacional (obrigatorio) e opcionalmente Quadra/Lote da malha espacial do Core para ancorar o pedido."
       }
     }
   ],
@@ -46,6 +53,13 @@
         "file": "docs/SPEC/01-modulos-plataforma.md",
         "section": "### Capacidades operacionais do Machinery Link / ## Dependencias sobre o Core",
         "approx_line": 48
+      },
+      "status": "resolvido",
+      "resolucao": {
+        "status": "resolvido",
+        "fase": "2.4",
+        "data": "2026-03-20",
+        "descricao": "SPEC/01-modulos-plataforma.md: capacidade #1 (Solicitacao) alargada para explicitar que o Empreiteiro informa a localizacao de trabalho seleccionando SetorOperacional (obrigatorio) e opcionalmente Quadra/Lote da malha espacial do Core, ancorando o pedido ao contexto logistico que alimenta o filtro de jurisdicao e o factor de adjacencia."
       }
     },
     {
@@ -61,6 +75,13 @@
         "file": "docs/SPEC/03-fila-scoring-estados-sla.md",
         "section": "## Regra zero, hard filter, destaque e score / ## Regra de conflito: alocacao manual sobre demanda `EM_ANDAMENTO`",
         "approx_line": 13
+      },
+      "status": "resolvido",
+      "resolucao": {
+        "status": "resolvido",
+        "fase": "2.1",
+        "data": "2026-03-20",
+        "descricao": "SPEC/03-fila-scoring-estados-sla.md passo 3 (Destaque Visual de Prioridade Maxima) alargado para explicitar UI nao bloqueante: as restantes demandas permanecem visiveis e com scroll abaixo da demanda destacada na UI movel; constitui contrato de experiencia da fila do operador (REQ-FUNC-008, REQ-ACE-005, REQ-JOR-004)."
       }
     },
     {
@@ -90,9 +111,9 @@
       {
         "prd_id": "REQ-JOR-001",
         "spec_path": "docs/SPEC/01-modulos-plataforma.md",
-        "status": "Parcial",
-        "severidade": "importante",
-        "comentario": "A SPEC cobre abertura de demandas simples e agrupadas, mas nao deixa explicito como a localizacao de trabalho e capturada nem qual entidade do Core ancora esse dado na requisicao."
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "A capacidade #1 (Solicitacao) explicita captura por SetorOperacional (obrigatorio) e Quadra/Lote opcionais da malha do Core, alinhada ao REQ-JOR-001 no PRD."
       },
       {
         "prd_id": "REQ-JOR-002",
@@ -111,9 +132,9 @@
       {
         "prd_id": "REQ-JOR-004",
         "spec_path": "docs/SPEC/03-fila-scoring-estados-sla.md",
-        "status": "Parcial",
-        "severidade": "importante",
-        "comentario": "Ha evidencia para destaque visual, alocacao manual e empilhamento nao destrutivo, com suporte contextual em `01-modulos-plataforma`, mas a exigencia de UI sem bloqueio e de fila estrita fica apenas implicita."
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "O passo 3 documenta UI nao bloqueante e fila scrollavel com demandas visiveis abaixo do destaque de prioridade maxima em mobile, fechando o contrato de experiencia do operador."
       },
       {
         "prd_id": "REQ-JOR-005",
@@ -129,18 +150,18 @@
   "decision_by_user": [],
   "executive_summary": {
     "total_findings": 4,
-    "total_findings_pendentes": 3,
-    "total_findings_resolvidos": 1,
+    "total_findings_pendentes": 0,
+    "total_findings_resolvidos": 4,
     "bloqueantes": 0,
-    "importantes": 3,
+    "importantes": 0,
     "menores": 0,
     "coverage": {
-      "coberto": 3,
-      "parcial": 2,
+      "coberto": 5,
+      "parcial": 0,
       "nao_coberto": 0
     },
-    "risco_geral": "medio",
-    "nota": "O achado SPEC-M03-003 (cancelamento automatico sem justificacao) foi resolvido por DEC-002 (auto-encerramento por estouro de SLA no fim do expediente, parametrizavel por obra). REQ-JOR-005 passa a Coberto. Achados importantes pendentes: PRD-M03-001 (localizacao), SPEC-M03-001 (captura de localizacao), SPEC-M03-002 (UX de fila)."
+    "risco_geral": "baixo",
+    "nota": "Todos os achados M03 estao resolvidos: SPEC-M03-003 via DEC-002 (SLA fim de expediente); PRD-M03-001 e SPEC-M03-001 com ancoragem espacial SetorOperacional/Quadra/Lote no PRD e na SPEC; SPEC-M03-002 com contrato de fila nao bloqueante e scroll em mobile. Cobertura PRD-SPEC: cinco requisitos JOR cobertos; risco geral baixo."
   },
   "traceability_csv": "docs/audit/output/M03/traceability.csv",
   "traceability_stub_markdown": "docs/audit/output/M03/traceability-stub.md"

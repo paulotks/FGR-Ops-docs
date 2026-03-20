@@ -6,7 +6,7 @@ Esta secção descreve o fluxo operacional principal do módulo Machinery Link, 
 
 ### `REQ-JOR-001` Requisicao inicial pelo Empreiteiro
 
-O `Empreiteiro` autentica-se no portal, informa a localizacao em que esta a trabalhar e solicita maquinario indicando o servico requerido. O fluxo deve permitir a criacao de demandas simples e tambem modelos agrupados de demandas dependentes.
+O `Empreiteiro` autentica-se no portal, informa a localizacao em que esta a trabalhar — seleccionando obrigatoriamente o `SetorOperacional` e, opcionalmente, `Quadra` e `Lote` da malha espacial do Core — e solicita maquinario indicando o servico requerido. Esta seleccao ancora o pedido ao contexto logistico que alimenta o filtro de jurisdicao e o fator de adjacencia no motor de score. O fluxo deve permitir a criacao de demandas simples e tambem modelos agrupados de demandas dependentes.
 
 -> SPEC: [../SPEC/01-modulos-plataforma.md#modulo-machinery-link-mvp](../SPEC/01-modulos-plataforma.md#modulo-machinery-link-mvp)
 

@@ -30,6 +30,11 @@
         "file": "docs/PRD/05-criterios-aceite.md",
         "section": "## Pendentes de migracao",
         "approx_line": 123
+      },
+      "resolucao": {
+        "status": "resolvido",
+        "data": "2026-03-20",
+        "descricao": "Resolvido na Fase 2.6 (2026-03-20). REQ-ACE-007 migrado integralmente de \"Pendentes de migracao\" para a nova secao \"Seguranca de token e gestao de sessao\" com 3 cenarios Gherkin: expiracao/renovacao de token, invalidacao imediata no logout e deteccao de reuso de refresh token. Referencia SPEC: docs/SPEC/00-visao-arquitetura.md#decisoes-arquiteturais-adrs."
       }
     },
     {
@@ -88,6 +93,11 @@
         "file": "docs/SPEC/03-fila-scoring-estados-sla.md",
         "section": "## Regra zero, hard filter, destaque e score",
         "approx_line": 15
+      },
+      "resolucao": {
+        "status": "resolvido",
+        "data": "2026-03-20",
+        "descricao": "Resolvido na Fase 2.1 (2026-03-20). O passo 3 de docs/SPEC/03-fila-scoring-estados-sla.md foi expandido para afirmar explicitamente que a UI e nao bloqueante, as demais demandas permanecem simultaneamente visiveis e rolaveis abaixo da demanda destacada na UI mobile. Constitui contrato de experiencia da fila do operador (REQ-FUNC-008, REQ-ACE-005, REQ-JOR-004)."
       }
     },
     {
@@ -145,9 +155,9 @@
       {
         "prd_id": "REQ-ACE-005",
         "spec_path": "docs/SPEC/03-fila-scoring-estados-sla.md",
-        "status": "Parcial",
-        "severidade": "importante",
-        "comentario": "O destaque visual de prioridade `MAXIMA` esta especificado, mas a manutencao explicita das restantes demandas visiveis e rolaveis na UI mobile nao foi localizada no texto tecnico."
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "SPEC passo 3 explicita UI nao bloqueante: demais demandas visiveis e rolaveis abaixo do destaque na mobile; alinhado a REQ-FUNC-008 e REQ-JOR-004 (contrato de experiencia da fila)."
       },
       {
         "prd_id": "REQ-ACE-006",
@@ -159,9 +169,9 @@
       {
         "prd_id": "REQ-ACE-007",
         "spec_path": "docs/SPEC/00-visao-arquitetura.md",
-        "status": "Parcial",
-        "severidade": "importante",
-        "comentario": "A arquitetura documenta access token de 15 minutos, refresh token rotativo de 7 dias e blacklist por jti em Redis, mas o criterio de aceite correspondente ainda nao esta migrado no PRD como requisito testavel dentro do modulo."
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "PRD secao \"Seguranca de token e gestao de sessao\" com cenarios Gherkin para token, logout e reuso de refresh; SPEC mantem decisoes em 00-visao-arquitetura.md#decisoes-arquiteturais-adrs."
       },
       {
         "prd_id": "REQ-ACE-008",
@@ -210,18 +220,18 @@
   "decision_by_user": [],
   "executive_summary": {
     "total_findings": 7,
-    "total_findings_pendentes": 2,
-    "total_findings_resolvidos": 5,
+    "total_findings_pendentes": 0,
+    "total_findings_resolvidos": 7,
     "bloqueantes": 0,
-    "importantes": 2,
+    "importantes": 0,
     "menores": 0,
     "coverage": {
-      "coberto": 6,
-      "parcial": 2,
+      "coberto": 8,
+      "parcial": 0,
       "nao_coberto": 0
     },
     "risco_geral": "baixo",
-    "nota": "Os dois conflitos bloqueantes do M06 foram resolvidos: CROSS-M06-001 por DEC-001 (modelo hibrido) e CROSS-M06-002 por DEC-002 (auto-encerramento por estouro de SLA). REQ-ACE-006 passa a Coberto. Achados importantes pendentes: PRD-M06-001 (REQ-ACE-007 por migrar), SPEC-M06-002 (UI nao bloqueante para REQ-ACE-005)."
+    "nota": "Risco baixo: todos os 7 achados do M06 estao resolvidos. Conflitos bloqueantes fechados por DEC-001 e DEC-002. PRD-M06-001 (Fase 2.6): REQ-ACE-007 migrado com cenarios Gherkin e referencia a ADRs. SPEC-M06-002 (Fase 2.1): contrato de fila mobile nao bloqueante no passo 3 da SPEC. Cobertura PRD-SPEC: 8 criterios Cobertos, 0 Parciais."
   },
   "traceability_csv": "docs/audit/output/M06/traceability.csv",
   "traceability_stub_markdown": "docs/audit/output/M06/traceability-stub.md"

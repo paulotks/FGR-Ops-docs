@@ -38,17 +38,18 @@ Matriz global de rastreio entre os requisitos do PRD e os modulos da SPEC.
 
 ## Resultados da auditoria PRD ↔ SPEC
 
-Resumo agregado de 7 modulos auditados (gerado em 2026-03-20).
+Resumo agregado de 7 modulos auditados (actualizado em 2026-03-20, pos-Fase 2).
 
 | Metrica | Valor |
 |---------|-------|
 | Total achados | 37 |
-| Bloqueantes | 7 |
-| Importantes | 28 |
-| Menores | 2 |
-| Coberto | 35 |
-| Parcial | 21 |
-| Nao coberto | 8 |
+| Bloqueantes | 7 (todos resolvidos) |
+| Importantes | 28 (27 resolvidos, 1 pendente: `SPEC-M02-001`) |
+| Menores | 2 (pendentes: `PRD-M02-002`, `SPEC-M02-002`) |
+| Resolvidos | 34 |
+| Coberto | 62 |
+| Parcial | 2 |
+| Nao coberto | 0 |
 
 Detalhes por modulo e JSON global em [docs/audit/output/global/consolidated-global.json](audit/output/global/consolidated-global.json).
 
@@ -57,17 +58,17 @@ Detalhes por modulo e JSON global em [docs/audit/output/global/consolidated-glob
 ### Auditoria M01 - bloco para `docs/traceability.md`
 
 - **Bloqueantes**
-  - `SPEC-M01-001` - `REQ-SCO-003` sem cobertura localizavel nas SPECs revistas do modulo (`docs/SPEC/00-visao-arquitetura.md` + complemento `docs/SPEC/05-backlog-mvp-glossario.md`).
-- **Importantes**
-  - `PRD-M01-001` - referencias locais do PRD dispersam a evidencia do modulo para SPECs fora da paridade core declarada.
-  - `PRD-M01-002` - secoes de Fase 2 e gatilhos dependem da matriz global para localizar a SPEC secundaria.
-  - `SPEC-M01-002` - `REQ-SCO-GAT-001..004` nao aparecem na SPEC secundaria `docs/SPEC/05-backlog-mvp-glossario.md`.
-  - `SPEC-M01-003` - `REQ-SCO-F2-005` nao foi localizado na lista de backlog tecnico adiado.
-  - `SPEC-M01-004` - `REQ-OBJ-004` / `REQ-SCO-004` ficam apenas parcialmente cobertos em `docs/SPEC/00-visao-arquitetura.md`.
+  - ~~`SPEC-M01-001`~~ — **Resolvido (Fase 1.3).** Rastreio `REQ-SCO-003` e texto explicito de cadastro de Maquinario e Ajudante adicionados em `00-visao-arquitetura.md`.
+- **Importantes** — Todos resolvidos na Fase 2.
+  - ~~`PRD-M01-001`~~ — **Resolvido (Fase 2.6).** Apontadores SPEC adicionados em `REQ-OBJ-003`, `REQ-OBJ-004`, `REQ-SCO-003`, `REQ-SCO-004`.
+  - ~~`PRD-M01-002`~~ — **Resolvido (Fase 2.6).** Apontadores SPEC adicionados para Fase 2 e Criterios de Promocao.
+  - ~~`SPEC-M01-002`~~ — **Resolvido (Fase 2.3).** Seccao de criterios de promocao adicionada com `REQ-SCO-GAT-001..004`.
+  - ~~`SPEC-M01-003`~~ — **Resolvido (Fase 2.3).** `REQ-SCO-F2-005` adicionado a lista de itens adiados.
+  - ~~`SPEC-M01-004`~~ — **Resolvido (Fase 2.2).** Checkpoint Manual, localizacao declarada e restricao sem GPS explicitados.
 - **Resumo de cobertura**
-  - `Coberto`: 13
-  - `Parcial`: 4
-  - `Nao coberto`: 6
+  - `Coberto`: 21
+  - `Parcial`: 2
+  - `Nao coberto`: 0
 
 ---
 
@@ -76,11 +77,11 @@ Detalhes por modulo e JSON global em [docs/audit/output/global/consolidated-glob
 - **Bloqueantes**
   - Nenhum bloqueio PRD↔SPEC identificado no modulo.
 - **Importantes**
-  - `PRD-M02-001` - o PRD nao explicita se `Empreiteiro` e `Operador de Maquinario` podem consultar cadastros auxiliares alem das proprias demandas, expediente e fila.
+  - ~~`PRD-M02-001`~~ — **Resolvido (Fase 2.6).** PRD `REQ-RBAC-005` e `REQ-RBAC-006` agora explicitam leitura de contexto auxiliar para Empreiteiro e Operador na medida necessaria.
   - `SPEC-M02-001` - a matriz tecnica abre leituras de contexto para `Empreiteiro` e `Operador` sem justificar como esse acesso continua aderente ao escopo restrito descrito no PRD.
 - **Resumo de cobertura**
-  - `Coberto`: 4
-  - `Parcial`: 2
+  - `Coberto`: 6
+  - `Parcial`: 0
   - `Nao coberto`: 0
 
 ---
@@ -89,14 +90,14 @@ Detalhes por modulo e JSON global em [docs/audit/output/global/consolidated-glob
 
 - **Bloqueantes**
   - Nenhum bloqueio PRD↔SPEC identificado no modulo.
-- **Importantes**
-  - `PRD-M03-001` - o PRD nao fixa se a localizacao inicial da demanda usa entidade espacial estruturada do Core, checkpoint manual ou campo livre.
-  - `SPEC-M03-001` - `01-modulos-plataforma` cobre a abertura da demanda, mas nao explicita a captura da localizacao de trabalho no momento da requisicao.
-  - `SPEC-M03-002` - `03-fila-scoring-estados-sla` cobre prioridade maxima, Regra Zero e empilhamento, mas nao transforma em contrato textual a exigencia de UI sem bloqueio e de fila estrita do operador.
-  - `SPEC-M03-003` - `03-fila-scoring-estados-sla` introduz aprovacao automatica de cancelamento apos 24 horas sem justificar essa decisao no contexto do PRD.
+- **Importantes** — Todos resolvidos.
+  - ~~`PRD-M03-001`~~ — **Resolvido (Fase 2.6).** `REQ-JOR-001` agora especifica seleccao de `SetorOperacional` (obrigatorio) e `Quadra`/`Lote` (opcional).
+  - ~~`SPEC-M03-001`~~ — **Resolvido (Fase 2.4).** Capacidade #1 (Solicitacao) expandida com captura obrigatoria de localizacao de trabalho.
+  - ~~`SPEC-M03-002`~~ — **Resolvido (Fase 2.1).** Passo 3 do motor agora explicita contrato de experiencia da fila: UI nao bloqueante, demandas visiveis e rolaveis.
+  - ~~`SPEC-M03-003`~~ — **Resolvido (Fase 1.2, DEC-002).** Encerramento por estouro de SLA no fim do expediente parametrizavel por obra.
 - **Resumo de cobertura**
-  - `Coberto`: 2
-  - `Parcial`: 3
+  - `Coberto`: 5
+  - `Parcial`: 0
   - `Nao coberto`: 0
 
 ---
@@ -104,17 +105,17 @@ Detalhes por modulo e JSON global em [docs/audit/output/global/consolidated-glob
 ### Auditoria M04 - bloco para `docs/traceability.md`
 
 - **Bloqueantes**
-  - `CROSS-M04-001` - conflito PRD↔SPEC entre o filtro estrito de jurisdicao/compatibilidade (`REQ-FUNC-002`) e a `Regra Zero` de alocacao manual por `operadorAlocadoId` (`REQ-FUNC-006`).
-- **Importantes**
-  - `PRD-M04-001` - os apontadores `-> SPEC` do PRD nao refletem toda a cobertura exigida pela matriz do M04, sobretudo em `02-modelo-dados.md` e `06-definicoes-complementares.md`.
-  - `PRD-M04-002` - o PRD nao fixa a precedencia entre filtro logistico estrito e alocacao manual explicita.
-  - `SPEC-M04-001` - `03-fila-scoring-estados-sla` escolhe um bypass manual amplo na `Regra Zero` sem esclarecer se os hard filters continuam obrigatorios.
-  - `SPEC-M04-002` - `01-modulos-plataforma` e `02-modelo-dados` nao fecham o contrato funcional de agrupamento/bulk pedido por `REQ-FUNC-005`.
-  - `SPEC-M04-003` - `06-definicoes-complementares` nao localiza explicitamente o calculo/persistencia de `tempoExecucaoMs`.
-  - `SPEC-M04-004` - `03-fila-scoring-estados-sla` cobre destaque visual de prioridade `MAXIMA`, mas nao explicita UI nao bloqueante nem preservacao das restantes demandas.
+  - ~~`CROSS-M04-001`~~ — **Resolvido (Fase 1.1, DEC-001).** Modelo hibrido: alocacao manual sobrepoe elegibilidade como excecao auditavel.
+- **Importantes** — Todos resolvidos.
+  - ~~`PRD-M04-001`~~ — **Resolvido (Fase 2.6).** Apontadores SPEC adicionados para `REQ-FUNC-003..010` em `PRD/03-requisitos-funcionais.md`.
+  - ~~`PRD-M04-002`~~ — **Resolvido (Fase 1.1, DEC-001).** Precedencia entre filtro e alocacao manual definida.
+  - ~~`SPEC-M04-001`~~ — **Resolvido (Fase 1.1, DEC-001).** Regra Zero documenta DEC-001 explicitamente.
+  - ~~`SPEC-M04-002`~~ — **Resolvido (Fase 2.4).** Capacidade #2 (Agrupamento e criacao multipla) adicionada com contrato funcional.
+  - ~~`SPEC-M04-003`~~ — **Resolvido (Fase 2.4).** `tempoExecucaoMs` especificado em `02-modelo-dados.md`.
+  - ~~`SPEC-M04-004`~~ — **Resolvido (Fase 2.1).** UI nao bloqueante e preservacao das demandas explicitadas.
 - **Resumo de cobertura**
-  - `Coberto`: 6
-  - `Parcial`: 4
+  - `Coberto`: 10
+  - `Parcial`: 0
   - `Nao coberto`: 0
 
 ---
@@ -122,49 +123,49 @@ Detalhes por modulo e JSON global em [docs/audit/output/global/consolidated-glob
 ### Auditoria M05 - bloco para `docs/traceability.md`
 
 - **Bloqueantes**
-  - ~~`SPEC-M05-002`~~ — **Resolvido (Fase 1.4, DEC-004).** ADR D6 adicionada em `00-visao-arquitetura.md` com politica de autenticacao segmentada por perfil: Campo (Usuario+PIN com controlos compensatorios) e Administrativo (palavra-passe forte conforme `REQ-NFR-007`). PRD `REQ-NFR-007` actualizado para reflectir segmentacao. `REQ-NFR-007` passa de `Nao coberto` para `Coberto`.
-- **Importantes**
-  - `SPEC-M05-001` - `00-visao-arquitetura` cobre thresholds de rate limiting, mas nao fecha endpoints exatos, `HTTP 429` e bloqueio temporario de 15 minutos exigidos por `REQ-NFR-006`.
-  - `SPEC-M05-003` - `02-modelo-dados` cobre isolamento por `obraId` e auditabilidade transacional, mas deixa parcial a rastreabilidade consistente dos recursos operacionais pedida por `REQ-NFR-004`.
+  - ~~`SPEC-M05-002`~~ — **Resolvido (Fase 1.4, DEC-004).** ADR D6 adicionada com politica de autenticacao segmentada por perfil.
+- **Importantes** — Todos resolvidos.
+  - ~~`SPEC-M05-001`~~ — **Resolvido (Fase 2.2).** ADR de Rate Limiting expandida com endpoints exactos, `HTTP 429`, `Retry-After` e bloqueio de 15 minutos.
+  - ~~`SPEC-M05-003`~~ — **Resolvido (Fase 2.5).** Politica de rastreabilidade uniforme adicionada em `06-definicoes-complementares.md` com tabela de entidades e `ResourceAuditLog`.
 - **Resumo de cobertura**
-  - `Coberto`: 5 (era 4)
-  - `Parcial`: 2
-  - `Nao coberto`: 0 (era 1)
+  - `Coberto`: 7
+  - `Parcial`: 0
+  - `Nao coberto`: 0
 
 ---
 
 ### Auditoria M06 - bloco para `docs/traceability.md`
 
-- **Bloqueantes**
-  - `CROSS-M06-001` - `REQ-ACE-003` diverge entre o cenario do PRD, que faz a jurisdicao/logistica superar a preferencia manual, e a SPEC, que preserva a `Regra Zero` para `operadorAlocadoId`.
-  - `CROSS-M06-002` - `REQ-ACE-006` exige revisao administrativa antes do encerramento definitivo, mas `03-fila-scoring-estados-sla` aprova cancelamentos automaticamente apos 24 horas sem decisao humana.
-- **Importantes**
-  - `PRD-M06-001` - `REQ-ACE-007` continua apenas como pendente de migracao em `05-criterios-aceite`, sem criterio testavel nem cenario de aceite.
-  - `PRD-M06-002` - o PRD usa "preferencia manual de operador" em `REQ-ACE-003` sem ligar explicitamente o termo a `operadorAlocadoId` ou a outro mecanismo tecnico.
-  - `SPEC-M06-001` - `03-fila-scoring-estados-sla` resolve `REQ-ACE-003` a favor do bypass manual sem justificar a convivencia com o cenario de aceite.
-  - `SPEC-M06-002` - `03-fila-scoring-estados-sla` destaca prioridade `MAXIMA`, mas nao explicita que as restantes demandas permanecem visiveis e rolaveis na UI mobile de `REQ-ACE-005`.
-  - `SPEC-M06-003` - `03-fila-scoring-estados-sla` introduz aprovacao automatica apos 24 horas em `REQ-ACE-006`, adicionando comportamento nao antecipado pelo criterio de aceite.
+- **Bloqueantes** — Todos resolvidos.
+  - ~~`CROSS-M06-001`~~ — **Resolvido (Fase 1.1, DEC-001).** PRD e SPEC alinhados no modelo hibrido de alocacao.
+  - ~~`CROSS-M06-002`~~ — **Resolvido (Fase 1.2, DEC-002).** Auto-encerramento por estouro de SLA no fim do expediente.
+- **Importantes** — Todos resolvidos.
+  - ~~`PRD-M06-001`~~ — **Resolvido (Fase 2.6).** `REQ-ACE-007` migrado com 3 cenarios Gherkin (expiracao, invalidacao, reuso).
+  - ~~`PRD-M06-002`~~ — **Resolvido (Fase 1.1, DEC-001).** `REQ-ACE-003` reescrito com terminologia canonica.
+  - ~~`SPEC-M06-001`~~ — **Resolvido (Fase 1.1, DEC-001).** Regra Zero documenta DEC-001.
+  - ~~`SPEC-M06-002`~~ — **Resolvido (Fase 2.1).** UI nao bloqueante e demandas visiveis/rolaveis explicitados.
+  - ~~`SPEC-M06-003`~~ — **Resolvido (Fase 1.2, DEC-002).** Encerramento por estouro de SLA justificado.
 - **Resumo de cobertura**
-  - `Coberto`: 4
-  - `Parcial`: 4
+  - `Coberto`: 8
+  - `Parcial`: 0
   - `Nao coberto`: 0
 
 ---
 
 ### Auditoria M07 - bloco para `docs/traceability.md`
 
-- **Bloqueantes**
-  - `CROSS-M07-001` - `REQ-MET-002` aponta no PRD para `01-modulos-plataforma`, mas a paridade oficial e a matriz global de M07 distribuem metricas e riscos por `02`, `03`, `05` e `06`, deixando sem fonte tecnica canonica o indicador de adocao e engajamento.
-  - `SPEC-M07-002` - os SPEC revistos nao definem a fonte do denominador "operadores ativos na folha da quinzena" nem o contrato analitico necessario para verificar `REQ-MET-002`.
-- **Importantes**
-  - `PRD-M07-001` - `REQ-MET-002` usa no PRD uma referencia cruzada para `01-modulos-plataforma` fora do conjunto de paridade oficial de M07.
-  - `PRD-M07-002` - `REQ-RISK-001` identifica o risco de governanca da taxonomia operacional, mas nao explicita a mitigacao esperada apesar do titulo "Riscos e mitigacoes".
-  - `SPEC-M07-001` - `02-modelo-dados` nao fecha atributos ou eventos canonicos para calcular `Horas Disponiveis` versus `Horas em Operacao` em `REQ-MET-001`.
-  - `SPEC-M07-003` - `05-backlog-mvp-glossario` define a taxonomia espacial, mas nao traduz `REQ-RISK-001` em fluxo tecnico de governanca, validacao ou auditoria cadastral.
+- **Bloqueantes** — Todos resolvidos.
+  - ~~`CROSS-M07-001`~~ — **Resolvido (Fase 1.5, DEC-003).** Referencia PRD corrigida para `06-definicoes-complementares.md`.
+  - ~~`SPEC-M07-002`~~ — **Resolvido (Fase 1.5, DEC-003).** Contrato analitico canonico adicionado com formula, denominador e janela temporal.
+- **Importantes** — Todos resolvidos.
+  - ~~`PRD-M07-001`~~ — **Resolvido (Fase 1.5, DEC-003).** Referencia SPEC corrigida.
+  - ~~`PRD-M07-002`~~ — **Resolvido (Fase 2.6).** Mitigacao explicita adicionada com responsavel, validacao, auditoria e relatorio.
+  - ~~`SPEC-M07-001`~~ — **Resolvido (Fase 2.4).** Seccao de medicao canonica adicionada em `02-modelo-dados.md` com Horas Disponiveis, Horas em Operacao e consulta de referencia.
+  - ~~`SPEC-M07-003`~~ — **Resolvido (Fase 2.3).** Seccao de governanca da taxonomia espacial adicionada em `05-backlog-mvp-glossario.md` com 4 regras tecnicas.
 - **Resumo de cobertura**
-  - `Coberto`: 2
-  - `Parcial`: 2
-  - `Nao coberto`: 1
+  - `Coberto`: 5
+  - `Parcial`: 0
+  - `Nao coberto`: 0
 
 ---
 

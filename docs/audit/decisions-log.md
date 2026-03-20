@@ -93,6 +93,60 @@ Este registo centraliza as decisões de produto necessárias antes das correçõ
 
 ---
 
+## Fase 2 — Correcoes de achados importantes
+
+As correcoes abaixo nao exigiram decisao de produto nova; derivam directamente dos achados da auditoria e das decisoes ja tomadas na Fase 0.
+
+### Fase 2.1 — SPEC/03-fila-scoring-estados-sla.md (UI nao bloqueante)
+
+- **Data:** 2026-03-20
+- **Achados resolvidos:** `SPEC-M03-002`, `SPEC-M04-004`, `SPEC-M06-002`
+- **Correcao:** Passo 3 (Destaque Visual de Prioridade Maxima) expandido para explicitar contrato de experiencia da fila do operador: UI nao bloqueante, demandas restantes visiveis e rolaveis na UI mobile. `REQ-JOR-004` adicionado a linha de rastreio PRD.
+
+### Fase 2.2 — SPEC/00-visao-arquitetura.md (Checkpoint Manual + Rate Limiting)
+
+- **Data:** 2026-03-20
+- **Achados resolvidos:** `SPEC-M01-004`, `SPEC-M05-001`
+- **Correcao SPEC-M01-004:** Seccao Arquitetura Tatica (DDD) expandida para explicitar Checkpoint Manual como mecanismo de localizacao declarada sem GPS/IoT, posicao neutra na primeira demanda do turno e relacao com `REQ-OBJ-004`/`REQ-SCO-004`.
+- **Correcao SPEC-M05-001:** ADR de Rate Limiting expandida com contrato normativo conforme `REQ-NFR-006`: endpoints exactos (`/auth/login`, `/auth/pin`, `POST /demandas`, `POST /demandas/bulk`), `HTTP 429 Too Many Requests` com `Retry-After`, bloqueio temporario de 15 minutos por IP ou utilizador.
+
+### Fase 2.3 — SPEC/05-backlog-mvp-glossario.md (Backlog, Gatilhos, Governanca)
+
+- **Data:** 2026-03-20
+- **Achados resolvidos:** `SPEC-M01-002`, `SPEC-M01-003`, `SPEC-M07-003`
+- **Correcao SPEC-M01-002:** Adicionada seccao "Criterios de promocao para Fase 2" com tabela cobrindo `REQ-SCO-GAT-001..004`. Linha de rastreio PRD actualizada.
+- **Correcao SPEC-M01-003:** Adicionado item explicito para `REQ-SCO-F2-005` (migracao de dados legados e roteirizacao geocolocada) na lista de itens adiados.
+- **Correcao SPEC-M07-003:** Adicionada seccao "Governanca da taxonomia espacial (`REQ-RISK-001`)" com 4 regras tecnicas: validacao referencial, auditoria cadastral, restricao de exclusao e relatorio de consistencia.
+
+### Fase 2.4 — SPEC/01-modulos-plataforma.md + SPEC/02-modelo-dados.md
+
+- **Data:** 2026-03-20
+- **Achados resolvidos:** `SPEC-M03-001`, `SPEC-M04-002`, `SPEC-M04-003`, `SPEC-M07-001`
+- **Correcao SPEC-M03-001:** Capacidade #1 (Solicitacao) expandida para explicitar captura obrigatoria de localizacao de trabalho (`SetorOperacional`, opcionalmente `Quadra`/`Lote`) no momento da abertura da demanda.
+- **Correcao SPEC-M04-002:** Adicionada capacidade #2 (Agrupamento e criacao multipla) com contrato funcional explicito: payload bulk, demandas independentes, `DemandaGrupo` para rastreio.
+- **Correcao SPEC-M04-003:** Adicionada especificacao de `tempoExecucaoMs` como campo calculado (`finalizadoEm - iniciadoEm`) persistido na conclusao. Timestamps offline prevalecem.
+- **Correcao SPEC-M07-001:** Adicionada seccao "Medicao canonica de tempo operacional (`REQ-MET-001`)" com definicoes de Horas Disponiveis, Horas em Operacao e consulta de referencia.
+
+### Fase 2.5 — SPEC/06-definicoes-complementares.md (Rastreabilidade)
+
+- **Data:** 2026-03-20
+- **Achados resolvidos:** `SPEC-M05-003`
+- **Correcao:** Adicionada seccao "Politica de rastreabilidade dos recursos operacionais (`REQ-NFR-004`)" com tabela uniforme de auditabilidade para todas as entidades operacionais, regras transversais de `ResourceAuditLog` e politica de soft-delete.
+
+### Fase 2.6 — Ficheiros PRD (referencias cruzadas)
+
+- **Data:** 2026-03-20
+- **Achados resolvidos:** `PRD-M01-001`, `PRD-M01-002`, `PRD-M02-001`, `PRD-M03-001`, `PRD-M04-001`, `PRD-M06-001`, `PRD-M07-002`
+- **PRD-M01-001:** Apontadores SPEC adicionados em `REQ-OBJ-003`, `REQ-OBJ-004`, `REQ-SCO-003`, `REQ-SCO-004` de `PRD/00-visao-escopo.md`.
+- **PRD-M01-002:** Apontadores SPEC adicionados nas seccoes Fora do Escopo e Criterios de Promocao para `05-backlog-mvp-glossario.md`.
+- **PRD-M02-001:** `PRD/01-usuarios-rbac.md` actualizado — `REQ-RBAC-005` e `REQ-RBAC-006` explicitam leitura de contexto auxiliar para Empreiteiro e Operador.
+- **PRD-M03-001:** `PRD/02-jornada-usuario.md` — `REQ-JOR-001` agora especifica seleccao de `SetorOperacional` (obrigatorio) e `Quadra`/`Lote` (opcional).
+- **PRD-M04-001:** `PRD/03-requisitos-funcionais.md` — apontadores SPEC adicionados para `REQ-FUNC-003`, `REQ-FUNC-004`, `REQ-FUNC-005`, `REQ-FUNC-007`, `REQ-FUNC-010`.
+- **PRD-M06-001:** `PRD/05-criterios-aceite.md` — `REQ-ACE-007` migrado para seccao "Seguranca de token e gestao de sessao" com 3 cenarios Gherkin (expiracao/renovacao, invalidacao por logout, deteccao de reuso).
+- **PRD-M07-002:** `PRD/06-metricas-riscos.md` — `REQ-RISK-001` agora inclui mitigacao explicita com responsavel, validacao, auditoria, restricao de exclusao e relatorio. Apontador SPEC actualizado.
+
+---
+
 ## Correções directas (sem decisão de produto pendente)
 
 ### Fase 1.3 — Cobertura de `REQ-SCO-003` (`SPEC-M01-001`)

@@ -36,6 +36,12 @@
         "file": "docs/PRD/03-requisitos-funcionais.md",
         "section": "### `REQ-FUNC-003` Gestao de maquinario e ajudantes / ### `REQ-FUNC-010` Adjacencias e localizacao operacional",
         "approx_line": 19
+      },
+      "resolucao": {
+        "status": "resolvido",
+        "fase": "2.6",
+        "data": "2026-03-20",
+        "descricao": "PRD/03-requisitos-funcionais.md — apontadores SPEC adicionados: REQ-FUNC-003 (02-modelo-dados.md), REQ-FUNC-004 (02-modelo-dados.md + 06-definicoes-complementares.md), REQ-FUNC-005 (02-modelo-dados.md), REQ-FUNC-007 (02-modelo-dados.md + 06-definicoes-complementares.md), REQ-FUNC-010 (02-modelo-dados.md)."
       }
     },
     {
@@ -96,6 +102,12 @@
         "file": "docs/SPEC/01-modulos-plataforma.md",
         "section": "### Capacidades operacionais do Machinery Link",
         "approx_line": 46
+      },
+      "resolucao": {
+        "status": "resolvido",
+        "fase": "2.4",
+        "data": "2026-03-20",
+        "descricao": "SPEC/01-modulos-plataforma.md expandido com nova capacidade #2 \"Agrupamento e criacao multipla\": payload bulk gera demandas independentes a partir da mesma experiencia de formulario, cada uma com ID proprio, participacao individual no pipeline da fila, conclusao/cancelamento autonomos, relacao logica preservada em DemandaGrupo para rastreio sem orquestracao de execucao (REQ-FUNC-005)."
       }
     },
     {
@@ -111,6 +123,12 @@
         "file": "docs/SPEC/06-definicoes-complementares.md",
         "section": "## Estrategia PWA offline / ## Rastreabilidade de ajudantes",
         "approx_line": 14
+      },
+      "resolucao": {
+        "status": "resolvido",
+        "fase": "2.4",
+        "data": "2026-03-20",
+        "descricao": "SPEC/02-modelo-dados.md — secao \"Relacionamentos e regras de integridade\" expandida: tempoExecucaoMs como campo calculado (finalizadoEm - iniciadoEm em ms), persistido no momento da conclusao; timestamps offline do dispositivo prevalecem (REQ-FUNC-007)."
       }
     },
     {
@@ -126,6 +144,12 @@
         "file": "docs/SPEC/03-fila-scoring-estados-sla.md",
         "section": "## Regra zero, hard filter, destaque e score",
         "approx_line": 15
+      },
+      "resolucao": {
+        "status": "resolvido",
+        "fase": "2.1",
+        "data": "2026-03-20",
+        "descricao": "SPEC/03-fila-scoring-estados-sla.md passo 3 expandido: UI nao bloqueante; demandas restantes permanecem visiveis e com scroll abaixo da demanda destacada na UI movel (REQ-FUNC-008)."
       }
     }
   ],
@@ -162,9 +186,9 @@
       {
         "prd_id": "REQ-FUNC-005",
         "spec_path": "docs/SPEC/01-modulos-plataforma.md + docs/SPEC/02-modelo-dados.md",
-        "status": "Parcial",
-        "severidade": "importante",
-        "comentario": "A SPEC reconhece demandas agrupadas, lote multiplo e a existencia de `DemandaGrupo`, mas nao fecha como a logica estrutural partilhada e o envio bulk de demandas independentes sao representados e distinguidos no contrato funcional."
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "01-modulos-plataforma documenta capacidade de agrupamento/criacao multipla: bulk gera demandas independentes com ID proprio, pipeline individual, DemandaGrupo para rastreio. 02-modelo-dados sustenta a entidade."
       },
       {
         "prd_id": "REQ-FUNC-006",
@@ -175,17 +199,17 @@
       },
       {
         "prd_id": "REQ-FUNC-007",
-        "spec_path": "docs/SPEC/03-fila-scoring-estados-sla.md + docs/SPEC/06-definicoes-complementares.md",
-        "status": "Parcial",
-        "severidade": "importante",
-        "comentario": "Ha evidencia para os timestamps operacionais e para a reconciliacao temporal, mas `tempoExecucaoMs` nao aparece como atributo explicitamente persistido/calculado no dominio revisado."
+        "spec_path": "docs/SPEC/02-modelo-dados.md + docs/SPEC/03-fila-scoring-estados-sla.md + docs/SPEC/06-definicoes-complementares.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "02-modelo-dados especifica tempoExecucaoMs como campo calculado (finalizadoEm - iniciadoEm em ms) persistido na conclusao; offline do dispositivo prevalece. Complementar em 03 e 06."
       },
       {
         "prd_id": "REQ-FUNC-008",
         "spec_path": "docs/SPEC/03-fila-scoring-estados-sla.md",
-        "status": "Parcial",
-        "severidade": "importante",
-        "comentario": "A prioridade `MAXIMA` tem destaque visual obrigatorio, mas o texto nao afirma explicitamente que a UI continua nao bloqueante e sem ocultar as restantes demandas."
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "Passo 3 da SPEC afirma UI nao bloqueante: demandas restantes visiveis e com scroll abaixo do destaque em mobile."
       },
       {
         "prd_id": "REQ-FUNC-009",
@@ -226,18 +250,18 @@
   "decision_by_user": [],
   "executive_summary": {
     "total_findings": 7,
-    "total_findings_pendentes": 4,
-    "total_findings_resolvidos": 3,
+    "total_findings_pendentes": 0,
+    "total_findings_resolvidos": 7,
     "bloqueantes": 0,
-    "importantes": 3,
+    "importantes": 0,
     "menores": 0,
     "coverage": {
-      "coberto": 7,
-      "parcial": 3,
+      "coberto": 10,
+      "parcial": 0,
       "nao_coberto": 0
     },
-    "risco_geral": "medio",
-    "nota": "O conflito bloqueante entre filtro logistico estrito e alocacao manual foi resolvido por DEC-001 (modelo hibrido). Restam 3 achados importantes: agrupamento/bulk (SPEC-M04-002), tempoExecucaoMs (SPEC-M04-003) e UI nao bloqueante para prioridade maxima (SPEC-M04-004). A cobertura de REQ-FUNC-002 passa a Coberto."
+    "risco_geral": "baixo",
+    "nota": "Conflito bloqueante resolvido por DEC-001. Todos os achados do modulo estao resolvidos: referencias cruzadas PRD (PRD-M04-001, Fase 2.6), agrupamento/bulk (SPEC-M04-002, Fase 2.4), tempoExecucaoMs (SPEC-M04-003, Fase 2.4), UI nao bloqueante MAXIMA (SPEC-M04-004, Fase 2.1). Cobertura PRD-SPEC: 10/10 requisitos Cobertos."
   },
   "traceability_csv": "docs/audit/output/M04/traceability.csv",
   "traceability_stub_markdown": "docs/audit/output/M04/traceability-stub.md"

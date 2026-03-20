@@ -20,6 +20,8 @@
       "id": "PRD-M02-001",
       "severity": "importante",
       "type": "ambiguidade",
+      "status": "resolvido",
+      "resolucao": "Fase 2.6 — 2026-03-20. PRD/01-usuarios-rbac.md actualizado: REQ-RBAC-005 e REQ-RBAC-006 agora explicitam que Empreiteiro e Operador podem ler contexto auxiliar (obra, hierarquia territorial, catalogos) na medida necessaria para preencher formularios de abertura de demanda ou visualizar a fila operacional.",
       "req_ids": [
         "REQ-RBAC-005",
         "REQ-RBAC-006"
@@ -112,16 +114,16 @@
       {
         "prd_id": "REQ-RBAC-005",
         "spec_path": "docs/SPEC/04-rbac-permissoes.md",
-        "status": "Parcial",
-        "severidade": "importante",
-        "comentario": "A autoria propria das demandas esta preservada, mas a matriz tambem abre leituras de obra, cadastros territoriais e catalogos operacionais alem da formulacao do PRD sobre visibilidade restrita as suas demandas."
+        "status": "Coberto",
+        "severidade": "resolvido",
+        "comentario": "Fase 2.6 (2026-03-20): REQ-RBAC-005 no PRD explicita leitura de obra, hierarquia territorial e catalogos na medida necessaria para abertura de demanda; cobre a fronteira com a matriz SPEC."
       },
       {
         "prd_id": "REQ-RBAC-006",
         "spec_path": "docs/SPEC/04-rbac-permissoes.md",
-        "status": "Parcial",
-        "severidade": "importante",
-        "comentario": "A SPEC restringe o operador a propria fila, expediente e demandas alocadas, mas nao explicita o requisito de prioridades maximas em destaque no topo e ainda adiciona leituras auxiliares fora da formulacao estrita do PRD."
+        "status": "Coberto",
+        "severidade": "resolvido",
+        "comentario": "Fase 2.6 (2026-03-20): REQ-RBAC-006 no PRD explicita leitura de contexto auxiliar na medida necessaria para visualizacao da fila operacional; cobre a fronteira com a matriz SPEC."
       }
     ],
     "blocking_conflicts": []
@@ -131,15 +133,16 @@
   "executive_summary": {
     "total_findings": 4,
     "bloqueantes": 0,
-    "importantes": 2,
+    "importantes": 1,
     "menores": 2,
+    "resolvidos": 1,
     "coverage": {
-      "coberto": 4,
-      "parcial": 2,
+      "coberto": 6,
+      "parcial": 0,
       "nao_coberto": 0
     },
     "risco_geral": "medio",
-    "nota": "O M02 esta tecnicamente bem coberto para perfis centrais e isolamento cross-tenant, mas permanece com fronteira pouco nitida para os acessos auxiliares de `Empreiteiro` e `Operador`, o que reduz a precisao da rastreabilidade entre narrativa de produto e matriz tecnica."
+    "nota": "Fase 2.6 (2026-03-20) resolveu PRD-M02-001: o PRD clarifica leituras auxiliares para Empreiteiro e Operador (REQ-RBAC-005 e REQ-RBAC-006), e a cross-check passa a 6/6 requisitos Cobertos. Permanecem em aberto SPEC-M02-001 (justificativa SPEC face ao escopo de produto) e os achados menores de nomenclatura (PRD-M02-002, SPEC-M02-002)."
   },
   "traceability_csv": "docs/audit/output/M02/traceability.csv",
   "traceability_stub_markdown": "docs/audit/output/M02/traceability-stub.md"

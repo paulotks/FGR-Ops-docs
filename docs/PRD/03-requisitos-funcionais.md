@@ -21,12 +21,15 @@ No fluxo automatico de distribuicao, maquinas e operadores nao podem visualizar 
 O sistema deve suportar o cadastro estruturado de `Tipos de Maquinario`, `Servicos`, `Maquinas` e `Ajudantes`. O `Operador` precisa de estar vinculado aos tipos de maquinario que esta autorizado a operar.
 
 -> SPEC: [../SPEC/01-modulos-plataforma.md#dependencias-sobre-o-core](../SPEC/01-modulos-plataforma.md#dependencias-sobre-o-core)
+-> SPEC: [../SPEC/02-modelo-dados.md#entidades-principais](../SPEC/02-modelo-dados.md#entidades-principais)
 
 ### `REQ-FUNC-004` Diario operacional de expediente
 
 O `RegistroExpediente` formaliza diariamente o uso do equipamento, associando `Operador`, `Maquina` e `Ajudante` num periodo temporal. No check-in, o operador escolhe a maquina filtrada pelas suas autorizacoes e regista o ajudante ativo; a troca de ajudante durante o turno deve permanecer auditada. A primeira demanda do dia parte de uma localizacao neutra (`Fora da Obra`) e so depois da primeira conclusao o checkpoint manual passa a influenciar a adjacencia.
 
 -> SPEC: [../SPEC/01-modulos-plataforma.md#capacidades-operacionais-do-machinery-link](../SPEC/01-modulos-plataforma.md#capacidades-operacionais-do-machinery-link)
+-> SPEC: [../SPEC/02-modelo-dados.md#entidades-principais](../SPEC/02-modelo-dados.md#entidades-principais)
+-> SPEC: [../SPEC/06-definicoes-complementares.md#rastreabilidade-de-ajudantes](../SPEC/06-definicoes-complementares.md#rastreabilidade-de-ajudantes)
 -> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#regra-zero-hard-filter-destaque-e-score](../SPEC/03-fila-scoring-estados-sla.md#regra-zero-hard-filter-destaque-e-score)
 
 ### `REQ-FUNC-005` Agrupamento e criacao multipla
@@ -34,6 +37,7 @@ O `RegistroExpediente` formaliza diariamente o uso do equipamento, associando `O
 O frontend deve permitir agrupar sequencias de servicos com logica estrutural partilhada e enviar um payload bulk de demandas independentes a partir da mesma experiencia de formulario.
 
 -> SPEC: [../SPEC/01-modulos-plataforma.md#capacidades-operacionais-do-machinery-link](../SPEC/01-modulos-plataforma.md#capacidades-operacionais-do-machinery-link)
+-> SPEC: [../SPEC/02-modelo-dados.md#entidades-principais](../SPEC/02-modelo-dados.md#entidades-principais)
 
 ### `REQ-FUNC-006` Alocacao manual e agendamentos
 
@@ -47,6 +51,8 @@ O frontend deve permitir agrupar sequencias de servicos com logica estrutural pa
 O sistema deve persistir e manipular os atributos temporais da demanda diretamente no dominio, incluindo `iniciadoEm`, `finalizadoEm` e o respetivo calculo de `tempoExecucaoMs`.
 
 -> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#sla-de-atendimento-e-governanca](../SPEC/03-fila-scoring-estados-sla.md#sla-de-atendimento-e-governanca)
+-> SPEC: [../SPEC/02-modelo-dados.md#relacionamentos-e-regras-de-integridade](../SPEC/02-modelo-dados.md#relacionamentos-e-regras-de-integridade)
+-> SPEC: [../SPEC/06-definicoes-complementares.md#estrategia-pwa-offline](../SPEC/06-definicoes-complementares.md#estrategia-pwa-offline)
 
 ### `REQ-FUNC-008` Prioridade maxima com destaque visual
 
@@ -65,6 +71,7 @@ O operador nao cancela diretamente uma demanda em `EM_ANDAMENTO`. Em vez disso, 
 O produto deve manter cadastro hierarquico espacial de `Quadras`, `Lotes` e `Ruas`, com regras de contiguidade que alimentam o motor de score e a jurisdicao logistica da fila.
 
 -> SPEC: [../SPEC/01-modulos-plataforma.md#dependencias-sobre-o-core](../SPEC/01-modulos-plataforma.md#dependencias-sobre-o-core)
+-> SPEC: [../SPEC/02-modelo-dados.md#entidades-principais](../SPEC/02-modelo-dados.md#entidades-principais)
 -> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#regra-zero-hard-filter-destaque-e-score](../SPEC/03-fila-scoring-estados-sla.md#regra-zero-hard-filter-destaque-e-score)
 
 ## Critérios de aceite relacionados
