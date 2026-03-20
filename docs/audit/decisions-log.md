@@ -67,6 +67,10 @@ Este registo centraliza as decisões de produto necessárias antes das correçõ
 - **Justificação:** A arquitetura tatica exige separacao clara de responsabilidades entre camada de negocio e camada operacional. Esta decisao preserva legibilidade para stakeholders e garante precisao tecnica para implementacao e auditoria, eliminando a ambiguidade atual da trilha PRD->SPEC e fechando a lacuna do denominador "operadores ativos na folha da quinzena".
 - **Nota MVP:** Criar secao unica na SPEC para `REQ-MET-002` com definicao formal do denominador, regra de janela da quinzena, timezone, criterios de inclusao/exclusao, politica de deduplicacao por operador e artefato de validacao. Atualizar o PRD para referenciar explicitamente essa secao.
 - **Achados resolvidos:** `CROSS-M07-001`, `SPEC-M07-002`, `PRD-M07-001`
+- **Aplicação (Fase 1.5 — 2026-03-20):**
+  - `SPEC/06-definicoes-complementares.md`: Adicionada secção "Contrato analítico `REQ-MET-002` — Adoção e engajamento operacional" com sete subsecções: Fórmula (numerador = operadores distintos com pelo menos 1 acção; denominador = operadores activos na folha da quinzena), Janela temporal da quinzena (Q1: 1-15, Q2: 16-fim do mês, timezone `America/Sao_Paulo`), Critérios de inclusão/exclusão (tabela com 6 cenários: admissão, desligamento, transferência, férias/licença), Política de deduplicação (contagem única por `User.id`+`obraId`, timestamp de origem offline), Fonte do denominador e integração (contrato mínimo com RH/folha: endpoint, payload, reconciliação quinzenal), Artefato de validação (tabela com 7 campos auditáveis, acessível via painel administrativo). `REQ-MET-002` adicionado ao rastreio PRD do ficheiro.
+  - `PRD/06-metricas-riscos.md`: Referência SPEC de `REQ-MET-002` corrigida — apontava para `01-modulos-plataforma.md#modulo-machinery-link-mvp` (fora da paridade oficial de M07); agora aponta para `06-definicoes-complementares.md#contrato-analitico-req-met-002`.
+  - Artefactos regenerados: `M07/consolidated.json`, `M07/traceability.csv`, `M07/traceability-stub.md`.
 
 ## DEC-004 — Política de palavra-passe `REQ-NFR-007`
 

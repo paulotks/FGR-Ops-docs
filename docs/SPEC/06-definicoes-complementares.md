@@ -1,6 +1,6 @@
 # Definicoes complementares
 
-**Rastreio PRD:** `REQ-NFR-002`, `REQ-FUNC-004`, `REQ-FUNC-006`, `REQ-FUNC-009`, `REQ-RISK-002`, `REQ-MET-003`
+**Rastreio PRD:** `REQ-NFR-002`, `REQ-FUNC-004`, `REQ-FUNC-006`, `REQ-FUNC-009`, `REQ-RISK-002`, `REQ-MET-002`, `REQ-MET-003`
 
 Este modulo fecha lacunas operacionais do MVP com decisoes tecnicas complementares sobre offline, agendamento, exclusao mutua adiada e rastreabilidade de ajudantes.
 
@@ -58,6 +58,66 @@ A `Demanda.dataAgendada` deve permanecer isolada do pipeline de score em tempo r
 
 - A entidade exigiria regras maduras para exclusao mutua, sincronismo entre multiplos maquinarios e recuperacao de falhas em operacoes acopladas.
 - No MVP, o papel equivalente e atendido apenas por agrupamentos passivos via `DemandaGrupo`, sem orquestracao simultanea de execucao.
+
+## Contrato analitico `REQ-MET-002` — Adocao e engajamento operacional
+
+Este contrato operacional constitui a fonte canonica de medicao para `REQ-MET-002`. O PRD define a intencao de negocio da metrica; esta secao define formula, denominador, regras de elegibilidade, janela temporal e evidencias auditaveis (DEC-003).
+
+### Formula
+
+```
+taxa_adocao = operadores_com_acao / operadores_ativos_folha_quinzena
+```
+
+- **Numerador (`operadores_com_acao`)**: contagem distinta de `User.id` com perfil `OPERADOR` que realizaram pelo menos uma das seguintes acoes registadas no sistema durante a janela da quinzena: check-in de expediente (`RegistroExpediente.iniciadoEm`), inicio de demanda (`Demanda` transitou para `EM_ANDAMENTO` pelo operador) ou conclusao de demanda (`Demanda` transitou para `CONCLUIDA` pelo operador).
+- **Denominador (`operadores_ativos_folha_quinzena`)**: contagem distinta de `User.id` com perfil `OPERADOR` presentes na folha de pagamento da obra na quinzena de referencia, conforme integracao com o sistema de RH/folha. Operadores com `deletadoEm` preenchido antes do inicio da quinzena sao excluidos.
+
+### Janela temporal da quinzena
+
+- **Quinzena 1**: dia 1 ate dia 15 do mes (inclusive), com inicio as `00:00:00` do dia 1 e fim as `23:59:59` do dia 15.
+- **Quinzena 2**: dia 16 ate ao ultimo dia do mes (inclusive), com inicio as `00:00:00` do dia 16 e fim as `23:59:59` do ultimo dia.
+- **Timezone**: `America/Sao_Paulo` (BRT/BRST). Todos os timestamps de acao e de corte de folha sao convertidos para este fuso antes da consolidacao.
+
+### Criterios de inclusao e exclusao
+
+| Criterio | Incluido | Excluido |
+| :--- | :--- | :--- |
+| Operador ativo na folha da quinzena e com expediente registado | Sim | — |
+| Operador ativo na folha mas sem nenhuma acao no app | Sim (denominador) | Nao (numerador) |
+| Operador desligado (`deletadoEm`) antes do inicio da quinzena | — | Sim |
+| Operador admitido durante a quinzena | Sim, a partir da data de admissao | — |
+| Operador transferido de obra durante a quinzena | Contabilizado na obra de origem ate a data de transferencia e na obra de destino a partir dela | — |
+| Operador em ferias, licenca ou afastamento formal durante toda a quinzena | — | Sim |
+
+### Politica de deduplicacao
+
+- Cada operador conta **uma unica vez** no numerador, independentemente do numero de acoes realizadas na quinzena.
+- A consolidacao e por `User.id` e por `obraId`; se o operador atua em multiplas obras, conta separadamente em cada obra.
+- Acoes originadas de sincronizacao offline sao consideradas com o `timestamp` original do dispositivo (campo `iniciadoEm` ou `finalizadoEm`), nao com o timestamp de sincronizacao no servidor.
+
+### Fonte do denominador e integracao
+
+A lista de operadores ativos na folha da quinzena deve ser obtida por integracao com o sistema de RH/folha da FGR. O contrato de integracao minimo exige:
+
+- **Endpoint ou carga batch**: API REST ou importacao periodica (CSV/JSON) com frequencia minima quinzenal.
+- **Payload minimo por operador**: `identificador_folha`, `User.id` (correspondencia), `obraId`, `data_admissao`, `data_desligamento` (se aplicavel), `status_folha` (ativo, ferias, licenca, afastado).
+- **Reconciliacao**: o sistema deve executar reconciliacao automatica no primeiro dia util apos o fechamento de cada quinzena, gerando log de divergencias entre a base de operadores do FGR-OPS e a folha recebida.
+
+### Artefato de validacao
+
+Para cada quinzena consolidada, o sistema deve gerar um artefato auditavel contendo:
+
+| Campo | Descricao |
+| :--- | :--- |
+| `obraId` | Identificador da obra |
+| `quinzena` | Periodo de referencia (ex.: `2026-03-01/2026-03-15`) |
+| `total_folha` | Denominador — operadores ativos na folha |
+| `total_com_acao` | Numerador — operadores com pelo menos 1 acao |
+| `taxa_adocao` | Resultado da formula (percentual) |
+| `lista_sem_acao` | Array de `User.id` presentes na folha sem nenhuma acao registada |
+| `gerado_em` | Timestamp de geracao (`America/Sao_Paulo`) |
+
+Este artefato deve ser persistido e acessivel via painel administrativo para `AdminOperacional`, `UsuarioInternoFGR` e `SuperAdmin`.
 
 ## Rastreabilidade de ajudantes
 

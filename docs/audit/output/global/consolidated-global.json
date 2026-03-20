@@ -1,5 +1,5 @@
 ﻿{
-    "generated_at":  "2026-03-20T11:55:11",
+    "generated_at":  "2026-03-20T15:47:53",
     "input_root":  "C:\\dev\\FGR-Ops-Requisitos\\docs\\audit\\output",
     "total_modules":  7,
     "module_ids":  [
@@ -13,13 +13,13 @@
                    ],
     "aggregate_executive_summary":  {
                                         "total_findings":  37,
-                                        "bloqueantes":  7,
-                                        "importantes":  28,
+                                        "bloqueantes":  2,
+                                        "importantes":  21,
                                         "menores":  2,
                                         "coverage":  {
-                                                         "coberto":  35,
-                                                         "parcial":  21,
-                                                         "nao_coberto":  8
+                                                         "coberto":  42,
+                                                         "parcial":  17,
+                                                         "nao_coberto":  5
                                                      }
                                     },
     "modules":  [
@@ -92,6 +92,8 @@
                                                                             "id":  "SPEC-M01-001",
                                                                             "severity":  "bloqueante",
                                                                             "type":  "lacuna",
+                                                                            "status":  "resolvido",
+                                                                            "resolucao":  "Fase 1.3 â€” 2026-03-20. Adicionado rastreio REQ-SCO-003 e texto explicito de cobertura para cadastro de Maquinario (placa, TipoMaquinario, Servico, propriedade) e Ajudante (sem credencial) na seccao Arquitetura Tatica (DDD) de docs/SPEC/00-visao-arquitetura.md, com referencia cruzada a docs/SPEC/02-modelo-dados.md.",
                                                                             "spec_path":  "docs/SPEC/00-visao-arquitetura.md",
                                                                             "req_ids":  [
                                                                                             "REQ-SCO-003"
@@ -99,8 +101,8 @@
                                                                             "descricao":  "No conjunto SPEC revisto para o M01 nao foi localizada evidencia para cadastro de maquinario com placa/tipo/servicos/propriedade nem para cadastro de ajudantes sem acesso ao sistema. O item permanece dentro do escopo do PRD, mas nao esta documentado nas SPECs revistas para este modulo.",
                                                                             "localizacao":  {
                                                                                                 "file":  "docs/SPEC/00-visao-arquitetura.md",
-                                                                                                "section":  "INFORMACAO_NAO_LOCALIZADA",
-                                                                                                "approx_line":  0
+                                                                                                "section":  "### Arquitetura Tatica (DDD)",
+                                                                                                "approx_line":  58
                                                                                             }
                                                                         },
                                                                         {
@@ -228,9 +230,9 @@
                                                                                             {
                                                                                                 "prd_id":  "REQ-SCO-003",
                                                                                                 "spec_path":  "docs/SPEC/00-visao-arquitetura.md",
-                                                                                                "status":  "Nao coberto",
-                                                                                                "severidade":  "bloqueante",
-                                                                                                "comentario":  "Nao foi localizada cobertura para cadastro de maquinario e ajudantes no conjunto SPEC revisto para o M01."
+                                                                                                "status":  "Coberto",
+                                                                                                "severidade":  "menor",
+                                                                                                "comentario":  "Seccao Arquitetura Tatica (DDD) documenta cadastro de Maquinario (placa, TipoMaquinario, Servico, propriedade) e Ajudante (sem credencial), com referencia a 02-modelo-dados.md para modelo completo."
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-SCO-004",
@@ -329,16 +331,17 @@
                                                                        ],
                                                   "executive_summary":  {
                                                                             "total_findings":  6,
-                                                                            "bloqueantes":  1,
+                                                                            "bloqueantes":  0,
                                                                             "importantes":  5,
                                                                             "menores":  0,
+                                                                            "resolvidos":  1,
                                                                             "coverage":  {
-                                                                                             "coberto":  13,
+                                                                                             "coberto":  14,
                                                                                              "parcial":  4,
-                                                                                             "nao_coberto":  6
+                                                                                             "nao_coberto":  5
                                                                                          },
                                                                             "risco_geral":  "medio",
-                                                                            "nota":  "O M01 tem boa cobertura para contexto, objetivos centrais e fundacao arquitetural do MVP, mas perde completude em itens de escopo detalhado e, sobretudo, na SPEC secundaria para backlog/gatilhos de Fase 2."
+                                                                            "nota":  "O M01 tem boa cobertura para contexto, objetivos centrais e fundacao arquitetural do MVP. O bloqueante SPEC-M01-001 (REQ-SCO-003) foi resolvido na Fase 1.3. Permanecem achados importantes na SPEC secundaria para backlog/gatilhos de Fase 2."
                                                                         },
                                                   "traceability_csv":  "docs/audit/output/M01/traceability.csv",
                                                   "traceability_stub_markdown":  "docs/audit/output/M01/traceability-stub.md"
@@ -580,8 +583,14 @@
                                                                             "localizacao":  {
                                                                                                 "file":  "docs/SPEC/03-fila-scoring-estados-sla.md",
                                                                                                 "section":  "## Fluxo detalhado `PENDENTE_APROVACAO`",
-                                                                                                "approx_line":  112
-                                                                                            }
+                                                                                                "approx_line":  116
+                                                                                            },
+                                                                            "resolucao":  {
+                                                                                              "status":  "resolvido",
+                                                                                              "decisao":  "DEC-002",
+                                                                                              "data":  "2026-03-20",
+                                                                                              "descricao":  "SPEC actualizada: prazo de 24h substituido por encerramento no fim do expediente parametrizavel por obra, com trilha auditavel obrigatoria e referencia a DEC-002. PRD REQ-ACE-006 reescrito para alinhar a politica de auto-encerramento por estouro de SLA."
+                                                                                          }
                                                                         }
                                                                     ],
                                                   "cross_check":  {
@@ -617,9 +626,9 @@
                                                                                             {
                                                                                                 "prd_id":  "REQ-JOR-005",
                                                                                                 "spec_path":  "docs/SPEC/03-fila-scoring-estados-sla.md",
-                                                                                                "status":  "Parcial",
-                                                                                                "severidade":  "importante",
-                                                                                                "comentario":  "A trilha em `DemandaLog` e a exigencia de justificativa estao cobertas, mas a regra de aprovacao automatica apos 24 horas acrescenta comportamento relevante sem justificativa documental."
+                                                                                                "status":  "Coberto",
+                                                                                                "severidade":  "menor",
+                                                                                                "comentario":  "A trilha em DemandaLog e a exigencia de justificativa estao cobertas. A regra de auto-encerramento por estouro de SLA no fim do expediente esta justificada por DEC-002 e documentada na SPEC com trilha auditavel obrigatoria."
                                                                                             }
                                                                                         ],
                                                                       "blocking_conflicts":  [
@@ -634,16 +643,18 @@
                                                                        ],
                                                   "executive_summary":  {
                                                                             "total_findings":  4,
+                                                                            "total_findings_pendentes":  3,
+                                                                            "total_findings_resolvidos":  1,
                                                                             "bloqueantes":  0,
-                                                                            "importantes":  4,
+                                                                            "importantes":  3,
                                                                             "menores":  0,
                                                                             "coverage":  {
-                                                                                             "coberto":  2,
-                                                                                             "parcial":  3,
+                                                                                             "coberto":  3,
+                                                                                             "parcial":  2,
                                                                                              "nao_coberto":  0
                                                                                          },
                                                                             "risco_geral":  "medio",
-                                                                            "nota":  "O M03 cobre bem a triagem logistica e o motor de score, mas ainda depende de inferencia para fechar a captura da localizacao inicial, a garantia de UX da fila do operador e a justificacao do fallback automatico em cancelamentos pendentes."
+                                                                            "nota":  "O achado SPEC-M03-003 (cancelamento automatico sem justificacao) foi resolvido por DEC-002 (auto-encerramento por estouro de SLA no fim do expediente, parametrizavel por obra). REQ-JOR-005 passa a Coberto. Achados importantes pendentes: PRD-M03-001 (localizacao), SPEC-M03-001 (captura de localizacao), SPEC-M03-002 (UX de fila)."
                                                                         },
                                                   "traceability_csv":  "docs/audit/output/M03/traceability.csv",
                                                   "traceability_stub_markdown":  "docs/audit/output/M03/traceability-stub.md"
@@ -705,7 +716,13 @@
                                                                                                "file":  "docs/PRD/03-requisitos-funcionais.md",
                                                                                                "section":  "### `REQ-FUNC-002` Filtro estrito por jurisdicao e compatibilidade / ### `REQ-FUNC-006` Alocacao manual e agendamentos",
                                                                                                "approx_line":  13
-                                                                                           }
+                                                                                           },
+                                                                           "resolucao":  {
+                                                                                             "status":  "resolvido",
+                                                                                             "decisao":  "DEC-001",
+                                                                                             "data":  "2026-03-20",
+                                                                                             "descricao":  "REQ-FUNC-002 agora qualifica o filtro estrito como aplicavel ao fluxo automatico e referencia REQ-FUNC-006 como excecao explicita e auditavel. REQ-FUNC-006 documenta o modelo hibrido: operadorAlocadoId sobrepoe distribuicao/elegibilidade mas nao remove o motor de priorizacao."
+                                                                                         }
                                                                        }
                                                                    ],
                                                   "spec_findings":  [
@@ -723,7 +740,13 @@
                                                                                                 "file":  "docs/SPEC/03-fila-scoring-estados-sla.md",
                                                                                                 "section":  "## Regra zero, hard filter, destaque e score",
                                                                                                 "approx_line":  13
-                                                                                            }
+                                                                                            },
+                                                                            "resolucao":  {
+                                                                                              "status":  "resolvido",
+                                                                                              "decisao":  "DEC-001",
+                                                                                              "data":  "2026-03-20",
+                                                                                              "descricao":  "A Regra Zero agora documenta explicitamente DEC-001: a alocacao manual sobrepoe distribuicao/elegibilidade como excecao auditavel, mas a demanda participa normalmente do pipeline de destaque e scoring. O Hard Filter explicita que demandas via operadorAlocadoId nao passam por este filtro."
+                                                                                          }
                                                                         },
                                                                         {
                                                                             "id":  "SPEC-M04-002",
@@ -783,9 +806,9 @@
                                                                                             {
                                                                                                 "prd_id":  "REQ-FUNC-002",
                                                                                                 "spec_path":  "docs/SPEC/03-fila-scoring-estados-sla.md",
-                                                                                                "status":  "Parcial",
-                                                                                                "severidade":  "bloqueante",
-                                                                                                "comentario":  "O `Hard Filter` cobre jurisdicao e compatibilidade no fluxo normal, mas a `Regra Zero` permite atribuicao direta por `operadorAlocadoId`, deixando o requisito absoluto do PRD vulneravel em cenarios de alocacao manual."
+                                                                                                "status":  "Coberto",
+                                                                                                "severidade":  "menor",
+                                                                                                "comentario":  "O PRD qualifica o filtro estrito como aplicavel ao fluxo automatico e referencia REQ-FUNC-006 como excecao explicita (DEC-001). A SPEC documenta o modelo hibrido na Regra Zero e no Hard Filter, alinhando distribuicao e scoring."
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-FUNC-003",
@@ -854,7 +877,13 @@
                                                                                                                  ],
                                                                                                      "descricao":  "O PRD fixa que maquinas e operadores nao podem receber tarefas fora da jurisdicao logistica ou sem compatibilidade maquina-servico, enquanto a SPEC declara que a `Regra Zero` com `operadorAlocadoId` contorna as regras subsequentes e atribui diretamente ao operador. A redacao atual cria conflito direto sobre se a alocacao manual pode ou nao ultrapassar os filtros eliminatorios.",
                                                                                                      "localizacao_prd":  "docs/PRD/03-requisitos-funcionais.md :: ### `REQ-FUNC-002` / ### `REQ-FUNC-006` :: ~L13 / ~L38",
-                                                                                                     "localizacao_spec":  "docs/SPEC/03-fila-scoring-estados-sla.md :: ## Regra zero, hard filter, destaque e score :: ~L13"
+                                                                                                     "localizacao_spec":  "docs/SPEC/03-fila-scoring-estados-sla.md :: ## Regra zero, hard filter, destaque e score :: ~L13",
+                                                                                                     "resolucao":  {
+                                                                                                                       "status":  "resolvido",
+                                                                                                                       "decisao":  "DEC-001",
+                                                                                                                       "data":  "2026-03-20",
+                                                                                                                       "descricao":  "PRD e SPEC agora alinhados no modelo hibrido: alocacao manual sobrepoe elegibilidade como excecao auditavel, demanda participa do scoring normalmente na fila do operador."
+                                                                                                                   }
                                                                                                  }
                                                                                              ]
                                                                   },
@@ -866,16 +895,18 @@
                                                                        ],
                                                   "executive_summary":  {
                                                                             "total_findings":  7,
-                                                                            "bloqueantes":  1,
-                                                                            "importantes":  6,
+                                                                            "total_findings_pendentes":  4,
+                                                                            "total_findings_resolvidos":  3,
+                                                                            "bloqueantes":  0,
+                                                                            "importantes":  3,
                                                                             "menores":  0,
                                                                             "coverage":  {
-                                                                                             "coberto":  6,
-                                                                                             "parcial":  4,
+                                                                                             "coberto":  7,
+                                                                                             "parcial":  3,
                                                                                              "nao_coberto":  0
                                                                                          },
-                                                                            "risco_geral":  "alto",
-                                                                            "nota":  "O M04 esta amplamente coberto para maquina de estados, expediente, agendamento, cancelamentos e modelagem espacial, mas permanece com um conflito bloqueante entre filtro logistico estrito e alocacao manual. Alem disso, agrupamento/bulk, `tempoExecucaoMs` e a garantia de UI nao bloqueante para prioridade maxima ainda dependem de inferencia entre varios ficheiros."
+                                                                            "risco_geral":  "medio",
+                                                                            "nota":  "O conflito bloqueante entre filtro logistico estrito e alocacao manual foi resolvido por DEC-001 (modelo hibrido). Restam 3 achados importantes: agrupamento/bulk (SPEC-M04-002), tempoExecucaoMs (SPEC-M04-003) e UI nao bloqueante para prioridade maxima (SPEC-M04-004). A cobertura de REQ-FUNC-002 passa a Coberto."
                                                                         },
                                                   "traceability_csv":  "docs/audit/output/M04/traceability.csv",
                                                   "traceability_stub_markdown":  "docs/audit/output/M04/traceability-stub.md"
@@ -930,12 +961,18 @@
                                                                             "req_ids":  [
                                                                                             "REQ-NFR-007"
                                                                                         ],
-                                                                            "descricao":  "Nao foi localizada especificacao tecnica para a politica minima de palavra-passe exigida no PRD. O modulo arquitetural apenas afirma genericamente que a politica de senha se aplica aos perfis com credencial propria, sem definir comprimento minimo, combinacao obrigatoria de classes de caracteres nem bloqueio de reutilizacao das ultimas 3 palavras-passe.",
+                                                                            "descricao":  "Achado resolvido na Fase 1.4 (2026-03-20). A SPEC agora documenta a politica de autenticacao segmentada por perfil em D6 (secao 6.1 para perfis de Campo com PIN, secao 6.2 para perfis Administrativos com palavra-passe forte, secao 6.3 para regras transversais), cobrindo comprimento minimo, classes obrigatorias, historico de reutilizacao, lockout, trilha auditavel, gestao de sessao e armazenamento seguro. Alinhado com DEC-004.",
                                                                             "localizacao":  {
                                                                                                 "file":  "docs/SPEC/00-visao-arquitetura.md",
-                                                                                                "section":  "### Principios arquiteturais adotados",
-                                                                                                "approx_line":  18
-                                                                                            }
+                                                                                                "section":  "### Decisoes Arquiteturais (ADRs) \u003e D6",
+                                                                                                "approx_line":  56
+                                                                                            },
+                                                                            "resolucao":  {
+                                                                                              "status":  "resolvido",
+                                                                                              "data":  "2026-03-20",
+                                                                                              "decisao":  "DEC-004",
+                                                                                              "correcao_aplicada":  "Adicionada ADR D6 com politica de autenticacao segmentada (Campo: Usuario+PIN com controlos compensatorios; Administrativo: palavra-passe forte conforme REQ-NFR-007). PRD REQ-NFR-007 actualizado para reflectir segmentacao."
+                                                                                          }
                                                                         },
                                                                         {
                                                                             "id":  "SPEC-M05-003",
@@ -960,49 +997,49 @@
                                                                                                 "spec_path":  "docs/SPEC/00-visao-arquitetura.md",
                                                                                                 "status":  "Coberto",
                                                                                                 "severidade":  "menor",
-                                                                                                "comentario":  "A SPEC documenta monorepo em `Turborepo`, separacao entre `apps/` e `packages/` e a adocao explicita de arquitetura tatica alinhada a DDD."
+                                                                                                "comentario":  "A SPEC documenta monorepo em Turborepo separacao entre apps e packages e adocao explicita de arquitetura tatica alinhada a DDD."
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-NFR-002",
                                                                                                 "spec_path":  "docs/SPEC/00-visao-arquitetura.md + docs/SPEC/06-definicoes-complementares.md",
                                                                                                 "status":  "Coberto",
                                                                                                 "severidade":  "menor",
-                                                                                                "comentario":  "A visao arquitetural fixa a estrategia mobile-first em PWA e o modulo complementar detalha cache, `offline-queue`, sincronizacao e comportamento sob conectividade instavel."
+                                                                                                "comentario":  "A visao arquitetural fixa a estrategia mobile-first em PWA e o modulo complementar detalha cache offline-queue sincronizacao e comportamento sob conectividade instavel."
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-NFR-003",
                                                                                                 "spec_path":  "docs/SPEC/00-visao-arquitetura.md",
                                                                                                 "status":  "Coberto",
                                                                                                 "severidade":  "menor",
-                                                                                                "comentario":  "O backend em `NestJS` com separacao entre dominio e framework e a autenticacao baseada em `JWT` estao explicitamente descritos."
+                                                                                                "comentario":  "O backend em NestJS com separacao entre dominio e framework e a autenticacao baseada em JWT estao explicitamente descritos."
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-NFR-004",
                                                                                                 "spec_path":  "docs/SPEC/00-visao-arquitetura.md + docs/SPEC/02-modelo-dados.md",
                                                                                                 "status":  "Parcial",
                                                                                                 "severidade":  "importante",
-                                                                                                "comentario":  "Ha cobertura clara para `SQL Server`, `Prisma` e isolamento logico multi-tenant por `obraId`, mas a rastreabilidade consistente dos recursos operacionais nao fica uniformemente especificada para todas as entidades."
+                                                                                                "comentario":  "Ha cobertura clara para SQL Server Prisma e isolamento logico multi-tenant por obraId mas a rastreabilidade consistente dos recursos operacionais nao fica uniformemente especificada para todas as entidades."
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-NFR-005",
                                                                                                 "spec_path":  "docs/SPEC/00-visao-arquitetura.md",
                                                                                                 "status":  "Coberto",
                                                                                                 "severidade":  "menor",
-                                                                                                "comentario":  "A SPEC fecha expiracao de access token em 15 minutos, refresh token com TTL de 7 dias, rotacao a cada uso e blacklist por `jti` em `Redis`."
+                                                                                                "comentario":  "A SPEC fecha expiracao de access token em 15 minutos refresh token com TTL de 7 dias rotacao a cada uso e blacklist por jti em Redis."
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-NFR-006",
                                                                                                 "spec_path":  "docs/SPEC/00-visao-arquitetura.md",
                                                                                                 "status":  "Parcial",
                                                                                                 "severidade":  "importante",
-                                                                                                "comentario":  "Os limites numericos aparecem na arquitectura, mas faltam os endpoints exatos, o contrato de `HTTP 429` e a regra de bloqueio temporario por IP ou utilizador descritos no PRD."
+                                                                                                "comentario":  "Os limites numericos aparecem na arquitetura mas faltam os endpoints exatos o contrato de HTTP 429 e a regra de bloqueio temporario por IP ou utilizador descritos no PRD."
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-NFR-007",
                                                                                                 "spec_path":  "docs/SPEC/00-visao-arquitetura.md",
-                                                                                                "status":  "Nao coberto",
-                                                                                                "severidade":  "bloqueante",
-                                                                                                "comentario":  "Nao foi localizada cobertura tecnica para os criterios minimos de palavra-passe nem para o historico de reutilizacao das ultimas 3 credenciais."
+                                                                                                "status":  "Coberto",
+                                                                                                "severidade":  "menor",
+                                                                                                "comentario":  "A ADR D6 documenta politica de autenticacao segmentada por perfil: Campo (Usuario+PIN com lockout progressivo, sessao curta, trilha auditavel) e Administrativo (palavra-passe forte com 8 caracteres minimos, 4 classes obrigatorias, bloqueio de reutilizacao das ultimas 3, lockout por conta). Cobertura completa de REQ-NFR-007 conforme DEC-004."
                                                                                             }
                                                                                         ],
                                                                       "blocking_conflicts":  [
@@ -1017,16 +1054,17 @@
                                                                        ],
                                                   "executive_summary":  {
                                                                             "total_findings":  3,
-                                                                            "bloqueantes":  1,
+                                                                            "bloqueantes":  0,
                                                                             "importantes":  2,
                                                                             "menores":  0,
+                                                                            "resolved":  1,
                                                                             "coverage":  {
-                                                                                             "coberto":  4,
+                                                                                             "coberto":  5,
                                                                                              "parcial":  2,
-                                                                                             "nao_coberto":  1
+                                                                                             "nao_coberto":  0
                                                                                          },
-                                                                            "risco_geral":  "alto",
-                                                                            "nota":  "O M05 tem boa cobertura para stack base, PWA/offline, backend e politica de tokens JWT, mas fica fragilizado em dois pontos de seguranca operacional: rate limiting incompletamente normatizado e ausencia de especificacao tecnica para a politica minima de palavra-passe. Alem disso, a rastreabilidade dos recursos operacionais fica apenas parcialmente fechada no modelo tecnico."
+                                                                            "risco_geral":  "medio",
+                                                                            "nota":  "O bloqueante SPEC-M05-002 foi resolvido na Fase 1.4 com a adicao da ADR D6 (politica de autenticacao segmentada por perfil conforme DEC-004). REQ-NFR-007 passa de \u0027Nao coberto\u0027 para \u0027Coberto\u0027. Permanecem dois achados importantes: rate limiting incompleto (SPEC-M05-001) e rastreabilidade parcial dos recursos operacionais (SPEC-M05-003)."
                                                                         },
                                                   "traceability_csv":  "docs/audit/output/M05/traceability.csv",
                                                   "traceability_stub_markdown":  "docs/audit/output/M05/traceability-stub.md"
@@ -1066,7 +1104,7 @@
                                                                            "localizacao":  {
                                                                                                "file":  "docs/PRD/05-criterios-aceite.md",
                                                                                                "section":  "## Pendentes de migracao",
-                                                                                               "approx_line":  115
+                                                                                               "approx_line":  123
                                                                                            }
                                                                        },
                                                                        {
@@ -1081,7 +1119,13 @@
                                                                                                "file":  "docs/PRD/05-criterios-aceite.md",
                                                                                                "section":  "## Jurisdicao logistica sobre preferencias no score",
                                                                                                "approx_line":  41
-                                                                                           }
+                                                                                           },
+                                                                           "resolucao":  {
+                                                                                             "status":  "resolvido",
+                                                                                             "decisao":  "DEC-001",
+                                                                                             "data":  "2026-03-20",
+                                                                                             "descricao":  "REQ-ACE-003 reescrito com terminologia canonica (operadorAlocadoId), modelo hibrido explicitado e dois cenarios Gherkin: um para adjacencia vs alocacao manual e outro para excecao auditavel fora da zona."
+                                                                                         }
                                                                        }
                                                                    ],
                                                   "spec_findings":  [
@@ -1098,7 +1142,13 @@
                                                                                                 "file":  "docs/SPEC/03-fila-scoring-estados-sla.md",
                                                                                                 "section":  "## Regra zero, hard filter, destaque e score",
                                                                                                 "approx_line":  13
-                                                                                            }
+                                                                                            },
+                                                                            "resolucao":  {
+                                                                                              "status":  "resolvido",
+                                                                                              "decisao":  "DEC-001",
+                                                                                              "data":  "2026-03-20",
+                                                                                              "descricao":  "A Regra Zero agora explicita DEC-001: alocacao manual sobrepoe elegibilidade mas a demanda participa do scoring. A nota de rastreio de REQ-ACE-003 foi alinhada. O conflito com o cenario de aceite esta eliminado."
+                                                                                          }
                                                                         },
                                                                         {
                                                                             "id":  "SPEC-M06-002",
@@ -1127,8 +1177,14 @@
                                                                             "localizacao":  {
                                                                                                 "file":  "docs/SPEC/03-fila-scoring-estados-sla.md",
                                                                                                 "section":  "## Fluxo detalhado `PENDENTE_APROVACAO`",
-                                                                                                "approx_line":  112
-                                                                                            }
+                                                                                                "approx_line":  116
+                                                                                            },
+                                                                            "resolucao":  {
+                                                                                              "status":  "resolvido",
+                                                                                              "decisao":  "DEC-002",
+                                                                                              "data":  "2026-03-20",
+                                                                                              "descricao":  "PRD REQ-ACE-006 reescrito para alinhar a politica de auto-encerramento por estouro de SLA no fim do expediente (parametrizavel por obra). SPEC actualizada: prazo de 24h substituido por encerramento no fim do expediente com trilha auditavel obrigatoria, revisao pos-facto no dia util seguinte e referencia a DEC-002."
+                                                                                          }
                                                                         }
                                                                     ],
                                                   "cross_check":  {
@@ -1150,9 +1206,9 @@
                                                                                             {
                                                                                                 "prd_id":  "REQ-ACE-003",
                                                                                                 "spec_path":  "docs/SPEC/03-fila-scoring-estados-sla.md",
-                                                                                                "status":  "Parcial",
-                                                                                                "severidade":  "bloqueante",
-                                                                                                "comentario":  "A SPEC cobre jurisdicao logistica, hard filters e formula de score, mas a `Regra Zero` e a nota de rastreio de `REQ-ACE-003` preservam a precedencia de `operadorAlocadoId`, conflitando com o cenario do PRD em que a preferencia manual deve perder para a demanda logisticamente favorecida."
+                                                                                                "status":  "Coberto",
+                                                                                                "severidade":  "menor",
+                                                                                                "comentario":  "PRD e SPEC alinhados pelo modelo hibrido DEC-001: alocacao manual determina o operador destinatario, mas a demanda participa do scoring normalmente. Cenarios Gherkin validam adjacencia vs alocacao manual e excecao auditavel fora da zona."
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-ACE-004",
@@ -1171,23 +1227,23 @@
                                                                                             {
                                                                                                 "prd_id":  "REQ-ACE-006",
                                                                                                 "spec_path":  "docs/SPEC/03-fila-scoring-estados-sla.md",
-                                                                                                "status":  "Parcial",
-                                                                                                "severidade":  "bloqueante",
-                                                                                                "comentario":  "A SPEC cobre a transicao inicial para `PENDENTE_APROVACAO` e a exposicao ao dashboard gerencial, mas acrescenta aprovacao automatica apos 24 horas sem decisao, o que enfraquece a exigencia de revisao administrativa antes do encerramento definitivo."
+                                                                                                "status":  "Coberto",
+                                                                                                "severidade":  "menor",
+                                                                                                "comentario":  "PRD e SPEC alinhados por DEC-002: cancelamento transita para PENDENTE_APROVACAO, com auto-encerramento por estouro de SLA no fim do expediente parametrizavel por obra. Trilha auditavel obrigatoria e revisao pos-facto no dia util seguinte documentadas em ambos os lados."
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-ACE-007",
                                                                                                 "spec_path":  "docs/SPEC/00-visao-arquitetura.md",
                                                                                                 "status":  "Parcial",
                                                                                                 "severidade":  "importante",
-                                                                                                "comentario":  "A arquitetura documenta access token de 15 minutos, refresh token rotativo de 7 dias e blacklist por `jti` em `Redis`, mas o criterio de aceite correspondente ainda nao esta migrado no PRD como requisito testavel dentro do modulo."
+                                                                                                "comentario":  "A arquitetura documenta access token de 15 minutos, refresh token rotativo de 7 dias e blacklist por jti em Redis, mas o criterio de aceite correspondente ainda nao esta migrado no PRD como requisito testavel dentro do modulo."
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-ACE-008",
                                                                                                 "spec_path":  "docs/SPEC/04-rbac-permissoes.md",
                                                                                                 "status":  "Coberto",
                                                                                                 "severidade":  "menor",
-                                                                                                "comentario":  "O bypass cross-tenant auditado e a limitacao estrita de `Board` a `HTTP GET`, com `HTTP 403` para escrita, estao claramente documentados."
+                                                                                                "comentario":  "O bypass cross-tenant auditado e a limitacao estrita de Board a HTTP GET, com HTTP 403 para escrita, estao claramente documentados."
                                                                                             }
                                                                                         ],
                                                                       "blocking_conflicts":  [
@@ -1199,7 +1255,13 @@
                                                                                                                  ],
                                                                                                      "descricao":  "O PRD exige, no cenario de aceite, que uma demanda com preferencia manual de operador perca no ranking para outra com jurisdicao logistica favoravel. A SPEC, por outro lado, determina que demandas com `operadorAlocadoId` contornam as regras subsequentes e nao participam do score normal. Os dois documentos divergem sobre se a preferencia/alocacao manual participa ou nao da ordenacao priorizada.",
                                                                                                      "localizacao_prd":  "docs/PRD/05-criterios-aceite.md :: ## Jurisdicao logistica sobre preferencias no score :: ~L43/~L50",
-                                                                                                     "localizacao_spec":  "docs/SPEC/03-fila-scoring-estados-sla.md :: ## Regra zero, hard filter, destaque e score :: ~L13/~L29"
+                                                                                                     "localizacao_spec":  "docs/SPEC/03-fila-scoring-estados-sla.md :: ## Regra zero, hard filter, destaque e score :: ~L13/~L29",
+                                                                                                     "resolucao":  {
+                                                                                                                       "status":  "resolvido",
+                                                                                                                       "decisao":  "DEC-001",
+                                                                                                                       "data":  "2026-03-20",
+                                                                                                                       "descricao":  "PRD e SPEC alinhados: alocacao manual sobrepoe elegibilidade/distribuicao mas a demanda participa do scoring na fila do operador. Cenarios Gherkin reescritos com terminologia canonica."
+                                                                                                                   }
                                                                                                  },
                                                                                                  {
                                                                                                      "id":  "CROSS-M06-002",
@@ -1208,8 +1270,14 @@
                                                                                                                      "REQ-ACE-006"
                                                                                                                  ],
                                                                                                      "descricao":  "O PRD fixa que o cancelamento iniciado em campo deve passar por revisao administrativa antes do encerramento definitivo. A SPEC reintroduz um caminho de conclusao sem revisao humana ao aprovar automaticamente o cancelamento apos 24 horas sem decisao gerencial, criando incompatibilidade direta com o criterio de aceite.",
-                                                                                                     "localizacao_prd":  "docs/PRD/05-criterios-aceite.md :: ## Aprovacao administrativa para cancelamentos de operadores :: ~L85/~L92",
-                                                                                                     "localizacao_spec":  "docs/SPEC/03-fila-scoring-estados-sla.md :: ## Fluxo detalhado `PENDENTE_APROVACAO` :: ~L112/~L116"
+                                                                                                     "localizacao_prd":  "docs/PRD/05-criterios-aceite.md :: ## Cancelamento de demandas em campo e encerramento por SLA :: ~L91/~L121",
+                                                                                                     "localizacao_spec":  "docs/SPEC/03-fila-scoring-estados-sla.md :: ## Fluxo detalhado `PENDENTE_APROVACAO` :: ~L110/~L120",
+                                                                                                     "resolucao":  {
+                                                                                                                       "status":  "resolvido",
+                                                                                                                       "decisao":  "DEC-002",
+                                                                                                                       "data":  "2026-03-20",
+                                                                                                                       "descricao":  "PRD REQ-ACE-006 reescrito para alinhar auto-encerramento por estouro de SLA no fim do expediente parametrizavel por obra. SPEC actualizada com referencia a DEC-002, trilha auditavel obrigatoria e visao de revisao pos-facto. O conflito bloqueante esta eliminado."
+                                                                                                                   }
                                                                                                  }
                                                                                              ]
                                                                   },
@@ -1221,16 +1289,18 @@
                                                                        ],
                                                   "executive_summary":  {
                                                                             "total_findings":  7,
-                                                                            "bloqueantes":  2,
-                                                                            "importantes":  5,
+                                                                            "total_findings_pendentes":  2,
+                                                                            "total_findings_resolvidos":  5,
+                                                                            "bloqueantes":  0,
+                                                                            "importantes":  2,
                                                                             "menores":  0,
                                                                             "coverage":  {
-                                                                                             "coberto":  4,
-                                                                                             "parcial":  4,
+                                                                                             "coberto":  6,
+                                                                                             "parcial":  2,
                                                                                              "nao_coberto":  0
                                                                                          },
-                                                                            "risco_geral":  "alto",
-                                                                            "nota":  "O M06 tem boa cobertura para isolamento RBAC, estado terminal, auditabilidade gerencial e restricoes cross-tenant, mas conserva dois desvios de aceite relevantes: a precedencia da alocacao manual face ao score/logistica e o encerramento automatico de cancelamentos sem revisao humana. Alem disso, `REQ-ACE-007` continua apenas parcialmente auditavel porque o criterio de token ainda nao foi migrado para o PRD modular."
+                                                                            "risco_geral":  "baixo",
+                                                                            "nota":  "Os dois conflitos bloqueantes do M06 foram resolvidos: CROSS-M06-001 por DEC-001 (modelo hibrido) e CROSS-M06-002 por DEC-002 (auto-encerramento por estouro de SLA). REQ-ACE-006 passa a Coberto. Achados importantes pendentes: PRD-M06-001 (REQ-ACE-007 por migrar), SPEC-M06-002 (UI nao bloqueante para REQ-ACE-005)."
                                                                         },
                                                   "traceability_csv":  "docs/audit/output/M06/traceability.csv",
                                                   "traceability_stub_markdown":  "docs/audit/output/M06/traceability-stub.md"
@@ -1272,7 +1342,14 @@
                                                                                                "file":  "docs/PRD/06-metricas-riscos.md",
                                                                                                "section":  "### `REQ-MET-002` Adocao e engajamento operacional",
                                                                                                "approx_line":  16
-                                                                                           }
+                                                                                           },
+                                                                           "resolucao":  {
+                                                                                             "status":  "resolvido",
+                                                                                             "fase":  "1.5",
+                                                                                             "data":  "2026-03-20",
+                                                                                             "decisao":  "DEC-003",
+                                                                                             "descricao":  "Referencia SPEC de REQ-MET-002 corrigida de 01-modulos-plataforma.md para 06-definicoes-complementares.md#contrato-analitico-req-met-002, alinhando a trilha documental com a paridade oficial de M07."
+                                                                                         }
                                                                        },
                                                                        {
                                                                            "id":  "PRD-M07-002",
@@ -1315,10 +1392,17 @@
                                                                                         ],
                                                                             "descricao":  "Os ficheiros tecnicos revistos mencionam check-in, expediente e acoes do operador, mas nenhum fecha a fonte do denominador \"operadores ativos na folha da quinzena\" nem o contrato analitico para consolidar acoes por operador. Sem essa fonte canonica, o indicador de adocao e engajamento do PRD nao fica tecnicamente verificavel.",
                                                                             "localizacao":  {
-                                                                                                "file":  "docs/SPEC/02-modelo-dados.md",
-                                                                                                "section":  "## Entidades principais",
-                                                                                                "approx_line":  16
-                                                                                            }
+                                                                                                "file":  "docs/SPEC/06-definicoes-complementares.md",
+                                                                                                "section":  "## Contrato analitico `REQ-MET-002` â€” Adocao e engajamento operacional",
+                                                                                                "approx_line":  62
+                                                                                            },
+                                                                            "resolucao":  {
+                                                                                              "status":  "resolvido",
+                                                                                              "fase":  "1.5",
+                                                                                              "data":  "2026-03-20",
+                                                                                              "decisao":  "DEC-003",
+                                                                                              "descricao":  "Adicionada seccao canonica em SPEC/06-definicoes-complementares.md com formula, denominador, janela temporal da quinzena, timezone, criterios de inclusao/exclusao, politica de deduplicacao, contrato de integracao RH/folha e artefato de validacao auditavel."
+                                                                                          }
                                                                         },
                                                                         {
                                                                             "id":  "SPEC-M07-003",
@@ -1347,10 +1431,10 @@
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-MET-002",
-                                                                                                "spec_path":  "docs/SPEC/02-modelo-dados.md + docs/SPEC/03-fila-scoring-estados-sla.md + docs/SPEC/06-definicoes-complementares.md",
-                                                                                                "status":  "Nao coberto",
-                                                                                                "severidade":  "bloqueante",
-                                                                                                "comentario":  "Foram localizadas acoes de check-in, inicio/conclusao de demanda e operacao offline, mas nao a fonte tecnica para o denominador de operadores ativos na quinzena nem um contrato de consolidacao do engajamento por operador."
+                                                                                                "spec_path":  "docs/SPEC/06-definicoes-complementares.md",
+                                                                                                "status":  "Coberto",
+                                                                                                "severidade":  "resolvido",
+                                                                                                "comentario":  "Seccao canonica adicionada em SPEC/06-definicoes-complementares.md (Fase 1.5, DEC-003) com formula, definicao formal do denominador (operadores ativos na folha da quinzena via integracao RH), janela temporal, timezone, criterios de inclusao/exclusao, politica de deduplicacao e artefato de validacao auditavel. Referencia PRD corrigida para apontar para a nova seccao."
                                                                                             },
                                                                                             {
                                                                                                 "prd_id":  "REQ-MET-003",
@@ -1383,7 +1467,14 @@
                                                                                                                  ],
                                                                                                      "descricao":  "O PRD ancora `REQ-MET-002` em `docs/SPEC/01-modulos-plataforma.md`, mas a paridade oficial do PRD, o indice da SPEC e a matriz global de rastreabilidade para M07 distribuem metricas e riscos por `02`, `03`, `05` e `06`, sem rastreio explicito desse ID em `01`. A trilha PRD-\u003eSPEC fica inconsistente e impede identificar qual modulo tecnico e a fonte canonica do indicador.",
                                                                                                      "localizacao_prd":  "docs/PRD/06-metricas-riscos.md :: ### `REQ-MET-002` Adocao e engajamento operacional :: ~L16/~L23",
-                                                                                                     "localizacao_spec":  "docs/PRD/_index.md + docs/SPEC/_index.md + docs/traceability.md :: tabelas de paridade e matriz global :: ~L13 + ~L8/~L13 + ~L35/~L36"
+                                                                                                     "localizacao_spec":  "docs/PRD/_index.md + docs/SPEC/_index.md + docs/traceability.md :: tabelas de paridade e matriz global :: ~L13 + ~L8/~L13 + ~L35/~L36",
+                                                                                                     "resolucao":  {
+                                                                                                                       "status":  "resolvido",
+                                                                                                                       "fase":  "1.5",
+                                                                                                                       "data":  "2026-03-20",
+                                                                                                                       "decisao":  "DEC-003",
+                                                                                                                       "descricao":  "Referencia PRD corrigida para SPEC/06-definicoes-complementares.md#contrato-analitico-req-met-002. Seccao canonica criada na SPEC com contrato operacional completo. Trilha PRD-\u003eSPEC agora consistente com paridade oficial de M07."
+                                                                                                                   }
                                                                                                  }
                                                                                              ]
                                                                   },
@@ -1396,15 +1487,17 @@
                                                   "executive_summary":  {
                                                                             "total_findings":  6,
                                                                             "bloqueantes":  2,
+                                                                            "bloqueantes_resolvidos":  2,
                                                                             "importantes":  4,
+                                                                            "importantes_resolvidos":  1,
                                                                             "menores":  0,
                                                                             "coverage":  {
-                                                                                             "coberto":  2,
+                                                                                             "coberto":  3,
                                                                                              "parcial":  2,
-                                                                                             "nao_coberto":  1
+                                                                                             "nao_coberto":  0
                                                                                          },
-                                                                            "risco_geral":  "alto",
-                                                                            "nota":  "O M07 cobre bem o risco de conectividade e a metrica de SLA para prioridades `MAXIMA`, mas permanece fragilizado na camada de observabilidade e rastreabilidade documental das metricas. O principal desvio esta em `REQ-MET-002`, que nao tem fonte tecnica canonica nem trilha PRD-\u003eSPEC coerente, enquanto `REQ-MET-001` e `REQ-RISK-001` ficam apenas parcialmente especificados do ponto de vista de medicao e governanca."
+                                                                            "risco_geral":  "medio",
+                                                                            "nota":  "Os 2 achados bloqueantes de M07 (CROSS-M07-001 e SPEC-M07-002) foram resolvidos na Fase 1.5 com aplicacao de DEC-003: a SPEC agora contem contrato analitico canonico para REQ-MET-002 e a referencia PRD foi corrigida. O achado importante PRD-M07-001 foi igualmente resolvido pela mesma correccao de referencia. Permanecem 3 achados importantes em aberto: SPEC-M07-001 (lacuna de medicao canonica para REQ-MET-001), PRD-M07-002 (mitigacao de REQ-RISK-001 nao explicitada no PRD) e SPEC-M07-003 (governanca de taxonomia sem fluxo tecnico). A cobertura de REQ-MET-002 passou de Nao coberto para Coberto."
                                                                         },
                                                   "traceability_csv":  "docs/audit/output/M07/traceability.csv",
                                                   "traceability_stub_markdown":  "docs/audit/output/M07/traceability-stub.md"

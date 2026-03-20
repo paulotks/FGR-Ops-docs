@@ -20,7 +20,7 @@ Razao entre o numero de operadores que realizaram pelo menos 1 check-in ou acao 
 - Baseline: `0%`, dado que o processo atual e analogico ou via radio.
 - Meta MVP: `100%` dos operadores das obras-piloto a registar todas as movimentacoes via sistema em ate 2 meses.
 
--> SPEC: [../SPEC/01-modulos-plataforma.md#modulo-machinery-link-mvp](../SPEC/01-modulos-plataforma.md#modulo-machinery-link-mvp)
+-> SPEC: [../SPEC/06-definicoes-complementares.md#contrato-analitico-req-met-002](../SPEC/06-definicoes-complementares.md#contrato-analitico-req-met-002)
 
 ### `REQ-MET-003` Tempo de espera critica para prioridade `MAXIMA`
 

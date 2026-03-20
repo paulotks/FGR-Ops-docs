@@ -31,6 +31,13 @@
         "file": "docs/PRD/06-metricas-riscos.md",
         "section": "### `REQ-MET-002` Adocao e engajamento operacional",
         "approx_line": 16
+      },
+      "resolucao": {
+        "status": "resolvido",
+        "fase": "1.5",
+        "data": "2026-03-20",
+        "decisao": "DEC-003",
+        "descricao": "Referencia SPEC de REQ-MET-002 corrigida de 01-modulos-plataforma.md para 06-definicoes-complementares.md#contrato-analitico-req-met-002, alinhando a trilha documental com a paridade oficial de M07."
       }
     },
     {
@@ -74,9 +81,16 @@
       ],
       "descricao": "Os ficheiros tecnicos revistos mencionam check-in, expediente e acoes do operador, mas nenhum fecha a fonte do denominador \"operadores ativos na folha da quinzena\" nem o contrato analitico para consolidar acoes por operador. Sem essa fonte canonica, o indicador de adocao e engajamento do PRD nao fica tecnicamente verificavel.",
       "localizacao": {
-        "file": "docs/SPEC/02-modelo-dados.md",
-        "section": "## Entidades principais",
-        "approx_line": 16
+        "file": "docs/SPEC/06-definicoes-complementares.md",
+        "section": "## Contrato analitico `REQ-MET-002` — Adocao e engajamento operacional",
+        "approx_line": 62
+      },
+      "resolucao": {
+        "status": "resolvido",
+        "fase": "1.5",
+        "data": "2026-03-20",
+        "decisao": "DEC-003",
+        "descricao": "Adicionada seccao canonica em SPEC/06-definicoes-complementares.md com formula, denominador, janela temporal da quinzena, timezone, criterios de inclusao/exclusao, politica de deduplicacao, contrato de integracao RH/folha e artefato de validacao auditavel."
       }
     },
     {
@@ -106,10 +120,10 @@
       },
       {
         "prd_id": "REQ-MET-002",
-        "spec_path": "docs/SPEC/02-modelo-dados.md + docs/SPEC/03-fila-scoring-estados-sla.md + docs/SPEC/06-definicoes-complementares.md",
-        "status": "Nao coberto",
-        "severidade": "bloqueante",
-        "comentario": "Foram localizadas acoes de check-in, inicio/conclusao de demanda e operacao offline, mas nao a fonte tecnica para o denominador de operadores ativos na quinzena nem um contrato de consolidacao do engajamento por operador."
+        "spec_path": "docs/SPEC/06-definicoes-complementares.md",
+        "status": "Coberto",
+        "severidade": "resolvido",
+        "comentario": "Seccao canonica adicionada em SPEC/06-definicoes-complementares.md (Fase 1.5, DEC-003) com formula, definicao formal do denominador (operadores ativos na folha da quinzena via integracao RH), janela temporal, timezone, criterios de inclusao/exclusao, politica de deduplicacao e artefato de validacao auditavel. Referencia PRD corrigida para apontar para a nova seccao."
       },
       {
         "prd_id": "REQ-MET-003",
@@ -142,7 +156,14 @@
         ],
         "descricao": "O PRD ancora `REQ-MET-002` em `docs/SPEC/01-modulos-plataforma.md`, mas a paridade oficial do PRD, o indice da SPEC e a matriz global de rastreabilidade para M07 distribuem metricas e riscos por `02`, `03`, `05` e `06`, sem rastreio explicito desse ID em `01`. A trilha PRD->SPEC fica inconsistente e impede identificar qual modulo tecnico e a fonte canonica do indicador.",
         "localizacao_prd": "docs/PRD/06-metricas-riscos.md :: ### `REQ-MET-002` Adocao e engajamento operacional :: ~L16/~L23",
-        "localizacao_spec": "docs/PRD/_index.md + docs/SPEC/_index.md + docs/traceability.md :: tabelas de paridade e matriz global :: ~L13 + ~L8/~L13 + ~L35/~L36"
+        "localizacao_spec": "docs/PRD/_index.md + docs/SPEC/_index.md + docs/traceability.md :: tabelas de paridade e matriz global :: ~L13 + ~L8/~L13 + ~L35/~L36",
+        "resolucao": {
+          "status": "resolvido",
+          "fase": "1.5",
+          "data": "2026-03-20",
+          "decisao": "DEC-003",
+          "descricao": "Referencia PRD corrigida para SPEC/06-definicoes-complementares.md#contrato-analitico-req-met-002. Seccao canonica criada na SPEC com contrato operacional completo. Trilha PRD->SPEC agora consistente com paridade oficial de M07."
+        }
       }
     ]
   },
@@ -151,15 +172,17 @@
   "executive_summary": {
     "total_findings": 6,
     "bloqueantes": 2,
+    "bloqueantes_resolvidos": 2,
     "importantes": 4,
+    "importantes_resolvidos": 1,
     "menores": 0,
     "coverage": {
-      "coberto": 2,
+      "coberto": 3,
       "parcial": 2,
-      "nao_coberto": 1
+      "nao_coberto": 0
     },
-    "risco_geral": "alto",
-    "nota": "O M07 cobre bem o risco de conectividade e a metrica de SLA para prioridades `MAXIMA`, mas permanece fragilizado na camada de observabilidade e rastreabilidade documental das metricas. O principal desvio esta em `REQ-MET-002`, que nao tem fonte tecnica canonica nem trilha PRD->SPEC coerente, enquanto `REQ-MET-001` e `REQ-RISK-001` ficam apenas parcialmente especificados do ponto de vista de medicao e governanca."
+    "risco_geral": "medio",
+    "nota": "Os 2 achados bloqueantes de M07 (CROSS-M07-001 e SPEC-M07-002) foram resolvidos na Fase 1.5 com aplicacao de DEC-003: a SPEC agora contem contrato analitico canonico para REQ-MET-002 e a referencia PRD foi corrigida. O achado importante PRD-M07-001 foi igualmente resolvido pela mesma correccao de referencia. Permanecem 3 achados importantes em aberto: SPEC-M07-001 (lacuna de medicao canonica para REQ-MET-001), PRD-M07-002 (mitigacao de REQ-RISK-001 nao explicitada no PRD) e SPEC-M07-003 (governanca de taxonomia sem fluxo tecnico). A cobertura de REQ-MET-002 passou de Nao coberto para Coberto."
   },
   "traceability_csv": "docs/audit/output/M07/traceability.csv",
   "traceability_stub_markdown": "docs/audit/output/M07/traceability-stub.md"
