@@ -1,0 +1,224 @@
+{
+  "module_id": "M04",
+  "command": "ANALISAR M04",
+  "sources": {
+    "mapping_json": "docs/audit/step0-module-mapping.json",
+    "prd_path": "docs/PRD/03-requisitos-funcionais.md",
+    "spec_paths_reviewed": [
+      "docs/SPEC/03-fila-scoring-estados-sla.md",
+      "docs/SPEC/01-modulos-plataforma.md",
+      "docs/SPEC/02-modelo-dados.md",
+      "docs/SPEC/06-definicoes-complementares.md"
+    ]
+  },
+  "audit_steps_executed": [
+    "prd-only-review",
+    "spec-only-review",
+    "cross-check-prd-vs-spec",
+    "blocking-questions-when-needed",
+    "consolidation"
+  ],
+  "prd_findings": [
+    {
+      "id": "PRD-M04-001",
+      "severity": "importante",
+      "type": "referencia_cruzada_incompleta",
+      "req_ids": [
+        "REQ-FUNC-003",
+        "REQ-FUNC-004",
+        "REQ-FUNC-005",
+        "REQ-FUNC-006",
+        "REQ-FUNC-007",
+        "REQ-FUNC-010"
+      ],
+      "descricao": "Os apontadores locais \"-> SPEC\" do PRD nao refletem toda a cobertura exigida pela matriz global do M04. O ficheiro referencia apenas parte dos modulos tecnicos relevantes, deixando fora evidencias importantes em `02-modelo-dados.md` e `06-definicoes-complementares.md` para varios `REQ-FUNC-*`, o que enfraquece a navegacao e o rastreio a partir do proprio modulo.",
+      "localizacao": {
+        "file": "docs/PRD/03-requisitos-funcionais.md",
+        "section": "### `REQ-FUNC-003` Gestao de maquinario e ajudantes / ### `REQ-FUNC-010` Adjacencias e localizacao operacional",
+        "approx_line": 19
+      }
+    },
+    {
+      "id": "PRD-M04-002",
+      "severity": "importante",
+      "type": "ambiguidade",
+      "req_ids": [
+        "REQ-FUNC-002",
+        "REQ-FUNC-006"
+      ],
+      "descricao": "O PRD estabelece um filtro estrito de jurisdicao e compatibilidade para que maquinas e operadores nao recebam tarefas fora do recorte logistico permitido, mas depois admite alocacao explicita via `operadorAlocadoId` sem dizer se essa atribuicao manual continua subordinada aos mesmos guards. A precedencia entre os dois requisitos nao fica documentada no proprio modulo.",
+      "localizacao": {
+        "file": "docs/PRD/03-requisitos-funcionais.md",
+        "section": "### `REQ-FUNC-002` Filtro estrito por jurisdicao e compatibilidade / ### `REQ-FUNC-006` Alocacao manual e agendamentos",
+        "approx_line": 13
+      }
+    }
+  ],
+  "spec_findings": [
+    {
+      "id": "SPEC-M04-001",
+      "severity": "importante",
+      "type": "decisao_sem_justificativa",
+      "spec_path": "docs/SPEC/03-fila-scoring-estados-sla.md",
+      "req_ids": [
+        "REQ-FUNC-002",
+        "REQ-FUNC-006"
+      ],
+      "descricao": "A `Regra Zero` afirma que demandas com `operadorAlocadoId` contornam as regras subsequentes e sao atribuidas diretamente ao operador indicado. Como o `Hard Filter` de jurisdicao e compatibilidade vem em seguida na mesma secao, a SPEC escolhe um bypass manual amplo sem explicitar se os filtros eliminatorios continuam obrigatorios na alocacao administrativa.",
+      "localizacao": {
+        "file": "docs/SPEC/03-fila-scoring-estados-sla.md",
+        "section": "## Regra zero, hard filter, destaque e score",
+        "approx_line": 13
+      }
+    },
+    {
+      "id": "SPEC-M04-002",
+      "severity": "importante",
+      "type": "lacuna",
+      "spec_path": "docs/SPEC/01-modulos-plataforma.md",
+      "req_ids": [
+        "REQ-FUNC-005"
+      ],
+      "descricao": "A SPEC lista abertura de demandas simples, agrupadas e em lote multiplo, mas nao transforma em contrato textual como a \"logica estrutural partilhada\" do agrupamento se materializa nem deixa explicito que o envio bulk gera demandas independentes a partir da mesma experiencia de formulario. `02-modelo-dados.md` apenas menciona `DemandaGrupo`, sem fechar o comportamento esperado pelo PRD.",
+      "localizacao": {
+        "file": "docs/SPEC/01-modulos-plataforma.md",
+        "section": "### Capacidades operacionais do Machinery Link",
+        "approx_line": 46
+      }
+    },
+    {
+      "id": "SPEC-M04-003",
+      "severity": "importante",
+      "type": "lacuna",
+      "spec_path": "docs/SPEC/06-definicoes-complementares.md",
+      "req_ids": [
+        "REQ-FUNC-007"
+      ],
+      "descricao": "As definicoes complementares citam persistencia offline de `iniciadoEm` e `finalizadoEm` e usam esses timestamps para reconciliacao e inferencia de ajudantes, mas nao foi localizada especificacao explicita para persistencia/calculo de `tempoExecucaoMs` como atributo de dominio. A cobertura temporal fica parcial para o requisito do PRD.",
+      "localizacao": {
+        "file": "docs/SPEC/06-definicoes-complementares.md",
+        "section": "## Estrategia PWA offline / ## Rastreabilidade de ajudantes",
+        "approx_line": 14
+      }
+    },
+    {
+      "id": "SPEC-M04-004",
+      "severity": "importante",
+      "type": "lacuna",
+      "spec_path": "docs/SPEC/03-fila-scoring-estados-sla.md",
+      "req_ids": [
+        "REQ-FUNC-008"
+      ],
+      "descricao": "O modulo tecnico documenta destaque visual obrigatorio para prioridade `MAXIMA`, mas nao explicita que esse destaque nao deve bloquear a interface nem ocultar as restantes demandas da fila. A cobertura existe para a prioridade visual, porem a garantia de experiencia descrita no PRD permanece implicita.",
+      "localizacao": {
+        "file": "docs/SPEC/03-fila-scoring-estados-sla.md",
+        "section": "## Regra zero, hard filter, destaque e score",
+        "approx_line": 15
+      }
+    }
+  ],
+  "cross_check": {
+    "coverage_rows": [
+      {
+        "prd_id": "REQ-FUNC-001",
+        "spec_path": "docs/SPEC/03-fila-scoring-estados-sla.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "A maquina de estados documenta transicoes autorizadas, guards por perfil e terminalidade de `CONCLUIDA`, cobrindo o fluxo estrito exigido pelo PRD."
+      },
+      {
+        "prd_id": "REQ-FUNC-002",
+        "spec_path": "docs/SPEC/03-fila-scoring-estados-sla.md",
+        "status": "Parcial",
+        "severidade": "bloqueante",
+        "comentario": "O `Hard Filter` cobre jurisdicao e compatibilidade no fluxo normal, mas a `Regra Zero` permite atribuicao direta por `operadorAlocadoId`, deixando o requisito absoluto do PRD vulneravel em cenarios de alocacao manual."
+      },
+      {
+        "prd_id": "REQ-FUNC-003",
+        "spec_path": "docs/SPEC/02-modelo-dados.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "O modelo de dados cobre `TipoMaquinario`, `Maquinario`, `Servico`, `Ajudante` e o vinculo N:M do `Operador` com os tipos autorizados, com suporte contextual adicional em `01-modulos-plataforma`."
+      },
+      {
+        "prd_id": "REQ-FUNC-004",
+        "spec_path": "docs/SPEC/01-modulos-plataforma.md + docs/SPEC/02-modelo-dados.md + docs/SPEC/03-fila-scoring-estados-sla.md + docs/SPEC/06-definicoes-complementares.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "O conjunto SPEC cobre `RegistroExpediente`, selecao de maquina e ajudante no check-in, troca auditavel via `TurnoAjudante`/`TROCA_AJUDANTE` e a regra de adjacencia neutra para a primeira demanda do dia."
+      },
+      {
+        "prd_id": "REQ-FUNC-005",
+        "spec_path": "docs/SPEC/01-modulos-plataforma.md + docs/SPEC/02-modelo-dados.md",
+        "status": "Parcial",
+        "severidade": "importante",
+        "comentario": "A SPEC reconhece demandas agrupadas, lote multiplo e a existencia de `DemandaGrupo`, mas nao fecha como a logica estrutural partilhada e o envio bulk de demandas independentes sao representados e distinguidos no contrato funcional."
+      },
+      {
+        "prd_id": "REQ-FUNC-006",
+        "spec_path": "docs/SPEC/03-fila-scoring-estados-sla.md + docs/SPEC/06-definicoes-complementares.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "A cobertura tecnica inclui criacao com `operadorAlocadoId`, estado `AGENDADA`, transicao automatica para `PENDENTE` 60 minutos antes e comportamento detalhado de `dataAgendada`."
+      },
+      {
+        "prd_id": "REQ-FUNC-007",
+        "spec_path": "docs/SPEC/03-fila-scoring-estados-sla.md + docs/SPEC/06-definicoes-complementares.md",
+        "status": "Parcial",
+        "severidade": "importante",
+        "comentario": "Ha evidencia para os timestamps operacionais e para a reconciliacao temporal, mas `tempoExecucaoMs` nao aparece como atributo explicitamente persistido/calculado no dominio revisado."
+      },
+      {
+        "prd_id": "REQ-FUNC-008",
+        "spec_path": "docs/SPEC/03-fila-scoring-estados-sla.md",
+        "status": "Parcial",
+        "severidade": "importante",
+        "comentario": "A prioridade `MAXIMA` tem destaque visual obrigatorio, mas o texto nao afirma explicitamente que a UI continua nao bloqueante e sem ocultar as restantes demandas."
+      },
+      {
+        "prd_id": "REQ-FUNC-009",
+        "spec_path": "docs/SPEC/03-fila-scoring-estados-sla.md + docs/SPEC/06-definicoes-complementares.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "A demanda vai para `PENDENTE_APROVACAO` mediante solicitacao do operador, com aprovacao/rejeicao administrativa e fallback automatico apos o SLA definido."
+      },
+      {
+        "prd_id": "REQ-FUNC-010",
+        "spec_path": "docs/SPEC/01-modulos-plataforma.md + docs/SPEC/02-modelo-dados.md + docs/SPEC/03-fila-scoring-estados-sla.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "A SPEC cobre a malha espacial (`Quadra`, `Lote`, `Rua`, adjacencias), a organizacao por `SetorOperacional` e o uso dessas entidades no fator de adjacencia e na jurisdicao logistica."
+      }
+    ],
+    "blocking_conflicts": [
+      {
+        "id": "CROSS-M04-001",
+        "severity": "bloqueante",
+        "req_ids": [
+          "REQ-FUNC-002",
+          "REQ-FUNC-006"
+        ],
+        "descricao": "O PRD fixa que maquinas e operadores nao podem receber tarefas fora da jurisdicao logistica ou sem compatibilidade maquina-servico, enquanto a SPEC declara que a `Regra Zero` com `operadorAlocadoId` contorna as regras subsequentes e atribui diretamente ao operador. A redacao atual cria conflito direto sobre se a alocacao manual pode ou nao ultrapassar os filtros eliminatorios.",
+        "localizacao_prd": "docs/PRD/03-requisitos-funcionais.md :: ### `REQ-FUNC-002` / ### `REQ-FUNC-006` :: ~L13 / ~L38",
+        "localizacao_spec": "docs/SPEC/03-fila-scoring-estados-sla.md :: ## Regra zero, hard filter, destaque e score :: ~L13"
+      }
+    ]
+  },
+  "blocking_questions": [],
+  "decision_by_user": [],
+  "executive_summary": {
+    "total_findings": 7,
+    "bloqueantes": 1,
+    "importantes": 6,
+    "menores": 0,
+    "coverage": {
+      "coberto": 6,
+      "parcial": 4,
+      "nao_coberto": 0
+    },
+    "risco_geral": "alto",
+    "nota": "O M04 esta amplamente coberto para maquina de estados, expediente, agendamento, cancelamentos e modelagem espacial, mas permanece com um conflito bloqueante entre filtro logistico estrito e alocacao manual. Alem disso, agrupamento/bulk, `tempoExecucaoMs` e a garantia de UI nao bloqueante para prioridade maxima ainda dependem de inferencia entre varios ficheiros."
+  },
+  "traceability_csv": "docs/audit/output/M04/traceability.csv",
+  "traceability_stub_markdown": "docs/audit/output/M04/traceability-stub.md"
+}

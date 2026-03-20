@@ -8,6 +8,7 @@ Este diretório contém o **PRD** (requisitos de produto) e a **SPEC** (especifi
 |--------|--------|-----------|
 | PRD | [PRD/_index.md](PRD/_index.md) | Visão, utilizadores, jornada, RF, RNF, critérios de aceite, métricas e riscos |
 | SPEC | [SPEC/_index.md](SPEC/_index.md) | Arquitetura, módulos, dados, fila/estados/SLA, RBAC, backlog MVP, complementos |
+| Audit | [audit/README.md](audit/README.md) | Fluxo operacional de auditoria por módulo (`ANALISAR Mxx`) e templates de saída |
 
 Os monolitos na raiz (`PRD-FGR-OPS.md`, `FGR-OPS-SPEC.md`) foram substituidos por stubs que apontam para `docs/`, evitando duas fontes de verdade. **Fonte atual:** navegar por `PRD/_index.md`, `SPEC/_index.md` e pela matriz global em [traceability.md](traceability.md).
 

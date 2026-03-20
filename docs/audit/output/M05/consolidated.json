@@ -1,0 +1,139 @@
+{
+  "module_id": "M05",
+  "command": "ANALISAR M05",
+  "sources": {
+    "mapping_json": "docs/audit/step0-module-mapping.json",
+    "prd_path": "docs/PRD/04-requisitos-nao-funcionais.md",
+    "spec_paths_reviewed": [
+      "docs/SPEC/00-visao-arquitetura.md",
+      "docs/SPEC/02-modelo-dados.md",
+      "docs/SPEC/06-definicoes-complementares.md"
+    ]
+  },
+  "audit_steps_executed": [
+    "prd-only-review",
+    "spec-only-review",
+    "cross-check-prd-vs-spec",
+    "blocking-questions-when-needed",
+    "consolidation"
+  ],
+  "prd_findings": [],
+  "spec_findings": [
+    {
+      "id": "SPEC-M05-001",
+      "severity": "importante",
+      "type": "lacuna",
+      "spec_path": "docs/SPEC/00-visao-arquitetura.md",
+      "req_ids": [
+        "REQ-NFR-006"
+      ],
+      "descricao": "A SPEC define rate limiting para autenticacao e criacao de demandas com os thresholds de 5 req/min e 20 req/min, mas nao fecha os detalhes normativos do PRD sobre os endpoints exatos (`/auth/login`, `POST /demandas`, `POST /demandas/bulk`), a resposta `HTTP 429` e o bloqueio temporario de 15 minutos por IP ou utilizador.",
+      "localizacao": {
+        "file": "docs/SPEC/00-visao-arquitetura.md",
+        "section": "### Decisoes Arquiteturais (ADRs)",
+        "approx_line": 42
+      }
+    },
+    {
+      "id": "SPEC-M05-002",
+      "severity": "bloqueante",
+      "type": "lacuna",
+      "spec_path": "docs/SPEC/00-visao-arquitetura.md",
+      "req_ids": [
+        "REQ-NFR-007"
+      ],
+      "descricao": "Nao foi localizada especificacao tecnica para a politica minima de palavra-passe exigida no PRD. O modulo arquitetural apenas afirma genericamente que a politica de senha se aplica aos perfis com credencial propria, sem definir comprimento minimo, combinacao obrigatoria de classes de caracteres nem bloqueio de reutilizacao das ultimas 3 palavras-passe.",
+      "localizacao": {
+        "file": "docs/SPEC/00-visao-arquitetura.md",
+        "section": "### Principios arquiteturais adotados",
+        "approx_line": 18
+      }
+    },
+    {
+      "id": "SPEC-M05-003",
+      "severity": "importante",
+      "type": "lacuna",
+      "spec_path": "docs/SPEC/02-modelo-dados.md",
+      "req_ids": [
+        "REQ-NFR-004"
+      ],
+      "descricao": "O modelo tecnico cobre `SQL Server`/`Prisma`, isolamento por `obraId`, `soft-delete` seletivo e `DemandaLog` para eventos transacionais, mas nao formaliza uma politica de rastreabilidade consistente para o conjunto dos recursos operacionais. A auditabilidade fica bem definida para demandas e parcialmente para alguns cadastros, sem regra geral equivalente para todas as entidades relevantes do dominio.",
+      "localizacao": {
+        "file": "docs/SPEC/02-modelo-dados.md",
+        "section": "## Relacionamentos e regras de integridade",
+        "approx_line": 30
+      }
+    }
+  ],
+  "cross_check": {
+    "coverage_rows": [
+      {
+        "prd_id": "REQ-NFR-001",
+        "spec_path": "docs/SPEC/00-visao-arquitetura.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "A SPEC documenta monorepo em `Turborepo`, separacao entre `apps/` e `packages/` e a adocao explicita de arquitetura tatica alinhada a DDD."
+      },
+      {
+        "prd_id": "REQ-NFR-002",
+        "spec_path": "docs/SPEC/00-visao-arquitetura.md + docs/SPEC/06-definicoes-complementares.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "A visao arquitetural fixa a estrategia mobile-first em PWA e o modulo complementar detalha cache, `offline-queue`, sincronizacao e comportamento sob conectividade instavel."
+      },
+      {
+        "prd_id": "REQ-NFR-003",
+        "spec_path": "docs/SPEC/00-visao-arquitetura.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "O backend em `NestJS` com separacao entre dominio e framework e a autenticacao baseada em `JWT` estao explicitamente descritos."
+      },
+      {
+        "prd_id": "REQ-NFR-004",
+        "spec_path": "docs/SPEC/00-visao-arquitetura.md + docs/SPEC/02-modelo-dados.md",
+        "status": "Parcial",
+        "severidade": "importante",
+        "comentario": "Ha cobertura clara para `SQL Server`, `Prisma` e isolamento logico multi-tenant por `obraId`, mas a rastreabilidade consistente dos recursos operacionais nao fica uniformemente especificada para todas as entidades."
+      },
+      {
+        "prd_id": "REQ-NFR-005",
+        "spec_path": "docs/SPEC/00-visao-arquitetura.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "A SPEC fecha expiracao de access token em 15 minutos, refresh token com TTL de 7 dias, rotacao a cada uso e blacklist por `jti` em `Redis`."
+      },
+      {
+        "prd_id": "REQ-NFR-006",
+        "spec_path": "docs/SPEC/00-visao-arquitetura.md",
+        "status": "Parcial",
+        "severidade": "importante",
+        "comentario": "Os limites numericos aparecem na arquitectura, mas faltam os endpoints exatos, o contrato de `HTTP 429` e a regra de bloqueio temporario por IP ou utilizador descritos no PRD."
+      },
+      {
+        "prd_id": "REQ-NFR-007",
+        "spec_path": "docs/SPEC/00-visao-arquitetura.md",
+        "status": "Nao coberto",
+        "severidade": "bloqueante",
+        "comentario": "Nao foi localizada cobertura tecnica para os criterios minimos de palavra-passe nem para o historico de reutilizacao das ultimas 3 credenciais."
+      }
+    ],
+    "blocking_conflicts": []
+  },
+  "blocking_questions": [],
+  "decision_by_user": [],
+  "executive_summary": {
+    "total_findings": 3,
+    "bloqueantes": 1,
+    "importantes": 2,
+    "menores": 0,
+    "coverage": {
+      "coberto": 4,
+      "parcial": 2,
+      "nao_coberto": 1
+    },
+    "risco_geral": "alto",
+    "nota": "O M05 tem boa cobertura para stack base, PWA/offline, backend e politica de tokens JWT, mas fica fragilizado em dois pontos de seguranca operacional: rate limiting incompletamente normatizado e ausencia de especificacao tecnica para a politica minima de palavra-passe. Alem disso, a rastreabilidade dos recursos operacionais fica apenas parcialmente fechada no modelo tecnico."
+  },
+  "traceability_csv": "docs/audit/output/M05/traceability.csv",
+  "traceability_stub_markdown": "docs/audit/output/M05/traceability-stub.md"
+}

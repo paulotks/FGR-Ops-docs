@@ -1,0 +1,6 @@
+PRD-ID,SPEC-Path,Status,Severidade,Comentario
+REQ-JOR-001,docs/SPEC/01-modulos-plataforma.md,Parcial,importante,A SPEC cobre abertura de demandas simples e agrupadas mas nao deixa explicito como a localizacao de trabalho e capturada nem qual entidade do Core ancora esse dado.
+REQ-JOR-002,docs/SPEC/03-fila-scoring-estados-sla.md,Coberto,menor,O hard filter elimina demandas fora do Setor Operacional do operador e tambem valida compatibilidade maquina-servico antes da atribuicao.
+REQ-JOR-003,docs/SPEC/03-fila-scoring-estados-sla.md,Coberto,menor,A formula de score os pesos por obra e os fatores de adjacencia servico e material estao documentados com detalhe suficiente.
+REQ-JOR-004,docs/SPEC/03-fila-scoring-estados-sla.md,Parcial,importante,Ha evidencia para destaque visual alocacao manual e empilhamento nao destrutivo com suporte contextual em 01-modulos-plataforma mas a exigencia de UI sem bloqueio e de fila estrita fica implicita.
+REQ-JOR-005,docs/SPEC/03-fila-scoring-estados-sla.md,Parcial,importante,A trilha em DemandaLog e a exigencia de justificativa estao cobertas mas a regra de aprovacao automatica apos 24 horas acrescenta comportamento relevante sem justificativa documental.

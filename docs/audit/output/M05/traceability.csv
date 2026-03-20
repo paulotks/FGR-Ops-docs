@@ -1,0 +1,8 @@
+PRD-ID,SPEC-Path,Status,Severidade,Comentario
+REQ-NFR-001,docs/SPEC/00-visao-arquitetura.md,Coberto,menor,A SPEC documenta monorepo em Turborepo separacao entre apps e packages e adocao explicita de arquitetura tatica alinhada a DDD.
+REQ-NFR-002,docs/SPEC/00-visao-arquitetura.md + docs/SPEC/06-definicoes-complementares.md,Coberto,menor,A visao arquitetural fixa a estrategia mobile-first em PWA e o modulo complementar detalha cache offline-queue sincronizacao e comportamento sob conectividade instavel.
+REQ-NFR-003,docs/SPEC/00-visao-arquitetura.md,Coberto,menor,O backend em NestJS com separacao entre dominio e framework e a autenticacao baseada em JWT estao explicitamente descritos.
+REQ-NFR-004,docs/SPEC/00-visao-arquitetura.md + docs/SPEC/02-modelo-dados.md,Parcial,importante,Ha cobertura clara para SQL Server Prisma e isolamento logico multi-tenant por obraId mas a rastreabilidade consistente dos recursos operacionais nao fica uniformemente especificada para todas as entidades.
+REQ-NFR-005,docs/SPEC/00-visao-arquitetura.md,Coberto,menor,A SPEC fecha expiracao de access token em 15 minutos refresh token com TTL de 7 dias rotacao a cada uso e blacklist por jti em Redis.
+REQ-NFR-006,docs/SPEC/00-visao-arquitetura.md,Parcial,importante,Os limites numericos aparecem na arquitetura mas faltam os endpoints exatos o contrato de HTTP 429 e a regra de bloqueio temporario por IP ou utilizador descritos no PRD.
+REQ-NFR-007,docs/SPEC/00-visao-arquitetura.md,Nao coberto,bloqueante,Nao foi localizada cobertura tecnica para os criterios minimos de palavra-passe nem para o historico de reutilizacao das ultimas 3 credenciais.

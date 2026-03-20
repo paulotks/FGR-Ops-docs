@@ -1,0 +1,104 @@
+{
+  "module_id": "MXX",
+  "command": "ANALISAR MXX",
+  "sources": {
+    "mapping_json": "docs/audit/step0-module-mapping.json",
+    "prd_path": "docs/PRD/<ficheiro>.md",
+    "spec_paths_reviewed": [
+      "docs/SPEC/<ficheiro-1>.md",
+      "docs/SPEC/<ficheiro-2>.md"
+    ]
+  },
+  "audit_steps_executed": [
+    "prd-only-review",
+    "spec-only-review",
+    "cross-check-prd-vs-spec",
+    "blocking-questions-when-needed",
+    "consolidation"
+  ],
+  "prd_findings": [
+    {
+      "id": "PRD-MXX-001",
+      "severity": "importante",
+      "type": "ambiguidade",
+      "req_ids": ["REQ-EXEMPLO-001"],
+      "descricao": "Descrever o achado encontrado no PRD.",
+      "localizacao": {
+        "file": "docs/PRD/<ficheiro>.md",
+        "section": "## <secao>",
+        "approx_line": 0
+      }
+    }
+  ],
+  "spec_findings": [
+    {
+      "id": "SPEC-MXX-001",
+      "severity": "importante",
+      "type": "lacuna",
+      "spec_path": "docs/SPEC/<ficheiro>.md",
+      "req_ids": ["REQ-EXEMPLO-001"],
+      "descricao": "Descrever o achado encontrado na SPEC.",
+      "localizacao": {
+        "file": "docs/SPEC/<ficheiro>.md",
+        "section": "## <secao>",
+        "approx_line": 0
+      }
+    }
+  ],
+  "cross_check": {
+    "coverage_rows": [
+      {
+        "prd_id": "REQ-EXEMPLO-001",
+        "spec_path": "docs/SPEC/<ficheiro>.md",
+        "status": "Parcial",
+        "severidade": "importante",
+        "comentario": "Cobertura parcial, depende de detalhe em outro ficheiro."
+      }
+    ],
+    "blocking_conflicts": [
+      {
+        "id": "CROSS-MXX-001",
+        "severity": "bloqueante",
+        "req_ids": ["REQ-EXEMPLO-001"],
+        "descricao": "Conflito direto entre PRD e SPEC.",
+        "localizacao_prd": "docs/PRD/<ficheiro>.md :: ## <secao> :: ~L0",
+        "localizacao_spec": "docs/SPEC/<ficheiro>.md :: ## <secao> :: ~L0"
+      }
+    ]
+  },
+  "blocking_questions": [
+    {
+      "id": "Q-MXX-001",
+      "question": "Pergunta objetiva para resolver bloqueio.",
+      "options": {
+        "A": "Opcao A",
+        "B": "Opcao B",
+        "C": "Opcao C",
+        "D": "Opcao D"
+      }
+    }
+  ],
+  "decision_by_user": [
+    {
+      "question_id": "Q-MXX-001",
+      "user_choice": "B",
+      "justificativa_usuario": "Resposta recebida do utilizador.",
+      "impacto_no_relatorio": "Como a decisão alterou a conclusão."
+    }
+  ],
+  "executive_summary": {
+    "total_findings": 0,
+    "bloqueantes": 0,
+    "importantes": 0,
+    "menores": 0,
+    "coverage": {
+      "coberto": 0,
+      "parcial": 0,
+      "nao_coberto": 0
+    },
+    "risco_geral": "medio",
+    "nota": "Resumo executivo curto para o módulo."
+  },
+  "traceability_csv": "docs/audit/output/MXX/traceability.csv",
+  "traceability_stub_markdown": "docs/audit/output/MXX/traceability-stub.md"
+}

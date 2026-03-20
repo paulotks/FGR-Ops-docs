@@ -1,0 +1,139 @@
+{
+  "module_id": "M03",
+  "command": "ANALISAR M03",
+  "sources": {
+    "mapping_json": "docs/audit/step0-module-mapping.json",
+    "prd_path": "docs/PRD/02-jornada-usuario.md",
+    "spec_paths_reviewed": [
+      "docs/SPEC/01-modulos-plataforma.md",
+      "docs/SPEC/03-fila-scoring-estados-sla.md"
+    ]
+  },
+  "audit_steps_executed": [
+    "prd-only-review",
+    "spec-only-review",
+    "cross-check-prd-vs-spec",
+    "blocking-questions-when-needed",
+    "consolidation"
+  ],
+  "prd_findings": [
+    {
+      "id": "PRD-M03-001",
+      "severity": "importante",
+      "type": "ambiguidade",
+      "req_ids": [
+        "REQ-JOR-001"
+      ],
+      "descricao": "O PRD exige que o Empreiteiro informe a localizacao onde esta a trabalhar, mas nao fixa se esse dado e capturado por `SetorOperacional`, `Quadra`, `Lote`, checkpoint manual ou campo livre. A falta dessa ancoragem dificulta validar a aderencia entre a abertura da demanda e o filtro logistico descrito na SPEC.",
+      "localizacao": {
+        "file": "docs/PRD/02-jornada-usuario.md",
+        "section": "### `REQ-JOR-001` Requisicao inicial pelo Empreiteiro",
+        "approx_line": 9
+      }
+    }
+  ],
+  "spec_findings": [
+    {
+      "id": "SPEC-M03-001",
+      "severity": "importante",
+      "type": "lacuna",
+      "spec_path": "docs/SPEC/01-modulos-plataforma.md",
+      "req_ids": [
+        "REQ-JOR-001"
+      ],
+      "descricao": "O modulo descreve abertura de demandas simples, agrupadas, em lote multiplo e programacoes agendadas, mas nao explicita que o Empreiteiro informa a localizacao de trabalho no momento da requisicao nem qual entidade espacial ancora essa captura. As dependencias sobre o Core explicam o contexto logistico, mas nao fecham a evidencia do dado de entrada do fluxo.",
+      "localizacao": {
+        "file": "docs/SPEC/01-modulos-plataforma.md",
+        "section": "### Capacidades operacionais do Machinery Link / ## Dependencias sobre o Core",
+        "approx_line": 48
+      }
+    },
+    {
+      "id": "SPEC-M03-002",
+      "severity": "importante",
+      "type": "lacuna",
+      "spec_path": "docs/SPEC/03-fila-scoring-estados-sla.md",
+      "req_ids": [
+        "REQ-JOR-004"
+      ],
+      "descricao": "O motor cobre destaque de prioridade `MAXIMA`, `Regra Zero` e empilhamento nao destrutivo sobre demanda em `EM_ANDAMENTO`, mas nao explicita o requisito de UX \"sem bloquear a interface\" nem define textualmente a fila do operador como contrato de experiencia. A cobertura funcional existe, porem a garantia operacional para a UI permanece indireta.",
+      "localizacao": {
+        "file": "docs/SPEC/03-fila-scoring-estados-sla.md",
+        "section": "## Regra zero, hard filter, destaque e score / ## Regra de conflito: alocacao manual sobre demanda `EM_ANDAMENTO`",
+        "approx_line": 13
+      }
+    },
+    {
+      "id": "SPEC-M03-003",
+      "severity": "importante",
+      "type": "decisao_sem_justificativa",
+      "spec_path": "docs/SPEC/03-fila-scoring-estados-sla.md",
+      "req_ids": [
+        "REQ-JOR-005"
+      ],
+      "descricao": "O fluxo `PENDENTE_APROVACAO` introduz aprovacao automatica do cancelamento apos 24 horas sem decisao gerencial, mas o ficheiro nao justifica por que a omissao administrativa deve resultar em cancelamento definitivo. O PRD pede auditoria obrigatoria e justificativa persistente, mas nao antecipa esse fallback operacional.",
+      "localizacao": {
+        "file": "docs/SPEC/03-fila-scoring-estados-sla.md",
+        "section": "## Fluxo detalhado `PENDENTE_APROVACAO`",
+        "approx_line": 112
+      }
+    }
+  ],
+  "cross_check": {
+    "coverage_rows": [
+      {
+        "prd_id": "REQ-JOR-001",
+        "spec_path": "docs/SPEC/01-modulos-plataforma.md",
+        "status": "Parcial",
+        "severidade": "importante",
+        "comentario": "A SPEC cobre abertura de demandas simples e agrupadas, mas nao deixa explicito como a localizacao de trabalho e capturada nem qual entidade do Core ancora esse dado na requisicao."
+      },
+      {
+        "prd_id": "REQ-JOR-002",
+        "spec_path": "docs/SPEC/03-fila-scoring-estados-sla.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "O hard filter elimina demandas fora do `Setor Operacional` do operador e tambem valida compatibilidade maquina-servico antes da atribuicao."
+      },
+      {
+        "prd_id": "REQ-JOR-003",
+        "spec_path": "docs/SPEC/03-fila-scoring-estados-sla.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "A formula de `score`, os pesos por obra e os fatores de adjacencia, servico e material estao documentados com detalhe suficiente."
+      },
+      {
+        "prd_id": "REQ-JOR-004",
+        "spec_path": "docs/SPEC/03-fila-scoring-estados-sla.md",
+        "status": "Parcial",
+        "severidade": "importante",
+        "comentario": "Ha evidencia para destaque visual, alocacao manual e empilhamento nao destrutivo, com suporte contextual em `01-modulos-plataforma`, mas a exigencia de UI sem bloqueio e de fila estrita fica apenas implicita."
+      },
+      {
+        "prd_id": "REQ-JOR-005",
+        "spec_path": "docs/SPEC/03-fila-scoring-estados-sla.md",
+        "status": "Parcial",
+        "severidade": "importante",
+        "comentario": "A trilha em `DemandaLog` e a exigencia de justificativa estao cobertas, mas a regra de aprovacao automatica apos 24 horas acrescenta comportamento relevante sem justificativa documental."
+      }
+    ],
+    "blocking_conflicts": []
+  },
+  "blocking_questions": [],
+  "decision_by_user": [],
+  "executive_summary": {
+    "total_findings": 4,
+    "bloqueantes": 0,
+    "importantes": 4,
+    "menores": 0,
+    "coverage": {
+      "coberto": 2,
+      "parcial": 3,
+      "nao_coberto": 0
+    },
+    "risco_geral": "medio",
+    "nota": "O M03 cobre bem a triagem logistica e o motor de score, mas ainda depende de inferencia para fechar a captura da localizacao inicial, a garantia de UX da fila do operador e a justificacao do fallback automatico em cancelamentos pendentes."
+  },
+  "traceability_csv": "docs/audit/output/M03/traceability.csv",
+  "traceability_stub_markdown": "docs/audit/output/M03/traceability-stub.md"
+}

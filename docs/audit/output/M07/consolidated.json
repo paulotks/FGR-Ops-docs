@@ -1,0 +1,166 @@
+{
+  "module_id": "M07",
+  "command": "ANALISAR M07",
+  "sources": {
+    "mapping_json": "docs/audit/step0-module-mapping.json",
+    "prd_path": "docs/PRD/06-metricas-riscos.md",
+    "spec_paths_reviewed": [
+      "docs/SPEC/03-fila-scoring-estados-sla.md",
+      "docs/SPEC/05-backlog-mvp-glossario.md",
+      "docs/SPEC/02-modelo-dados.md",
+      "docs/SPEC/06-definicoes-complementares.md"
+    ]
+  },
+  "audit_steps_executed": [
+    "prd-only-review",
+    "spec-only-review",
+    "cross-check-prd-vs-spec",
+    "blocking-questions-when-needed",
+    "consolidation"
+  ],
+  "prd_findings": [
+    {
+      "id": "PRD-M07-001",
+      "severity": "importante",
+      "type": "referencia_cruzada_incompleta",
+      "req_ids": [
+        "REQ-MET-002"
+      ],
+      "descricao": "O proprio PRD aponta `REQ-MET-002` para `docs/SPEC/01-modulos-plataforma.md`, mas a paridade oficial do modulo M07 e a matriz global de rastreabilidade concentram a auditoria de metricas e riscos em `02`, `03`, `05` e `06`. A referencia interna quebra a trilha documental do modulo e faz a cobertura do indicador depender de um ficheiro fora do conjunto mapeado para M07.",
+      "localizacao": {
+        "file": "docs/PRD/06-metricas-riscos.md",
+        "section": "### `REQ-MET-002` Adocao e engajamento operacional",
+        "approx_line": 16
+      }
+    },
+    {
+      "id": "PRD-M07-002",
+      "severity": "importante",
+      "type": "campo_em_aberto",
+      "req_ids": [
+        "REQ-RISK-001"
+      ],
+      "descricao": "A secao e apresentada como \"Riscos e mitigacoes\", mas `REQ-RISK-001` descreve apenas a dependencia de governanca sobre `Lote`, `Quadra` e `SetorOperacional` sem explicitar a mitigacao esperada, o responsavel pela manutencao nem o criterio de controlo minimo. O risco fica bem identificado, mas a acao mitigadora nao aparece no texto do PRD.",
+      "localizacao": {
+        "file": "docs/PRD/06-metricas-riscos.md",
+        "section": "### `REQ-RISK-001` Governanca da taxonomia operacional",
+        "approx_line": 38
+      }
+    }
+  ],
+  "spec_findings": [
+    {
+      "id": "SPEC-M07-001",
+      "severity": "importante",
+      "type": "lacuna",
+      "spec_path": "docs/SPEC/02-modelo-dados.md",
+      "req_ids": [
+        "REQ-MET-001"
+      ],
+      "descricao": "O conjunto tecnico revisto modela `RegistroExpediente`, `Demanda` e os estados operacionais, mas nao define atributos, eventos nem consulta de referencia para separar `Horas Disponiveis` de `Horas em Operacao`. Assim, a formula de tempo ocioso do PRD fica apenas parcialmente auditavel a partir da SPEC.",
+      "localizacao": {
+        "file": "docs/SPEC/02-modelo-dados.md",
+        "section": "## Entidades principais",
+        "approx_line": 20
+      }
+    },
+    {
+      "id": "SPEC-M07-002",
+      "severity": "bloqueante",
+      "type": "lacuna",
+      "spec_path": "docs/SPEC/02-modelo-dados.md",
+      "req_ids": [
+        "REQ-MET-002"
+      ],
+      "descricao": "Os ficheiros tecnicos revistos mencionam check-in, expediente e acoes do operador, mas nenhum fecha a fonte do denominador \"operadores ativos na folha da quinzena\" nem o contrato analitico para consolidar acoes por operador. Sem essa fonte canonica, o indicador de adocao e engajamento do PRD nao fica tecnicamente verificavel.",
+      "localizacao": {
+        "file": "docs/SPEC/02-modelo-dados.md",
+        "section": "## Entidades principais",
+        "approx_line": 16
+      }
+    },
+    {
+      "id": "SPEC-M07-003",
+      "severity": "importante",
+      "type": "lacuna",
+      "spec_path": "docs/SPEC/05-backlog-mvp-glossario.md",
+      "req_ids": [
+        "REQ-RISK-001"
+      ],
+      "descricao": "A SPEC cobre `REQ-RISK-001` apenas ao nivel de glossario e delimitacao do MVP. Embora `Setor Operacional` e `Checkpoint Manual` sejam definidos, nao foi localizada regra tecnica para governanca da taxonomia, validacao de adjacencias ou trilha de auditoria especifica para manutencao cadastral coerente, que e exatamente a mitigacao operativa pedida pelo risco.",
+      "localizacao": {
+        "file": "docs/SPEC/05-backlog-mvp-glossario.md",
+        "section": "## Glossario tecnico",
+        "approx_line": 20
+      }
+    }
+  ],
+  "cross_check": {
+    "coverage_rows": [
+      {
+        "prd_id": "REQ-MET-001",
+        "spec_path": "docs/SPEC/02-modelo-dados.md + docs/SPEC/03-fila-scoring-estados-sla.md",
+        "status": "Parcial",
+        "severidade": "importante",
+        "comentario": "A SPEC fornece entidades operacionais, `RegistroExpediente`, `Demanda` e o marco de `EM_ANDAMENTO`, mas nao fecha uma medicao canonica para `Horas Disponiveis` versus `Horas em Operacao` nem explicita extracao do indicador de tempo ocioso."
+      },
+      {
+        "prd_id": "REQ-MET-002",
+        "spec_path": "docs/SPEC/02-modelo-dados.md + docs/SPEC/03-fila-scoring-estados-sla.md + docs/SPEC/06-definicoes-complementares.md",
+        "status": "Nao coberto",
+        "severidade": "bloqueante",
+        "comentario": "Foram localizadas acoes de check-in, inicio/conclusao de demanda e operacao offline, mas nao a fonte tecnica para o denominador de operadores ativos na quinzena nem um contrato de consolidacao do engajamento por operador."
+      },
+      {
+        "prd_id": "REQ-MET-003",
+        "spec_path": "docs/SPEC/03-fila-scoring-estados-sla.md + docs/SPEC/06-definicoes-complementares.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "A SPEC define SLA de 15 minutos para prioridade `MAXIMA`, escalacao apos +5 minutos e regra de marco zero baseada em `dataAgendada`, permitindo medir atendimento dentro de `T+15` e escalacao em `T+20`."
+      },
+      {
+        "prd_id": "REQ-RISK-001",
+        "spec_path": "docs/SPEC/05-backlog-mvp-glossario.md + docs/SPEC/02-modelo-dados.md",
+        "status": "Parcial",
+        "severidade": "importante",
+        "comentario": "A taxonomia espacial e os conceitos de `SetorOperacional`, `Quadra`, `Lote` e adjacencia aparecem na SPEC, mas a governanca administrativa coerente citada no PRD nao se traduz em fluxo tecnico de manutencao, validacao ou auditoria cadastral."
+      },
+      {
+        "prd_id": "REQ-RISK-002",
+        "spec_path": "docs/SPEC/06-definicoes-complementares.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "A estrategia `offline-first` em PWA, com `Service Workers`, persistencia local, sincronizacao posterior, resolucao de conflitos por `iniciadoEm`/`finalizadoEm` e restricao de check-in/encerrar expediente a `online-only`, cobre diretamente o risco operacional de conectividade."
+      }
+    ],
+    "blocking_conflicts": [
+      {
+        "id": "CROSS-M07-001",
+        "severity": "bloqueante",
+        "req_ids": [
+          "REQ-MET-002"
+        ],
+        "descricao": "O PRD ancora `REQ-MET-002` em `docs/SPEC/01-modulos-plataforma.md`, mas a paridade oficial do PRD, o indice da SPEC e a matriz global de rastreabilidade para M07 distribuem metricas e riscos por `02`, `03`, `05` e `06`, sem rastreio explicito desse ID em `01`. A trilha PRD->SPEC fica inconsistente e impede identificar qual modulo tecnico e a fonte canonica do indicador.",
+        "localizacao_prd": "docs/PRD/06-metricas-riscos.md :: ### `REQ-MET-002` Adocao e engajamento operacional :: ~L16/~L23",
+        "localizacao_spec": "docs/PRD/_index.md + docs/SPEC/_index.md + docs/traceability.md :: tabelas de paridade e matriz global :: ~L13 + ~L8/~L13 + ~L35/~L36"
+      }
+    ]
+  },
+  "blocking_questions": [],
+  "decision_by_user": [],
+  "executive_summary": {
+    "total_findings": 6,
+    "bloqueantes": 2,
+    "importantes": 4,
+    "menores": 0,
+    "coverage": {
+      "coberto": 2,
+      "parcial": 2,
+      "nao_coberto": 1
+    },
+    "risco_geral": "alto",
+    "nota": "O M07 cobre bem o risco de conectividade e a metrica de SLA para prioridades `MAXIMA`, mas permanece fragilizado na camada de observabilidade e rastreabilidade documental das metricas. O principal desvio esta em `REQ-MET-002`, que nao tem fonte tecnica canonica nem trilha PRD->SPEC coerente, enquanto `REQ-MET-001` e `REQ-RISK-001` ficam apenas parcialmente especificados do ponto de vista de medicao e governanca."
+  },
+  "traceability_csv": "docs/audit/output/M07/traceability.csv",
+  "traceability_stub_markdown": "docs/audit/output/M07/traceability-stub.md"
+}

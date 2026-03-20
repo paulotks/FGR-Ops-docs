@@ -1,0 +1,119 @@
+{
+  "step": "read-indexes",
+  "description": "Mapeamento M01–M07 para auditoria PRD↔SPEC (etapa 0). Paridade oficial: docs/PRD/_index.md e docs/SPEC/_index.md. Notas de SPEC secundário obrigatório: docs/traceability.md (matriz global).",
+  "sources": {
+    "prd_index": "docs/PRD/_index.md",
+    "spec_index": "docs/SPEC/_index.md",
+    "matrix": "docs/traceability.md"
+  },
+  "modules": [
+    {
+      "module_id": "M01",
+      "title": "Visão e escopo",
+      "prd_path": "docs/PRD/00-visao-escopo.md",
+      "spec_primary": ["docs/SPEC/00-visao-arquitetura.md"],
+      "spec_secondary": [
+        {
+          "path": "docs/SPEC/05-backlog-mvp-glossario.md",
+          "note": "Matriz: REQ-SCO-F2-*, REQ-SCO-GAT-* — delimitação do backlog, itens adiados e gatilhos de promoção."
+        }
+      ],
+      "note": "Coluna SPEC (paridade) do PRD aponta só 00-visao-arquitetura; matriz exige também 05 para escopo Fase 2 e gatilhos."
+    },
+    {
+      "module_id": "M02",
+      "title": "Personas e RBAC",
+      "prd_path": "docs/PRD/01-usuarios-rbac.md",
+      "spec_primary": ["docs/SPEC/04-rbac-permissoes.md"],
+      "spec_secondary": [],
+      "note": "Paridade 1:1 na matriz; sem SPEC secundário obrigatório."
+    },
+    {
+      "module_id": "M03",
+      "title": "Jornada",
+      "prd_path": "docs/PRD/02-jornada-usuario.md",
+      "spec_primary": ["docs/SPEC/01-modulos-plataforma.md"],
+      "spec_secondary": [
+        {
+          "path": "docs/SPEC/03-fila-scoring-estados-sla.md",
+          "note": "Matriz: REQ-JOR-002/003 (triagem e score); REQ-JOR-004/005 (campo, alocação, auditoria). PRD index lista ambos os SPEC em paridade."
+        }
+      ],
+      "note": "Auditoria core: começar por 01-modulos; cross-check operacional em 03-fila conforme linhas da matriz por REQ-JOR-*."
+    },
+    {
+      "module_id": "M04",
+      "title": "Requisitos funcionais",
+      "prd_path": "docs/PRD/03-requisitos-funcionais.md",
+      "spec_primary": ["docs/SPEC/03-fila-scoring-estados-sla.md"],
+      "spec_secondary": [
+        {
+          "path": "docs/SPEC/01-modulos-plataforma.md",
+          "note": "Matriz: REQ-FUNC-003/004/005/010 em conjunto com outros SPEC; fronteiras Core/Machinery Link e capacidades."
+        },
+        {
+          "path": "docs/SPEC/02-modelo-dados.md",
+          "note": "Matriz: REQ-FUNC-003, 005, 007, 010; entidades, multi-criação, modelo espacial."
+        },
+        {
+          "path": "docs/SPEC/06-definicoes-complementares.md",
+          "note": "Matriz: REQ-FUNC-004, 006–009 — offline, agendamentos, cancelamentos, ajudantes."
+        }
+      ],
+      "note": "Cobertura REQ-FUNC-* dispersa na matriz; 03 é motor principal para estados/fila; 01/02/06 conforme linhas por ID."
+    },
+    {
+      "module_id": "M05",
+      "title": "RNF",
+      "prd_path": "docs/PRD/04-requisitos-nao-funcionais.md",
+      "spec_primary": ["docs/SPEC/00-visao-arquitetura.md"],
+      "spec_secondary": [
+        {
+          "path": "docs/SPEC/02-modelo-dados.md",
+          "note": "Matriz: REQ-NFR-004 — persistência relacional e isolamento multi-tenant."
+        },
+        {
+          "path": "docs/SPEC/06-definicoes-complementares.md",
+          "note": "Matriz: REQ-NFR-002 — PWA, offline e conectividade (complemento a visão arquitetural)."
+        }
+      ],
+      "note": "PRD index lista 00, 02 e 06 em paridade; matriz detalha qual REQ vai a qual SPEC."
+    },
+    {
+      "module_id": "M06",
+      "title": "Critérios de aceite",
+      "prd_path": "docs/PRD/05-criterios-aceite.md",
+      "spec_primary": [
+        "docs/SPEC/04-rbac-permissoes.md",
+        "docs/SPEC/03-fila-scoring-estados-sla.md"
+      ],
+      "spec_secondary": [
+        {
+          "path": "docs/SPEC/00-visao-arquitetura.md",
+          "note": "Matriz: REQ-ACE-007 — segurança de token; alinhamento à arquitetura base (PRD menciona pendência de token)."
+        }
+      ],
+      "note": "Dois SPEC em paridade no PRD (04 + 03). REQ-ACE-007 na matriz → 00-visao-arquitetura (não na célula única do PRD index)."
+    },
+    {
+      "module_id": "M07",
+      "title": "Métricas e riscos",
+      "prd_path": "docs/PRD/06-metricas-riscos.md",
+      "spec_primary": [
+        "docs/SPEC/03-fila-scoring-estados-sla.md",
+        "docs/SPEC/05-backlog-mvp-glossario.md"
+      ],
+      "spec_secondary": [
+        {
+          "path": "docs/SPEC/02-modelo-dados.md",
+          "note": "Índices PRD/SPEC listam 02 em paridade com este PRD; matriz concentra REQ-MET/REQ-RISK em 03, 05 e 06 — usar 02 como cross-check quando o ID o exigir."
+        },
+        {
+          "path": "docs/SPEC/06-definicoes-complementares.md",
+          "note": "Matriz: REQ-MET-* com 06; REQ-RISK-002 com 06 — operação em campo e limites do MVP."
+        }
+      ],
+      "note": "PRD index: quatro SPEC (02, 03, 05, 06). Matriz: REQ-MET → 03+06; REQ-RISK → 05+06. Auditoria: núcleo 03+05, depois 02/06."
+    }
+  ]
+}

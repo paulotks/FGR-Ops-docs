@@ -1,0 +1,24 @@
+PRD-ID,SPEC-Path,Status,Severidade,Comentario
+REQ-CTX-001,docs/SPEC/00-visao-arquitetura.md,Coberto,menor,A visao geral descreve o problema de obras simultaneas e sistemas isolados por obra.
+REQ-CTX-002,docs/SPEC/00-visao-arquitetura.md,Coberto,menor,A visao geral menciona nomenclaturas inconsistentes e falta de consolidacao gerencial.
+REQ-CTX-003,docs/SPEC/00-visao-arquitetura.md,Coberto,menor,A fundacao centralizada e multi-tenant cobre a relevancia estrategica descrita no PRD.
+REQ-OBJ-001,docs/SPEC/00-visao-arquitetura.md,Coberto,menor,A visao macro e a estrutura do monorepo sustentam a centralizacao numa unica plataforma.
+REQ-OBJ-002,docs/SPEC/00-visao-arquitetura.md,Coberto,menor,Os principios e ADRs detalham segregacao logica por obra e bypass auditado para perfis cross-tenant.
+REQ-OBJ-003,docs/SPEC/00-visao-arquitetura.md,Coberto,menor,A visao geral fixa o MVP no Machinery Link para digitalizar solicitacao despacho e execucao.
+REQ-OBJ-004,docs/SPEC/00-visao-arquitetura.md,Parcial,importante,Existe evidencia de algoritmo de fila e jurisdicao logistica mas nao da localizacao declarada sem GPS.
+REQ-OBJ-005,docs/SPEC/00-visao-arquitetura.md,Coberto,menor,O principio mobile-first descreve PWA responsivo para operadores em smartphone.
+REQ-SCO-001,docs/SPEC/00-visao-arquitetura.md,Coberto,menor,ADRs e principios cobrem JWT RBAC governanca multi-tenant e base do modulo Core.
+REQ-SCO-002,docs/SPEC/00-visao-arquitetura.md,Parcial,importante,Ha evidencia do ciclo operacional e de Demanda DemandaGrupo mas nao de catalogos e modelagem espacial completos.
+REQ-SCO-003,docs/SPEC/00-visao-arquitetura.md,Nao coberto,bloqueante,Nao foi localizada cobertura para cadastro de maquinario e ajudantes no conjunto SPEC revisto para o M01.
+REQ-SCO-004,docs/SPEC/00-visao-arquitetura.md,Parcial,importante,A arquitetura tatica menciona setor logistico e score mas nao detalha checkpoint manual habilitacao e urgencia.
+REQ-SCO-005,docs/SPEC/00-visao-arquitetura.md,Coberto,menor,O principio mobile-first registra o PWA responsivo para uso em campo.
+REQ-SCO-F2-001,docs/SPEC/05-backlog-mvp-glossario.md,Parcial,importante,Telemetria e IoT sao adiados mas o texto nao explicita os campos de horimetro ou KM e similares.
+REQ-SCO-F2-002,docs/SPEC/05-backlog-mvp-glossario.md,Coberto,menor,O backlog adia explicitamente o modulo de Almoxarifado para a Fase 2.
+REQ-SCO-F2-003,docs/SPEC/05-backlog-mvp-glossario.md,Coberto,menor,O backlog adia rastreamento IoT e depende de hardware homologado.
+REQ-SCO-F2-004,docs/SPEC/05-backlog-mvp-glossario.md,Coberto,menor,Aplicacoes nativas sao explicitamente postergadas mantendo o MVP em PWA.
+REQ-SCO-F2-005,docs/SPEC/05-backlog-mvp-glossario.md,Nao coberto,importante,Nao foi localizada mencao a migracao de dados legados nem a roteirizacao em mapas geocolocados.
+REQ-SCO-F2-006,docs/SPEC/05-backlog-mvp-glossario.md,Coberto,menor,ServicoDinamico e explicitamente adiado por falta de regras maduras.
+REQ-SCO-GAT-001,docs/SPEC/05-backlog-mvp-glossario.md,Nao coberto,importante,O gatilho de telemetria IoT nao esta documentado no backlog tecnico revisto.
+REQ-SCO-GAT-002,docs/SPEC/05-backlog-mvp-glossario.md,Nao coberto,importante,O gatilho do modulo de Almoxarifado nao esta documentado no backlog tecnico revisto.
+REQ-SCO-GAT-003,docs/SPEC/05-backlog-mvp-glossario.md,Nao coberto,importante,O gatilho para aplicacoes nativas nao esta documentado no backlog tecnico revisto.
+REQ-SCO-GAT-004,docs/SPEC/05-backlog-mvp-glossario.md,Nao coberto,importante,O gatilho para Servicos Dinamicos nao esta documentado no backlog tecnico revisto.

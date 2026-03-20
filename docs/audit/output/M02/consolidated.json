@@ -1,0 +1,146 @@
+{
+  "module_id": "M02",
+  "command": "ANALISAR M02",
+  "sources": {
+    "mapping_json": "docs/audit/step0-module-mapping.json",
+    "prd_path": "docs/PRD/01-usuarios-rbac.md",
+    "spec_paths_reviewed": [
+      "docs/SPEC/04-rbac-permissoes.md"
+    ]
+  },
+  "audit_steps_executed": [
+    "prd-only-review",
+    "spec-only-review",
+    "cross-check-prd-vs-spec",
+    "blocking-questions-when-needed",
+    "consolidation"
+  ],
+  "prd_findings": [
+    {
+      "id": "PRD-M02-001",
+      "severity": "importante",
+      "type": "ambiguidade",
+      "req_ids": [
+        "REQ-RBAC-005",
+        "REQ-RBAC-006"
+      ],
+      "descricao": "O PRD descreve `Empreiteiro` e `Operador de Maquinario` com escopo muito restrito as proprias demandas, expediente e fila operacional, mas nao explicita se esses perfis podem consultar cadastros auxiliares de contexto como obra, hierarquia territorial, maquinario, servicos ou materiais. Essa fronteira fica insuficiente para validar leituras adicionais abertas na SPEC.",
+      "localizacao": {
+        "file": "docs/PRD/01-usuarios-rbac.md",
+        "section": "## Matriz base de perfis",
+        "approx_line": 13
+      }
+    },
+    {
+      "id": "PRD-M02-002",
+      "severity": "menor",
+      "type": "inconsistencia_nomenclatura",
+      "req_ids": [
+        "REQ-RBAC-006"
+      ],
+      "descricao": "O perfil aparece como `Operador de Maquinario` na matriz base e como `Operador` nos principios do produto, sem uma nota local que fixe se os termos sao sinonimos oficiais. A variacao nao bloqueia a leitura, mas introduz ruido de rastreabilidade com a SPEC.",
+      "localizacao": {
+        "file": "docs/PRD/01-usuarios-rbac.md",
+        "section": "## Matriz base de perfis / ## Principios de autorizacao do produto",
+        "approx_line": 14
+      }
+    }
+  ],
+  "spec_findings": [
+    {
+      "id": "SPEC-M02-001",
+      "severity": "importante",
+      "type": "decisao_sem_justificativa",
+      "spec_path": "docs/SPEC/04-rbac-permissoes.md",
+      "req_ids": [
+        "REQ-RBAC-005",
+        "REQ-RBAC-006"
+      ],
+      "descricao": "A matriz tecnica concede a `Empreiteiro` e/ou `Operador` leitura em recursos de contexto como `core:obra`, `core:setor-operacional`, `core:quadra`, `core:lote`, `core:rua`, `machinery:maquinario`, `machinery:servico` e `machinery:material`, mas o ficheiro nao explica por que essas leituras continuam compativeis com o escopo restrito descrito no PRD. As decisoes de design justificam criacao/alteracao dos cadastros territoriais, porem nao a abertura de leitura para perfis de campo e terceiros.",
+      "localizacao": {
+        "file": "docs/SPEC/04-rbac-permissoes.md",
+        "section": "## Matriz completa de permissoes por recurso (Lacuna 1) / ## Decisoes de design",
+        "approx_line": 43
+      }
+    },
+    {
+      "id": "SPEC-M02-002",
+      "severity": "menor",
+      "type": "inconsistencia_nomenclatura",
+      "spec_path": "docs/SPEC/04-rbac-permissoes.md",
+      "req_ids": [
+        "REQ-RBAC-006"
+      ],
+      "descricao": "A SPEC usa apenas o nome curto `Operador`, enquanto o PRD apresenta `Operador de Maquinario`. A divergencia terminologica nao altera a intencao funcional, mas torna a navegacao entre os dois documentos menos precisa.",
+      "localizacao": {
+        "file": "docs/SPEC/04-rbac-permissoes.md",
+        "section": "## Perfis de acesso",
+        "approx_line": 23
+      }
+    }
+  ],
+  "cross_check": {
+    "coverage_rows": [
+      {
+        "prd_id": "REQ-RBAC-001",
+        "spec_path": "docs/SPEC/04-rbac-permissoes.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "A SPEC define bypass multi-tenant, visao transversal e auditoria de acessos cross-tenant para `SuperAdmin`."
+      },
+      {
+        "prd_id": "REQ-RBAC-002",
+        "spec_path": "docs/SPEC/04-rbac-permissoes.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "O perfil `Board` esta limitado a leitura, com bypass cross-tenant passivo e foco em analytics e dashboards."
+      },
+      {
+        "prd_id": "REQ-RBAC-003",
+        "spec_path": "docs/SPEC/04-rbac-permissoes.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "A SPEC cobre atribuicao explicita por obra, cadastros operacionais e alocacao manual de demandas para `AdminOperacional`."
+      },
+      {
+        "prd_id": "REQ-RBAC-004",
+        "spec_path": "docs/SPEC/04-rbac-permissoes.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "A SPEC documenta visibilidade gerencial no tenant, aprovacao/rejeicao de contestacoes e selecao manual de operador na criacao/alocacao de demanda."
+      },
+      {
+        "prd_id": "REQ-RBAC-005",
+        "spec_path": "docs/SPEC/04-rbac-permissoes.md",
+        "status": "Parcial",
+        "severidade": "importante",
+        "comentario": "A autoria propria das demandas esta preservada, mas a matriz tambem abre leituras de obra, cadastros territoriais e catalogos operacionais alem da formulacao do PRD sobre visibilidade restrita as suas demandas."
+      },
+      {
+        "prd_id": "REQ-RBAC-006",
+        "spec_path": "docs/SPEC/04-rbac-permissoes.md",
+        "status": "Parcial",
+        "severidade": "importante",
+        "comentario": "A SPEC restringe o operador a propria fila, expediente e demandas alocadas, mas nao explicita o requisito de prioridades maximas em destaque no topo e ainda adiciona leituras auxiliares fora da formulacao estrita do PRD."
+      }
+    ],
+    "blocking_conflicts": []
+  },
+  "blocking_questions": [],
+  "decision_by_user": [],
+  "executive_summary": {
+    "total_findings": 4,
+    "bloqueantes": 0,
+    "importantes": 2,
+    "menores": 2,
+    "coverage": {
+      "coberto": 4,
+      "parcial": 2,
+      "nao_coberto": 0
+    },
+    "risco_geral": "medio",
+    "nota": "O M02 esta tecnicamente bem coberto para perfis centrais e isolamento cross-tenant, mas permanece com fronteira pouco nitida para os acessos auxiliares de `Empreiteiro` e `Operador`, o que reduz a precisao da rastreabilidade entre narrativa de produto e matriz tecnica."
+  },
+  "traceability_csv": "docs/audit/output/M02/traceability.csv",
+  "traceability_stub_markdown": "docs/audit/output/M02/traceability-stub.md"
+}

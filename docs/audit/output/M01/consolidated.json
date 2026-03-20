@@ -1,0 +1,311 @@
+{
+  "module_id": "M01",
+  "command": "ANALISAR M01",
+  "sources": {
+    "mapping_json": "docs/audit/step0-module-mapping.json",
+    "prd_path": "docs/PRD/00-visao-escopo.md",
+    "spec_paths_reviewed": [
+      "docs/SPEC/00-visao-arquitetura.md",
+      "docs/SPEC/05-backlog-mvp-glossario.md"
+    ]
+  },
+  "audit_steps_executed": [
+    "prd-only-review",
+    "spec-only-review",
+    "cross-check-prd-vs-spec",
+    "blocking-questions-when-needed",
+    "consolidation"
+  ],
+  "prd_findings": [
+    {
+      "id": "PRD-M01-001",
+      "severity": "importante",
+      "type": "referencia_cruzada_incompleta",
+      "req_ids": [
+        "REQ-OBJ-003",
+        "REQ-OBJ-004",
+        "REQ-SCO-002",
+        "REQ-SCO-003",
+        "REQ-SCO-004"
+      ],
+      "descricao": "Os apontadores locais \"-> SPEC\" dispersam a evidencia do modulo para 01-modulos-plataforma, 02-modelo-dados e 03-fila-scoring-estados-sla, enquanto a paridade oficial do M01 usa 00-visao-arquitetura como core e 05-backlog-mvp-glossario como complemento. A leitura isolada do modulo nao basta para confirmar toda a cobertura a partir das referencias do proprio ficheiro.",
+      "localizacao": {
+        "file": "docs/PRD/00-visao-escopo.md",
+        "section": "## 2. Objetivos / ## 3. Escopo",
+        "approx_line": 23
+      }
+    },
+    {
+      "id": "PRD-M01-002",
+      "severity": "importante",
+      "type": "referencia_cruzada_incompleta",
+      "req_ids": [
+        "REQ-SCO-F2-001",
+        "REQ-SCO-F2-002",
+        "REQ-SCO-F2-003",
+        "REQ-SCO-F2-004",
+        "REQ-SCO-F2-005",
+        "REQ-SCO-F2-006",
+        "REQ-SCO-GAT-001",
+        "REQ-SCO-GAT-002",
+        "REQ-SCO-GAT-003",
+        "REQ-SCO-GAT-004"
+      ],
+      "descricao": "As secoes de Fase 2 e criterios de promocao nao trazem apontadores locais para a SPEC secundaria exigida pela matriz global. O rastreio de backlog e gatilhos depende de docs/traceability.md, e nao da navegacao natural do modulo.",
+      "localizacao": {
+        "file": "docs/PRD/00-visao-escopo.md",
+        "section": "### Fora do Escopo (Fase 2+)",
+        "approx_line": 54
+      }
+    }
+  ],
+  "spec_findings": [
+    {
+      "id": "SPEC-M01-001",
+      "severity": "bloqueante",
+      "type": "lacuna",
+      "spec_path": "docs/SPEC/00-visao-arquitetura.md",
+      "req_ids": [
+        "REQ-SCO-003"
+      ],
+      "descricao": "No conjunto SPEC revisto para o M01 nao foi localizada evidencia para cadastro de maquinario com placa/tipo/servicos/propriedade nem para cadastro de ajudantes sem acesso ao sistema. O item permanece dentro do escopo do PRD, mas nao esta documentado nas SPECs revistas para este modulo.",
+      "localizacao": {
+        "file": "docs/SPEC/00-visao-arquitetura.md",
+        "section": "INFORMACAO_NAO_LOCALIZADA",
+        "approx_line": 0
+      }
+    },
+    {
+      "id": "SPEC-M01-002",
+      "severity": "importante",
+      "type": "lacuna",
+      "spec_path": "docs/SPEC/05-backlog-mvp-glossario.md",
+      "req_ids": [
+        "REQ-SCO-GAT-001",
+        "REQ-SCO-GAT-002",
+        "REQ-SCO-GAT-003",
+        "REQ-SCO-GAT-004"
+      ],
+      "descricao": "O ficheiro e a sua linha de rastreio cobrem os itens REQ-SCO-F2-*, mas nao documentam os gatilhos REQ-SCO-GAT-* esperados pela matriz global do M01. Os criterios de promocao para Fase 2 ficam sem cobertura tecnica localizavel.",
+      "localizacao": {
+        "file": "docs/SPEC/05-backlog-mvp-glossario.md",
+        "section": "## Backlog MVP",
+        "approx_line": 7
+      }
+    },
+    {
+      "id": "SPEC-M01-003",
+      "severity": "importante",
+      "type": "lacuna",
+      "spec_path": "docs/SPEC/05-backlog-mvp-glossario.md",
+      "req_ids": [
+        "REQ-SCO-F2-005"
+      ],
+      "descricao": "A lista de itens adiados para Fase 2 nao menciona migracao de dados legados nem roteirizacao em mapas geocolocados. O REQ-SCO-F2-005 fica sem evidencia especifica no backlog tecnico revisto.",
+      "localizacao": {
+        "file": "docs/SPEC/05-backlog-mvp-glossario.md",
+        "section": "### Itens adiados para Fase 2",
+        "approx_line": 13
+      }
+    },
+    {
+      "id": "SPEC-M01-004",
+      "severity": "importante",
+      "type": "ambiguidade",
+      "spec_path": "docs/SPEC/00-visao-arquitetura.md",
+      "req_ids": [
+        "REQ-OBJ-004",
+        "REQ-SCO-004"
+      ],
+      "descricao": "O ficheiro rastreia REQ-OBJ-004 e REQ-SCO-004, mas o texto observado nao explicita checkpoint manual, localizacao declarada nem a restricao sem dependencia de GPS. A evidencia encontrada cobre algoritmo, fila e setor logistico, ficando parcial para a regra completa.",
+      "localizacao": {
+        "file": "docs/SPEC/00-visao-arquitetura.md",
+        "section": "### Principios arquiteturais adotados / ### Arquitetura Tatica (DDD)",
+        "approx_line": 14
+      }
+    }
+  ],
+  "cross_check": {
+    "coverage_rows": [
+      {
+        "prd_id": "REQ-CTX-001",
+        "spec_path": "docs/SPEC/00-visao-arquitetura.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "A visao geral descreve o problema de obras simultaneas e sistemas isolados por obra."
+      },
+      {
+        "prd_id": "REQ-CTX-002",
+        "spec_path": "docs/SPEC/00-visao-arquitetura.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "A visao geral menciona nomenclaturas inconsistentes e falta de consolidacao gerencial."
+      },
+      {
+        "prd_id": "REQ-CTX-003",
+        "spec_path": "docs/SPEC/00-visao-arquitetura.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "A fundacao centralizada e multi-tenant cobre a relevancia estrategica descrita no PRD."
+      },
+      {
+        "prd_id": "REQ-OBJ-001",
+        "spec_path": "docs/SPEC/00-visao-arquitetura.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "A visao macro e a estrutura do monorepo sustentam a centralizacao numa unica plataforma."
+      },
+      {
+        "prd_id": "REQ-OBJ-002",
+        "spec_path": "docs/SPEC/00-visao-arquitetura.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "Os principios e ADRs detalham segregacao logica por obra e bypass auditado para perfis cross-tenant."
+      },
+      {
+        "prd_id": "REQ-OBJ-003",
+        "spec_path": "docs/SPEC/00-visao-arquitetura.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "A visao geral fixa o MVP no Machinery Link para digitalizar solicitacao, despacho e execucao."
+      },
+      {
+        "prd_id": "REQ-OBJ-004",
+        "spec_path": "docs/SPEC/00-visao-arquitetura.md",
+        "status": "Parcial",
+        "severidade": "importante",
+        "comentario": "Existe evidencia de algoritmo de fila e jurisdicao logistica, mas nao da localizacao declarada sem GPS."
+      },
+      {
+        "prd_id": "REQ-OBJ-005",
+        "spec_path": "docs/SPEC/00-visao-arquitetura.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "O principio mobile-first descreve PWA responsivo para operadores em smartphone."
+      },
+      {
+        "prd_id": "REQ-SCO-001",
+        "spec_path": "docs/SPEC/00-visao-arquitetura.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "ADRs e principios cobrem JWT, RBAC, governanca multi-tenant e base do modulo Core."
+      },
+      {
+        "prd_id": "REQ-SCO-002",
+        "spec_path": "docs/SPEC/00-visao-arquitetura.md",
+        "status": "Parcial",
+        "severidade": "importante",
+        "comentario": "Ha evidencia do ciclo operacional e de Demanda/DemandaGrupo, mas nao de catalogos e modelagem espacial completos."
+      },
+      {
+        "prd_id": "REQ-SCO-003",
+        "spec_path": "docs/SPEC/00-visao-arquitetura.md",
+        "status": "Nao coberto",
+        "severidade": "bloqueante",
+        "comentario": "Nao foi localizada cobertura para cadastro de maquinario e ajudantes no conjunto SPEC revisto para o M01."
+      },
+      {
+        "prd_id": "REQ-SCO-004",
+        "spec_path": "docs/SPEC/00-visao-arquitetura.md",
+        "status": "Parcial",
+        "severidade": "importante",
+        "comentario": "A arquitetura tatica menciona setor logistico e score, mas nao detalha checkpoint manual, habilitacao e urgencia."
+      },
+      {
+        "prd_id": "REQ-SCO-005",
+        "spec_path": "docs/SPEC/00-visao-arquitetura.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "O principio mobile-first registra o PWA responsivo para uso em campo."
+      },
+      {
+        "prd_id": "REQ-SCO-F2-001",
+        "spec_path": "docs/SPEC/05-backlog-mvp-glossario.md",
+        "status": "Parcial",
+        "severidade": "importante",
+        "comentario": "Telemetria e IoT sao adiados, mas o texto nao explicita os campos de horimetro, KM e similares."
+      },
+      {
+        "prd_id": "REQ-SCO-F2-002",
+        "spec_path": "docs/SPEC/05-backlog-mvp-glossario.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "O backlog adia explicitamente o modulo de Almoxarifado para a Fase 2."
+      },
+      {
+        "prd_id": "REQ-SCO-F2-003",
+        "spec_path": "docs/SPEC/05-backlog-mvp-glossario.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "O backlog adia rastreamento IoT e depende de hardware homologado."
+      },
+      {
+        "prd_id": "REQ-SCO-F2-004",
+        "spec_path": "docs/SPEC/05-backlog-mvp-glossario.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "Aplicacoes nativas sao explicitamente postergadas, mantendo o MVP em PWA."
+      },
+      {
+        "prd_id": "REQ-SCO-F2-005",
+        "spec_path": "docs/SPEC/05-backlog-mvp-glossario.md",
+        "status": "Nao coberto",
+        "severidade": "importante",
+        "comentario": "Nao foi localizada mencao a migracao de dados legados nem a roteirizacao em mapas geocolocados."
+      },
+      {
+        "prd_id": "REQ-SCO-F2-006",
+        "spec_path": "docs/SPEC/05-backlog-mvp-glossario.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "ServicoDinamico e explicitamente adiado por falta de regras maduras."
+      },
+      {
+        "prd_id": "REQ-SCO-GAT-001",
+        "spec_path": "docs/SPEC/05-backlog-mvp-glossario.md",
+        "status": "Nao coberto",
+        "severidade": "importante",
+        "comentario": "O gatilho de telemetria/IoT nao esta documentado no backlog tecnico revisto."
+      },
+      {
+        "prd_id": "REQ-SCO-GAT-002",
+        "spec_path": "docs/SPEC/05-backlog-mvp-glossario.md",
+        "status": "Nao coberto",
+        "severidade": "importante",
+        "comentario": "O gatilho do modulo de Almoxarifado nao esta documentado no backlog tecnico revisto."
+      },
+      {
+        "prd_id": "REQ-SCO-GAT-003",
+        "spec_path": "docs/SPEC/05-backlog-mvp-glossario.md",
+        "status": "Nao coberto",
+        "severidade": "importante",
+        "comentario": "O gatilho para aplicacoes nativas nao esta documentado no backlog tecnico revisto."
+      },
+      {
+        "prd_id": "REQ-SCO-GAT-004",
+        "spec_path": "docs/SPEC/05-backlog-mvp-glossario.md",
+        "status": "Nao coberto",
+        "severidade": "importante",
+        "comentario": "O gatilho para Servicos Dinamicos nao esta documentado no backlog tecnico revisto."
+      }
+    ],
+    "blocking_conflicts": []
+  },
+  "blocking_questions": [],
+  "decision_by_user": [],
+  "executive_summary": {
+    "total_findings": 6,
+    "bloqueantes": 1,
+    "importantes": 5,
+    "menores": 0,
+    "coverage": {
+      "coberto": 13,
+      "parcial": 4,
+      "nao_coberto": 6
+    },
+    "risco_geral": "medio",
+    "nota": "O M01 tem boa cobertura para contexto, objetivos centrais e fundacao arquitetural do MVP, mas perde completude em itens de escopo detalhado e, sobretudo, na SPEC secundaria para backlog/gatilhos de Fase 2."
+  },
+  "traceability_csv": "docs/audit/output/M01/traceability.csv",
+  "traceability_stub_markdown": "docs/audit/output/M01/traceability-stub.md"
+}

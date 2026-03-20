@@ -1,0 +1,4 @@
+PRD-ID,SPEC-Path,Status,Severidade,Comentario
+REQ-EXEMPLO-001,docs/SPEC/<ficheiro>.md,Coberto,menor,Cobertura completa sem bloqueios.
+REQ-EXEMPLO-002,docs/SPEC/<ficheiro>.md,Parcial,importante,Cobertura parcial; falta detalhe operacional.
+REQ-EXEMPLO-003,docs/SPEC/<ficheiro>.md,Não coberto,bloqueante,Requisito sem cobertura localizável.

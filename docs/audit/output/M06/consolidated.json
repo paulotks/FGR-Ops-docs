@@ -1,0 +1,196 @@
+{
+  "module_id": "M06",
+  "command": "ANALISAR M06",
+  "sources": {
+    "mapping_json": "docs/audit/step0-module-mapping.json",
+    "prd_path": "docs/PRD/05-criterios-aceite.md",
+    "spec_paths_reviewed": [
+      "docs/SPEC/04-rbac-permissoes.md",
+      "docs/SPEC/03-fila-scoring-estados-sla.md",
+      "docs/SPEC/00-visao-arquitetura.md"
+    ]
+  },
+  "audit_steps_executed": [
+    "prd-only-review",
+    "spec-only-review",
+    "cross-check-prd-vs-spec",
+    "blocking-questions-when-needed",
+    "consolidation"
+  ],
+  "prd_findings": [
+    {
+      "id": "PRD-M06-001",
+      "severity": "importante",
+      "type": "campo_em_aberto",
+      "req_ids": [
+        "REQ-ACE-007"
+      ],
+      "descricao": "O modulo declara concentrar criterios de aceite testaveis do PRD, mas `REQ-ACE-007` aparece apenas como pendente de migracao, sem enunciado verificavel nem cenario Gherkin. Como a matriz global ja associa este ID a `docs/SPEC/00-visao-arquitetura.md`, a ausencia do criterio no proprio PRD impede validar a seguranca de token ponta a ponta no formato de aceite adotado pelo modulo.",
+      "localizacao": {
+        "file": "docs/PRD/05-criterios-aceite.md",
+        "section": "## Pendentes de migracao",
+        "approx_line": 115
+      }
+    },
+    {
+      "id": "PRD-M06-002",
+      "severity": "importante",
+      "type": "ambiguidade",
+      "req_ids": [
+        "REQ-ACE-003"
+      ],
+      "descricao": "O cenario de `REQ-ACE-003` usa a expressao \"preferencia manual de operador\" sem amarrar esse conceito ao campo tecnico `operadorAlocadoId` nem distinguir preferencia soft de alocacao hard. A falta de nomenclatura canonica torna o cruzamento com a `Regra Zero` da SPEC dependente de interpretacao.",
+      "localizacao": {
+        "file": "docs/PRD/05-criterios-aceite.md",
+        "section": "## Jurisdicao logistica sobre preferencias no score",
+        "approx_line": 41
+      }
+    }
+  ],
+  "spec_findings": [
+    {
+      "id": "SPEC-M06-001",
+      "severity": "importante",
+      "type": "decisao_sem_justificativa",
+      "spec_path": "docs/SPEC/03-fila-scoring-estados-sla.md",
+      "req_ids": [
+        "REQ-ACE-003"
+      ],
+      "descricao": "A SPEC restringe `REQ-ACE-003` ao universo das demandas elegiveis ao score e reafirma que atribuicoes com `operadorAlocadoId` continuam a seguir a `Regra Zero`. O modulo tecnico escolhe, assim, a precedencia do bypass manual sem justificar como essa decisao convive com o cenario de aceite em que a jurisdicao logistica deve superar a preferencia manual.",
+      "localizacao": {
+        "file": "docs/SPEC/03-fila-scoring-estados-sla.md",
+        "section": "## Regra zero, hard filter, destaque e score",
+        "approx_line": 13
+      }
+    },
+    {
+      "id": "SPEC-M06-002",
+      "severity": "importante",
+      "type": "lacuna",
+      "spec_path": "docs/SPEC/03-fila-scoring-estados-sla.md",
+      "req_ids": [
+        "REQ-ACE-005"
+      ],
+      "descricao": "O destaque visual de prioridade `MAXIMA` esta previsto, mas nao se torna contrato textual que as restantes demandas permanecem simultaneamente visiveis e rolaveis na UI mobile. O criterio de aceite pede explicitamente destaque sem supressao, e essa garantia fica apenas implicita na redacao tecnica.",
+      "localizacao": {
+        "file": "docs/SPEC/03-fila-scoring-estados-sla.md",
+        "section": "## Regra zero, hard filter, destaque e score",
+        "approx_line": 15
+      }
+    },
+    {
+      "id": "SPEC-M06-003",
+      "severity": "importante",
+      "type": "decisao_sem_justificativa",
+      "spec_path": "docs/SPEC/03-fila-scoring-estados-sla.md",
+      "req_ids": [
+        "REQ-ACE-006"
+      ],
+      "descricao": "O fluxo `PENDENTE_APROVACAO` introduz aprovacao automatica do cancelamento apos 24 horas sem resposta gerencial. Essa decisao adiciona encerramento definitivo sem revisao humana efetiva, embora o criterio de aceite do PRD exija revisao administrativa antes da conclusao do cancelamento.",
+      "localizacao": {
+        "file": "docs/SPEC/03-fila-scoring-estados-sla.md",
+        "section": "## Fluxo detalhado `PENDENTE_APROVACAO`",
+        "approx_line": 112
+      }
+    }
+  ],
+  "cross_check": {
+    "coverage_rows": [
+      {
+        "prd_id": "REQ-ACE-001",
+        "spec_path": "docs/SPEC/04-rbac-permissoes.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "A SPEC define `obraId` como escopo obrigatorio para entidades tenant-scoped e fecha o bypass controlado para `SuperAdmin` e `Board`, alinhando isolamento por obra e visibilidade consolidada cross-tenant."
+      },
+      {
+        "prd_id": "REQ-ACE-002",
+        "spec_path": "docs/SPEC/03-fila-scoring-estados-sla.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "A maquina de estados torna `CONCLUIDA` um estado terminal e a matriz de autorizacao explicita que nao ha mutacoes validas depois da conclusao."
+      },
+      {
+        "prd_id": "REQ-ACE-003",
+        "spec_path": "docs/SPEC/03-fila-scoring-estados-sla.md",
+        "status": "Parcial",
+        "severidade": "bloqueante",
+        "comentario": "A SPEC cobre jurisdicao logistica, hard filters e formula de score, mas a `Regra Zero` e a nota de rastreio de `REQ-ACE-003` preservam a precedencia de `operadorAlocadoId`, conflitando com o cenario do PRD em que a preferencia manual deve perder para a demanda logisticamente favorecida."
+      },
+      {
+        "prd_id": "REQ-ACE-004",
+        "spec_path": "docs/SPEC/03-fila-scoring-estados-sla.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "A auditoria administrativa exige registo nao destrutivo com ator, timestamp, valores antigo/novo e justificativa obrigatoria para alteracoes gerenciais relevantes."
+      },
+      {
+        "prd_id": "REQ-ACE-005",
+        "spec_path": "docs/SPEC/03-fila-scoring-estados-sla.md",
+        "status": "Parcial",
+        "severidade": "importante",
+        "comentario": "O destaque visual de prioridade `MAXIMA` esta especificado, mas a manutencao explicita das restantes demandas visiveis e rolaveis na UI mobile nao foi localizada no texto tecnico."
+      },
+      {
+        "prd_id": "REQ-ACE-006",
+        "spec_path": "docs/SPEC/03-fila-scoring-estados-sla.md",
+        "status": "Parcial",
+        "severidade": "bloqueante",
+        "comentario": "A SPEC cobre a transicao inicial para `PENDENTE_APROVACAO` e a exposicao ao dashboard gerencial, mas acrescenta aprovacao automatica apos 24 horas sem decisao, o que enfraquece a exigencia de revisao administrativa antes do encerramento definitivo."
+      },
+      {
+        "prd_id": "REQ-ACE-007",
+        "spec_path": "docs/SPEC/00-visao-arquitetura.md",
+        "status": "Parcial",
+        "severidade": "importante",
+        "comentario": "A arquitetura documenta access token de 15 minutos, refresh token rotativo de 7 dias e blacklist por `jti` em `Redis`, mas o criterio de aceite correspondente ainda nao esta migrado no PRD como requisito testavel dentro do modulo."
+      },
+      {
+        "prd_id": "REQ-ACE-008",
+        "spec_path": "docs/SPEC/04-rbac-permissoes.md",
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "O bypass cross-tenant auditado e a limitacao estrita de `Board` a `HTTP GET`, com `HTTP 403` para escrita, estao claramente documentados."
+      }
+    ],
+    "blocking_conflicts": [
+      {
+        "id": "CROSS-M06-001",
+        "severity": "bloqueante",
+        "req_ids": [
+          "REQ-ACE-003"
+        ],
+        "descricao": "O PRD exige, no cenario de aceite, que uma demanda com preferencia manual de operador perca no ranking para outra com jurisdicao logistica favoravel. A SPEC, por outro lado, determina que demandas com `operadorAlocadoId` contornam as regras subsequentes e nao participam do score normal. Os dois documentos divergem sobre se a preferencia/alocacao manual participa ou nao da ordenacao priorizada.",
+        "localizacao_prd": "docs/PRD/05-criterios-aceite.md :: ## Jurisdicao logistica sobre preferencias no score :: ~L43/~L50",
+        "localizacao_spec": "docs/SPEC/03-fila-scoring-estados-sla.md :: ## Regra zero, hard filter, destaque e score :: ~L13/~L29"
+      },
+      {
+        "id": "CROSS-M06-002",
+        "severity": "bloqueante",
+        "req_ids": [
+          "REQ-ACE-006"
+        ],
+        "descricao": "O PRD fixa que o cancelamento iniciado em campo deve passar por revisao administrativa antes do encerramento definitivo. A SPEC reintroduz um caminho de conclusao sem revisao humana ao aprovar automaticamente o cancelamento apos 24 horas sem decisao gerencial, criando incompatibilidade direta com o criterio de aceite.",
+        "localizacao_prd": "docs/PRD/05-criterios-aceite.md :: ## Aprovacao administrativa para cancelamentos de operadores :: ~L85/~L92",
+        "localizacao_spec": "docs/SPEC/03-fila-scoring-estados-sla.md :: ## Fluxo detalhado `PENDENTE_APROVACAO` :: ~L112/~L116"
+      }
+    ]
+  },
+  "blocking_questions": [],
+  "decision_by_user": [],
+  "executive_summary": {
+    "total_findings": 7,
+    "bloqueantes": 2,
+    "importantes": 5,
+    "menores": 0,
+    "coverage": {
+      "coberto": 4,
+      "parcial": 4,
+      "nao_coberto": 0
+    },
+    "risco_geral": "alto",
+    "nota": "O M06 tem boa cobertura para isolamento RBAC, estado terminal, auditabilidade gerencial e restricoes cross-tenant, mas conserva dois desvios de aceite relevantes: a precedencia da alocacao manual face ao score/logistica e o encerramento automatico de cancelamentos sem revisao humana. Alem disso, `REQ-ACE-007` continua apenas parcialmente auditavel porque o criterio de token ainda nao foi migrado para o PRD modular."
+  },
+  "traceability_csv": "docs/audit/output/M06/traceability.csv",
+  "traceability_stub_markdown": "docs/audit/output/M06/traceability-stub.md"
+}
