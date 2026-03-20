@@ -17,6 +17,7 @@ O MVP contempla exclusivamente o modulo `Machinery Link`. Capacidades como `Almo
 - **Aplicacoes nativas**: o MVP permanece em `PWA`; mobile nativo fica condicionado a necessidades tecnicas futuras.
 - **Migracao de dados legados e roteirizacao geocolocada** (`REQ-SCO-F2-005`): a importacao de historico operacional de sistemas anteriores e a roteirizacao em mapas geocolocados ficam fora do MVP. A migracao depende de mapeamento de esquemas legados por obra e validacao de integridade com o modelo canonico do FGR-OPS; a roteirizacao depende de integracao com servico de mapas e maturidade da malha espacial em producao.
 - **ServicoDinamico**: adiado por falta de regras maduras para exclusao mutua, sincronismo e dependencias multiplas entre frentes.
+- **Entrega formal de material** (`PontoOrigem`, `exigeTransporte`): fluxo estruturado de entrega de material a partir de origens externas fixas (centrais de concreto, usinas, etc.) com tipificacao de servicos de transporte, campos obrigatorios de origem/destino/material e pre-preenchimento automatico da origem. No MVP, servicos de movimentacao de massas (Grunt, Concreto, etc.) sao tratados como demandas regulares com material e destino opcionais e descricao em texto livre, pois o material ja se encontra na frente de obras (DEC-006).
 
 ### Criterios de promocao para Fase 2
 

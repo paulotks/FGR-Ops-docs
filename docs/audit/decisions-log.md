@@ -91,6 +91,44 @@ Este registo centraliza as decisões de produto necessárias antes das correçõ
   - `PRD/04-requisitos-nao-funcionais.md`: `REQ-NFR-007` actualizado — título alterado para "Política de autenticação segmentada por perfil"; texto reformulado para documentar dois grupos (Campo: Usuário+PIN com controlos compensatórios; Administrativo: palavra-passe forte); referência SPEC apontada para novo anchor `#politica-autenticacao-senha`.
   - Artefactos regenerados: `M05/consolidated.json`, `M05/traceability.csv`, `M05/traceability-stub.md`.
 
+## DEC-005 — Localizacao obrigatoria, locais externos e ponto de origem (`REQ-JOR-001`)
+
+- **Estado:** Decidido
+- **Data:** 2026-03-20
+- **Participantes:** Produto, Operacoes, Stakeholders de Negocio
+- **Contexto:** Alinhar o modelo de localizacao da solicitacao do empreiteiro com a realidade operacional de obras de condominios horizontais, infraestrutura e casas. O requisito original definia `Quadra`/`Lote` como opcionais e nao distinguia servicos de execucao local de servicos de transporte de material.
+- **Opcoes em analise:**
+  - A) Manter Quadra/Lote opcionais; localizacao generica.
+  - B) Tornar Quadra/Lote obrigatorios; criar entidade para locais externos; tipificar servicos de transporte.
+  - C) Modelo generico de "ponto de localizacao" sem distincao.
+- **Decisao:** B) Localizacao obrigatoria com dois modos. O empreiteiro seleciona obrigatoriamente **Quadra/Lote** ou **Local Externo** (Portaria, Pulmao, Garagem, etc.). O `SetorOperacional` e derivado automaticamente. A filtragem mutua entre Servico e Maquinario melhora a UX ao restringir opcoes invalidas. *(Nota: o escopo de transporte de material — `exigeTransporte`, `PontoOrigem` — foi subsequentemente revisto por DEC-006 e adiado para pos-MVP.)*
+- **Justificacao:** A obrigatoriedade de Quadra/Lote reflete o fluxo real do empreiteiro em campo. Locais como Portaria, Pulmao e Garagem precisam ser endereçaveis no sistema sem pertencer a malha de Quadra/Lote. A filtragem mutua entre Servico e Maquinario melhora a UX ao restringir opcoes invalidas.
+- **Nota MVP:** A UX deve oferecer alternancia simples entre Quadra/Lote e Local Externo na interface de solicitacao.
+- **Aplicacao (2026-03-20):**
+  - `PRD/02-jornada-usuario.md`: `REQ-JOR-001` reescrito — localizacao obrigatoria (Quadra/Lote ou Local Externo), `SetorOperacional` derivado, filtragem mutua Servico/Maquinario, material e destino opcionais, descricao complementar recomendada para movimentacao.
+  - `SPEC/01-modulos-plataforma.md`: Capacidade #1 (Solicitacao) actualizada para reflectir novo fluxo com dois modos de localizacao, material e destino opcionais.
+  - `SPEC/02-modelo-dados.md`: Adicionada entidade `LocalExterno`; `Demanda` expandida com atributos de localizacao (`localTipo`), material e destino opcionais, e `descricaoAdicional`. `REQ-JOR-001` adicionado ao rastreio PRD.
+
+## DEC-006 — Revisao do escopo de transporte de material no MVP (`REQ-JOR-001`)
+
+- **Estado:** Decidido
+- **Data:** 2026-03-20
+- **Participantes:** Produto, Logistica de campo, Operacoes
+- **Contexto:** Validacao de campo com auxiliar de Logistica revelou que o fluxo real de movimentacao de massas (Grunt, Concreto, etc.) difere do modelo de entrega de material desenhado em DEC-005. Na pratica, o empreiteiro nao solicita massas como pedido de material externo — os materiais ja se encontram na frente de obras, tipicamente em caixa d'agua dentro ou na frente do lote. As demandas sao para o operador de maquinas **movimentar** a massa existente (ex.: subir grunt para laje, descer massa, levar para lote ao lado). O fluxo actual no sistema legado utiliza: Servico=Movimentacao, Equipamento=Munck, Material=Grunt, Localizacao=Quadra/Lote de origem, Destino=Quadra de Destino (geralmente interno ao lote), Descricao=texto livre.
+- **Opcoes em analise:**
+  - A) Manter `exigeTransporte`, `PontoOrigem` e fluxo de entrega formal no MVP.
+  - B) Adiar o fluxo de entrega formal para pos-MVP; no MVP tratar movimentacao de massas como demanda regular com material e destino opcionais e descricao em texto livre.
+  - C) Remover completamente o conceito de entrega de material do roadmap.
+- **Decisao:** B) Adiar entrega formal de material para pos-MVP. No MVP, servicos de movimentacao de massas sao tratados como demandas regulares: o empreiteiro informa localizacao (Quadra/Lote ou Local Externo), seleciona servico e equipamento com filtragem mutua, opcionalmente seleciona material (para `fator_material`) e informa destino (Quadra/Lote), e detalha a operacao no campo de descricao. As entidades `PontoOrigem`, a flag `exigeTransporte` no `Servico` e os campos polimorficos de origem na `Demanda` ficam adiados para Fase 2, onde poderao ser reaproveitados para um servico de entrega de material de origem externa.
+- **Justificacao:** O material (massas, grunt, concreto) ja se encontra na frente de obras e nao precisa de logistica de entrega no MVP. O fluxo real e de movimentacao local, adequadamente atendido pelo formulario existente com descricao em texto livre. A implementacao de entrega formal de material (`PontoOrigem`, `exigeTransporte`) nao e inutil — e reaproveitavel em fase posterior para cenarios de entrega de material de origens externas (centrais, usinas) — mas adiciona complexidade desnecessaria ao MVP.
+- **Nota MVP:** A UI do empreiteiro permanece com o fluxo simples: localizacao + servico/equipamento + material (opcional) + destino (opcional) + descricao.
+- **Aplicacao (2026-03-20):**
+  - `PRD/02-jornada-usuario.md`: `REQ-JOR-001` revisto — subsecao "Servicos com transporte de material" substituida por "Material e destino (opcionais)" com nota sobre movimentacao de massas e adiamento de entrega formal; descricao complementar recomendada para movimentacao.
+  - `SPEC/01-modulos-plataforma.md`: Capacidade #1 simplificada — removidas referencias a `exigeTransporte` e `PontoOrigem`; material e destino descritos como opcionais.
+  - `SPEC/02-modelo-dados.md`: Removida entidade `PontoOrigem`; removidos `exigeTransporte` e `pontoOrigemPadraoId` do `Servico`; `Demanda` simplificada (removidos campos polimorficos de origem; mantidos `materialId` e `destinoQuadraId`/`destinoLoteId` como opcionais).
+  - `SPEC/06-definicoes-complementares.md`: `PontoOrigem` removido da tabela de rastreabilidade.
+  - `SPEC/05-backlog-mvp-glossario.md`: Adicionado item "Entrega formal de material" aos adiamentos para Fase 2.
+
 ---
 
 ## Fase 2 — Correcoes de achados importantes
@@ -140,7 +178,7 @@ As correcoes abaixo nao exigiram decisao de produto nova; derivam directamente d
 - **PRD-M01-001:** Apontadores SPEC adicionados em `REQ-OBJ-003`, `REQ-OBJ-004`, `REQ-SCO-003`, `REQ-SCO-004` de `PRD/00-visao-escopo.md`.
 - **PRD-M01-002:** Apontadores SPEC adicionados nas seccoes Fora do Escopo e Criterios de Promocao para `05-backlog-mvp-glossario.md`.
 - **PRD-M02-001:** `PRD/01-usuarios-rbac.md` actualizado — `REQ-RBAC-005` e `REQ-RBAC-006` explicitam leitura de contexto auxiliar para Empreiteiro e Operador.
-- **PRD-M03-001:** `PRD/02-jornada-usuario.md` — `REQ-JOR-001` agora especifica seleccao de `SetorOperacional` (obrigatorio) e `Quadra`/`Lote` (opcional).
+- **PRD-M03-001:** `PRD/02-jornada-usuario.md` — `REQ-JOR-001` agora especifica seleccao de `SetorOperacional` (obrigatorio) e `Quadra`/`Lote` (opcional). *(Nota: subsequentemente actualizado por DEC-005 — Quadra/Lote tornados obrigatorios, Local Externo introduzido, SetorOperacional derivado. Revisto por DEC-006 — entrega formal de material adiada para pos-MVP; movimentacao de massas como demanda regular.)*
 - **PRD-M04-001:** `PRD/03-requisitos-funcionais.md` — apontadores SPEC adicionados para `REQ-FUNC-003`, `REQ-FUNC-004`, `REQ-FUNC-005`, `REQ-FUNC-007`, `REQ-FUNC-010`.
 - **PRD-M06-001:** `PRD/05-criterios-aceite.md` — `REQ-ACE-007` migrado para seccao "Seguranca de token e gestao de sessao" com 3 cenarios Gherkin (expiracao/renovacao, invalidacao por logout, deteccao de reuso).
 - **PRD-M07-002:** `PRD/06-metricas-riscos.md` — `REQ-RISK-001` agora inclui mitigacao explicita com responsavel, validacao, auditoria, restricao de exclusao e relatorio. Apontador SPEC actualizado.

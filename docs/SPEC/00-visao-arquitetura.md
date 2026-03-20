@@ -57,7 +57,7 @@ O sistema é estruturado num Monorepo (Turborepo):
 
 > Decisão: O modelo de bypass condicional no middleware foi preferido ao modelo de "supertenant" (tenant especial que contém todos os dados) por manter a lógica de isolamento centralizada em um único ponto da infraestrutura, reduzindo risco de vazamento por query mal construída.
 
-6. **D6: Política de Autenticação e Palavra-passe — segmentação por perfil** {#politica-autenticacao-senha}
+### D6: Politica de Autenticacao e Palavra-passe - segmentacao por perfil {#politica-autenticacao-senha}
 
    **Rastreio PRD:** REQ-NFR-007 | **Decisão de produto:** DEC-004
 

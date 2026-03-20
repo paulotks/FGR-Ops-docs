@@ -1,13 +1,13 @@
 # Modelo de dados
 
-**Rastreio PRD:** `REQ-FUNC-003`, `REQ-FUNC-004`, `REQ-FUNC-006`, `REQ-FUNC-007`, `REQ-FUNC-010`, `REQ-NFR-004`, `REQ-MET-001`
+**Rastreio PRD:** `REQ-JOR-001`, `REQ-FUNC-003`, `REQ-FUNC-004`, `REQ-FUNC-006`, `REQ-FUNC-007`, `REQ-FUNC-010`, `REQ-NFR-004`, `REQ-MET-001`
 
 Este modulo consolida as entidades principais do dominio, as relacoes entre recursos operacionais e as regras de integridade que sustentam o isolamento por obra e a rastreabilidade do Machinery Link.
 
 ## Entidades principais
 
 - **Core**: `User`, `Role` e `Obra`.
-- **Organizacao espacial**: `SetorOperacional` (macro-jurisdicao alocavel), `Quadra`, `Lote`, `Rua` e `LoteAdjacencia`, usados para inferir proximidade e restringir o motor de fila.
+- **Organizacao espacial**: `SetorOperacional` (macro-jurisdicao alocavel), `Quadra`, `Lote`, `Rua` e `LoteAdjacencia`, usados para inferir proximidade e restringir o motor de fila. `LocalExterno` representa localizacoes operacionais da obra fora da malha de Quadra/Lote (Portaria, Pulmao, Garagem, entre outros), cadastraveis por obra e vinculados a um `SetorOperacional`.
 - **Operacional**: `Empreiteira`.
 - **Maquinario e recursos**:
   - `TipoMaquinario`: categoria generica que define capacidades base, como escavadeira ou motoniveladora.
@@ -17,7 +17,14 @@ Este modulo consolida as entidades principais do dominio, as relacoes entre recu
 - **Catalogo**:
   - `Servico`: atividade executada, vinculada operacionalmente ao `Maquinario`, seguindo a hierarquia `TipoMaquinario` -> `Maquinario` -> `Servico`.
   - `Material`.
-- **Transacional**: `Demanda` como aggregate root, `DemandaGrupo` e `DemandaLog`.
+- **Transacional**: `Demanda` como aggregate root, `DemandaGrupo` e `DemandaLog`. A `Demanda` inclui os seguintes atributos de localizacao (`REQ-JOR-001`):
+  - `localTipo` (enum: `QUADRA_LOTE` | `LOCAL_EXTERNO`): tipo de localizacao onde o servico e necessario.
+  - `quadraId`, `loteId`: obrigatorios quando `localTipo = QUADRA_LOTE`.
+  - `localExternoId`: obrigatorio quando `localTipo = LOCAL_EXTERNO`.
+  - `setorOperacionalId`: derivado automaticamente da localizacao selecionada.
+  - `materialId` (FK para `Material`, opcional): quando preenchido, alimenta o `fator_material` no motor de score.
+  - `destinoQuadraId`, `destinoLoteId` (opcionais): contextualizam servicos de movimentacao de material (ex.: mover massa para lote adjacente).
+  - `descricaoAdicional` (texto livre, opcional): recomendado para servicos de movimentacao, onde o empreiteiro detalha a operacao (ex.: "subir grunt para laje da casa").
 - **Expediente**: `RegistroExpediente`, que formaliza a relacao temporal entre `Operador`, `Maquina` e, opcionalmente, `Ajudante`.
 
 No check-in do inicio de expediente, o operador deve:

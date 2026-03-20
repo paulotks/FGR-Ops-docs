@@ -59,7 +59,7 @@ A `Demanda.dataAgendada` deve permanecer isolada do pipeline de score em tempo r
 - A entidade exigiria regras maduras para exclusao mutua, sincronismo entre multiplos maquinarios e recuperacao de falhas em operacoes acopladas.
 - No MVP, o papel equivalente e atendido apenas por agrupamentos passivos via `DemandaGrupo`, sem orquestracao simultanea de execucao.
 
-## Contrato analitico `REQ-MET-002` — Adocao e engajamento operacional
+## Contrato analitico `REQ-MET-002` - Adocao e engajamento operacional {#contrato-analitico-req-met-002}
 
 Este contrato operacional constitui a fonte canonica de medicao para `REQ-MET-002`. O PRD define a intencao de negocio da metrica; esta secao define formula, denominador, regras de elegibilidade, janela temporal e evidencias auditaveis (DEC-003).
 
@@ -132,6 +132,7 @@ O PRD exige rastreabilidade consistente dos recursos operacionais em modelo rela
 | `Material` | Sim | Sim — mesmo contrato | Sim |
 | `SetorOperacional` | Sim (com restricao de demandas activas — ver [05-backlog-mvp-glossario.md](05-backlog-mvp-glossario.md#governanca-da-taxonomia-espacial-req-risk-001)) | Sim — mesmo contrato | Sim |
 | `Quadra`, `Lote`, `Rua` | Sim (com restricao de demandas activas) | Sim — mesmo contrato | Sim |
+| `LocalExterno` | Sim (com restricao de demandas activas) | Sim — mesmo contrato | Sim |
 | `RegistroExpediente` | Nao (imutavel apos encerramento) | Sim — criacao e encerramento | Sim |
 
 Regras transversais:

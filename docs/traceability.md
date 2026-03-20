@@ -16,7 +16,7 @@ Matriz global de rastreio entre os requisitos do PRD e os modulos da SPEC.
 | `REQ-CTX-*`, `REQ-OBJ-*`, `REQ-SCO-*` | [PRD/00-visao-escopo.md](PRD/00-visao-escopo.md) | [SPEC/00-visao-arquitetura.md](SPEC/00-visao-arquitetura.md) | Contexto, objetivos, escopo MVP/Fase 2 e alinhamento arquitetural base. |
 | `REQ-SCO-F2-*`, `REQ-SCO-GAT-*` | [PRD/00-visao-escopo.md](PRD/00-visao-escopo.md) | [SPEC/05-backlog-mvp-glossario.md](SPEC/05-backlog-mvp-glossario.md) | Delimitacao do backlog, itens adiados e gatilhos de promocao. |
 | `REQ-RBAC-*` | [PRD/01-usuarios-rbac.md](PRD/01-usuarios-rbac.md) | [SPEC/04-rbac-permissoes.md](SPEC/04-rbac-permissoes.md) | Perfis, escopos de acesso, bypass cross-tenant e matrizes de permissao. |
-| `REQ-JOR-001` | [PRD/02-jornada-usuario.md](PRD/02-jornada-usuario.md) | [SPEC/01-modulos-plataforma.md](SPEC/01-modulos-plataforma.md) | Cobertura da abertura de demandas e fronteiras do modulo operacional. |
+| `REQ-JOR-001` | [PRD/02-jornada-usuario.md](PRD/02-jornada-usuario.md) | [SPEC/01-modulos-plataforma.md](SPEC/01-modulos-plataforma.md), [SPEC/02-modelo-dados.md](SPEC/02-modelo-dados.md) | Cobertura da abertura de demandas, localizacao obrigatoria (Quadra/Lote ou Local Externo), filtragem mutua Servico/Maquinario, material e destino opcionais, descricao para movimentacao (DEC-005, DEC-006). |
 | `REQ-JOR-002`, `REQ-JOR-003` | [PRD/02-jornada-usuario.md](PRD/02-jornada-usuario.md) | [SPEC/03-fila-scoring-estados-sla.md](SPEC/03-fila-scoring-estados-sla.md) | Triagem por jurisdicao e score operacional. |
 | `REQ-JOR-004`, `REQ-JOR-005` | [PRD/02-jornada-usuario.md](PRD/02-jornada-usuario.md) | [SPEC/03-fila-scoring-estados-sla.md](SPEC/03-fila-scoring-estados-sla.md) | Execucao em campo, alocacao manual e auditoria administrativa. |
 | `REQ-FUNC-001`, `REQ-FUNC-002` | [PRD/03-requisitos-funcionais.md](PRD/03-requisitos-funcionais.md) | [SPEC/03-fila-scoring-estados-sla.md](SPEC/03-fila-scoring-estados-sla.md) | Maquina de estados, filtros eliminatorios e regras de fila. |
@@ -94,7 +94,7 @@ Detalhes por modulo e JSON global em [docs/audit/output/global/consolidated-glob
 - **Bloqueantes**
   - Nenhum bloqueio PRD↔SPEC identificado no modulo.
 - **Importantes** — Todos resolvidos.
-  - ~~`PRD-M03-001`~~ — **Resolvido (Fase 2.6).** `REQ-JOR-001` agora especifica seleccao de `SetorOperacional` (obrigatorio) e `Quadra`/`Lote` (opcional).
+  - ~~`PRD-M03-001`~~ — **Resolvido (Fase 2.6).** `REQ-JOR-001` agora especifica seleccao de `SetorOperacional` (obrigatorio) e `Quadra`/`Lote` (opcional). *(Subsequentemente actualizado por DEC-005: Quadra/Lote obrigatorios, Local Externo introduzido, SetorOperacional derivado. Revisto por DEC-006: entrega formal de material adiada para pos-MVP; movimentacao de massas tratada como demanda regular com material e destino opcionais.)*
   - ~~`SPEC-M03-001`~~ — **Resolvido (Fase 2.4).** Capacidade #1 (Solicitacao) expandida com captura obrigatoria de localizacao de trabalho.
   - ~~`SPEC-M03-002`~~ — **Resolvido (Fase 2.1).** Passo 3 do motor agora explicita contrato de experiencia da fila: UI nao bloqueante, demandas visiveis e rolaveis.
   - ~~`SPEC-M03-003`~~ — **Resolvido (Fase 1.2, DEC-002).** Encerramento por estouro de SLA no fim do expediente parametrizavel por obra.

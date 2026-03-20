@@ -28,7 +28,7 @@ Os monolitos na raiz (`PRD-FGR-OPS.md`, `FGR-OPS-SPEC.md`) foram substituidos po
 
 ### Ligações cruzadas
 
-- Do PRD para a SPEC: linha curta `→ SPEC: [caminho-relativo](...#âncora)`.
+- Do PRD para a SPEC: linha curta `→ SPEC: caminho-relativo#ancora`.
 - Da SPEC para o PRD: bloco **`Rastreio PRD:`** com IDs.
 - Âncoras Markdown nas secções SPEC: `## Título {#identificador-ancora}`.
 

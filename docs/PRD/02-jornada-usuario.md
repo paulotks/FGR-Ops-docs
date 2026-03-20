@@ -6,9 +6,35 @@ Esta secção descreve o fluxo operacional principal do módulo Machinery Link, 
 
 ### `REQ-JOR-001` Requisicao inicial pelo Empreiteiro
 
-O `Empreiteiro` autentica-se no portal, informa a localizacao em que esta a trabalhar — seleccionando obrigatoriamente o `SetorOperacional` e, opcionalmente, `Quadra` e `Lote` da malha espacial do Core — e solicita maquinario indicando o servico requerido. Esta seleccao ancora o pedido ao contexto logistico que alimenta o filtro de jurisdicao e o fator de adjacencia no motor de score. O fluxo deve permitir a criacao de demandas simples e tambem modelos agrupados de demandas dependentes.
+O `Empreiteiro` acede ao aplicativo movel, autentica-se (caso nao esteja autenticado) e solicita maquinario seguindo o fluxo descrito abaixo.
+
+#### Localizacao da demanda
+
+O empreiteiro informa obrigatoriamente a localizacao onde necessita do servico, selecionando:
+
+- **Quadra e Lote** da malha espacial do Core (opcao padrao), ou
+- **Local Externo** da obra (Portaria, Pulmao, Garagem, entre outros cadastrados por obra).
+
+A interface deve oferecer alternancia simples entre os dois modos de localizacao para facilitar o preenchimento. O `SetorOperacional` e derivado automaticamente da localizacao selecionada, ancorando o pedido ao contexto logistico que alimenta o filtro de jurisdicao e o fator de adjacencia no motor de score.
+
+#### Selecao de servico e maquinario
+
+O empreiteiro seleciona o servico desejado a partir de uma lista nomeada e o maquinario correspondente. A selecao e mutuamente filtravel: escolher um servico restringe os maquinarios disponiveis e vice-versa, conforme o vinculo operacional do catalogo (`TipoMaquinario` -> `Maquinario` -> `Servico`).
+
+#### Material e destino (opcionais)
+
+O empreiteiro pode selecionar um **Material** do catalogo (ex.: Grunt, Concreto) e informar um **Destino** (Quadra/Lote diferente da localizacao de origem). Ambos os campos sao opcionais. Quando preenchido, o material alimenta o `fator_material` no motor de score; o destino contextualiza servicos de movimentacao.
+
+> **Nota sobre movimentacao de massas:** Servicos de movimentacao de materiais como Grunt, Concreto e similares constituem demandas para que o operador de maquinas desloque a massa ja existente no local de obra (tipicamente armazenada em caixa d'agua na frente do lote). Exemplos: "subir grunt para laje da casa", "descer massa", "levar para o lote ao lado". O empreiteiro informa a localizacao de origem (Quadra/Lote), seleciona servico (ex.: Movimentacao), equipamento (ex.: Munck), opcionalmente o material e o destino, e detalha a operacao no campo de descricao. Nao se trata de pedido de fornecimento de material externo — o material ja se encontra na frente de obras.
+
+> **Entrega formal de material (pos-MVP):** Um fluxo estruturado de entrega de material a partir de origens externas (centrais de concreto, usinas, etc.) podera ser implementado em fase posterior, reaproveitando o catalogo de materiais e a infraestrutura de localizacao ja existentes. Ver itens adiados em [../SPEC/05-backlog-mvp-glossario.md](../SPEC/05-backlog-mvp-glossario.md#itens-adiados-para-fase-2).
+
+#### Complemento e submissao
+
+O empreiteiro pode adicionar uma descricao complementar (campo livre, recomendado para servicos de movimentacao) e submete a solicitacao. O fluxo deve permitir a criacao de demandas simples e tambem de lotes agrupados via `DemandaGrupo` para rastreabilidade, sem orquestracao de execucao.
 
 -> SPEC: [../SPEC/01-modulos-plataforma.md#modulo-machinery-link-mvp](../SPEC/01-modulos-plataforma.md#modulo-machinery-link-mvp)
+-> SPEC: [../SPEC/02-modelo-dados.md#entidades-principais](../SPEC/02-modelo-dados.md#entidades-principais)
 
 ### `REQ-JOR-002` Triagem por jurisdicao logistica
 
