@@ -12,4 +12,6 @@ Pacote modular de requisitos de produto. Resumos abaixo; conteúdo migrado a par
 | [05-criterios-aceite.md](05-criterios-aceite.md) | Critérios de aceite | Critérios testáveis do PRD para RBAC, isolamento e operação do Machinery Link; segurança de token permanece pendente. | REQ-ACE-001…006, REQ-ACE-008 | [04-rbac-permissoes.md](../SPEC/04-rbac-permissoes.md), [03-fila-scoring-estados-sla.md](../SPEC/03-fila-scoring-estados-sla.md) |
 | [06-metricas-riscos.md](06-metricas-riscos.md) | Metricas e riscos | Indicadores de sucesso do MVP, riscos operacionais e mitigacoes para rollout em campo. | REQ-MET-001…003, REQ-RISK-001…002 | [02-modelo-dados.md](../SPEC/02-modelo-dados.md), [03-fila-scoring-estados-sla.md](../SPEC/03-fila-scoring-estados-sla.md), [05-backlog-mvp-glossario.md](../SPEC/05-backlog-mvp-glossario.md), [06-definicoes-complementares.md](../SPEC/06-definicoes-complementares.md) |
 
+- [Matriz de rastreabilidade](../traceability.md)
+
 [Voltar ao README dos docs](../README.md)

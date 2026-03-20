@@ -12,4 +12,6 @@ Pacote modular de especificação técnica. Resumos abaixo; conteúdo migrado a 
 | [05-backlog-mvp-glossario.md](05-backlog-mvp-glossario.md) | Backlog MVP e glossario | Delimitacao do MVP, itens adiados para Fase 2 e glossario tecnico comum. | REQ-SCO-F2-001…006, REQ-RISK-001 | — |
 | [06-definicoes-complementares.md](06-definicoes-complementares.md) | Definicoes complementares | Offline PWA, comportamento de agendamentos, adiamento de `ServicoDinamico` e rastreabilidade de ajudantes. | REQ-NFR-002, REQ-FUNC-004, REQ-FUNC-006, REQ-FUNC-009, REQ-RISK-002, REQ-MET-003 | — |
 
+- [Matriz de rastreabilidade](../traceability.md)
+
 [Voltar ao README dos docs](../README.md)
