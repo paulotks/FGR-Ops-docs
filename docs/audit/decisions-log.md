@@ -82,3 +82,17 @@ Este registo centraliza as decisões de produto necessárias antes das correçõ
 - **Justificação:** A segmentação equilibra usabilidade operacional em campo e segurança corporativa nos perfis de retaguarda. O PRD permanece como fonte dos critérios mínimos e da regra por perfil, enquanto a SPEC torna-se fonte canónica do contrato técnico de autenticação (fluxos, lockout, rate limiting por endpoint/perfil, auditoria e gestão de sessão), fechando a lacuna bloqueante identificada em `SPEC-M05-002`.
 - **Nota MVP:** Para login de Campo com `Usuário + PIN`, implementar no mínimo: limite de tentativas com bloqueio temporário progressivo, resposta de erro não enumerável, trilha auditável de autenticação e política de sessão curta. A SPEC deve explicitar os parâmetros operacionais.
 - **Achados resolvidos:** `SPEC-M05-002`
+
+---
+
+## Correções directas (sem decisão de produto pendente)
+
+### Fase 1.3 — Cobertura de `REQ-SCO-003` (`SPEC-M01-001`)
+
+- **Data:** 2026-03-20
+- **Tipo:** Lacuna documental — gap de cobertura SPEC sem ambiguidade de produto.
+- **Contexto:** O PRD define `REQ-SCO-003` (Gestão de Recursos: Cadastro de Maquinário e Ajudantes) e aponta para `SPEC/02-modelo-dados.md`, que já documenta as entidades. Contudo, o SPEC primário do M01 (`SPEC/00-visao-arquitetura.md`) não referenciava `REQ-SCO-003` nem mencionava os atributos de cadastro, ficando sem cobertura localizável no escopo de auditoria do módulo.
+- **Correcção aplicada:**
+  - `SPEC/00-visao-arquitetura.md` §Arquitetura Tática (DDD): adicionado `REQ-SCO-003` ao rastreio PRD; texto expandido para documentar cadastro de `Maquinario` (placa, TipoMaquinario, Servico vinculado, propriedade FGR/Terceiro) e `Ajudante` (recurso humano sem credencial própria), com referência cruzada a `02-modelo-dados.md`.
+- **Artefactos regenerados:** `M01/consolidated.json`, `M01/traceability.csv`, `M01/traceability-stub.md`.
+- **Achado resolvido:** `SPEC-M01-001` (bloqueante → resolvido)

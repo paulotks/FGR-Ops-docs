@@ -55,11 +55,11 @@ O sistema é estruturado num Monorepo (Turborepo):
 
 ### Arquitetura Tática (DDD) {#arquitetura-tatica-ddd}
 
-**Rastreio PRD:** REQ-OBJ-001, REQ-SCO-001, REQ-SCO-002
+**Rastreio PRD:** REQ-OBJ-001, REQ-SCO-001, REQ-SCO-002, REQ-SCO-003
 
 Foi adotada de forma estrita a **Arquitetura Tática**:
 - **Domínios e Bounded Contexts**: O módulo "Core" lida com identidade (Users, Roles, Obras). O módulo "Machinery Link" lida apenas com o ciclo operacional de equipamentos.
-- **Aggregates e Entities**: `Demanda` é o Aggregate Root, compondo entidades filhas como `DemandaAcao` e amparando agrupamentos via `DemandaGrupo`. `Maquinario` e `Operador` são entidades operacionais essenciais.
+- **Aggregates e Entities**: `Demanda` é o Aggregate Root, compondo entidades filhas como `DemandaAcao` e amparando agrupamentos via `DemandaGrupo`. `Maquinario` e `Operador` são entidades operacionais essenciais. O cadastro de recursos abrange `Maquinario` (com atributos `placa`, `TipoMaquinario`, `Servico` vinculado e `propriedade` FGR/Terceiro) e `Ajudante` (recurso humano vinculado à obra sem credencial própria no sistema). O modelo de dados completo destas entidades está detalhado em [02-modelo-dados.md](02-modelo-dados.md).
 - **Value Objects**: Atributos imutáveis e configurações de peso dinâmicos do Score (`W_adj`).
 - **Domain Services**: Lógicas de negócio puras isoladas, notadamente o **Algoritmo de Priorização da Fila** (onde o check de Setor Logístico e Score é feito).
 - **Repositories**: Interfaces no *Core* determinam o contrato (`IDemandaRepository`), sendo implementadas como *Prisma Adapters* na infraestrutura.

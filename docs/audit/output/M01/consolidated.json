@@ -64,6 +64,8 @@
       "id": "SPEC-M01-001",
       "severity": "bloqueante",
       "type": "lacuna",
+      "status": "resolvido",
+      "resolucao": "Fase 1.3 — 2026-03-20. Adicionado rastreio REQ-SCO-003 e texto explicito de cobertura para cadastro de Maquinario (placa, TipoMaquinario, Servico, propriedade) e Ajudante (sem credencial) na seccao Arquitetura Tatica (DDD) de docs/SPEC/00-visao-arquitetura.md, com referencia cruzada a docs/SPEC/02-modelo-dados.md.",
       "spec_path": "docs/SPEC/00-visao-arquitetura.md",
       "req_ids": [
         "REQ-SCO-003"
@@ -71,8 +73,8 @@
       "descricao": "No conjunto SPEC revisto para o M01 nao foi localizada evidencia para cadastro de maquinario com placa/tipo/servicos/propriedade nem para cadastro de ajudantes sem acesso ao sistema. O item permanece dentro do escopo do PRD, mas nao esta documentado nas SPECs revistas para este modulo.",
       "localizacao": {
         "file": "docs/SPEC/00-visao-arquitetura.md",
-        "section": "INFORMACAO_NAO_LOCALIZADA",
-        "approx_line": 0
+        "section": "### Arquitetura Tatica (DDD)",
+        "approx_line": 58
       }
     },
     {
@@ -200,9 +202,9 @@
       {
         "prd_id": "REQ-SCO-003",
         "spec_path": "docs/SPEC/00-visao-arquitetura.md",
-        "status": "Nao coberto",
-        "severidade": "bloqueante",
-        "comentario": "Nao foi localizada cobertura para cadastro de maquinario e ajudantes no conjunto SPEC revisto para o M01."
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "Seccao Arquitetura Tatica (DDD) documenta cadastro de Maquinario (placa, TipoMaquinario, Servico, propriedade) e Ajudante (sem credencial), com referencia a 02-modelo-dados.md para modelo completo."
       },
       {
         "prd_id": "REQ-SCO-004",
@@ -295,16 +297,17 @@
   "decision_by_user": [],
   "executive_summary": {
     "total_findings": 6,
-    "bloqueantes": 1,
+    "bloqueantes": 0,
     "importantes": 5,
     "menores": 0,
+    "resolvidos": 1,
     "coverage": {
-      "coberto": 13,
+      "coberto": 14,
       "parcial": 4,
-      "nao_coberto": 6
+      "nao_coberto": 5
     },
     "risco_geral": "medio",
-    "nota": "O M01 tem boa cobertura para contexto, objetivos centrais e fundacao arquitetural do MVP, mas perde completude em itens de escopo detalhado e, sobretudo, na SPEC secundaria para backlog/gatilhos de Fase 2."
+    "nota": "O M01 tem boa cobertura para contexto, objetivos centrais e fundacao arquitetural do MVP. O bloqueante SPEC-M01-001 (REQ-SCO-003) foi resolvido na Fase 1.3. Permanecem achados importantes na SPEC secundaria para backlog/gatilhos de Fase 2."
   },
   "traceability_csv": "docs/audit/output/M01/traceability.csv",
   "traceability_stub_markdown": "docs/audit/output/M01/traceability-stub.md"
