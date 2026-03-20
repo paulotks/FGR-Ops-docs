@@ -113,10 +113,11 @@ Quando um `Operador` precisa invalidar uma demanda em execucao, nao pode move-la
 
 - A demanda permanece suspensa num holding state gerencial.
 - A exclusividade do operador sobre a demanda e removida apos o pedido, libertando-o para receber a proxima tarefa do topo da fila.
-- O prazo maximo de resposta gerencial e de 24 horas; sem decisao, o sistema aprova o cancelamento automaticamente.
+- O prazo maximo de resposta gerencial e o fim do expediente da obra. O horario de expediente e parametrizavel por obra (ex.: 06h-17h). Se nao houver decisao gerencial ate ao fim do expediente, o sistema aprova automaticamente o cancelamento com origem `estouro_sla_fim_expediente`, ator `SISTEMA` e timestamp (DEC-002).
 - `AdminOperacional`, `UsuarioInternoFGR` e `SuperAdmin` sao os avaliadores autorizados.
 - Se a solicitacao for rejeitada, a demanda regressa a `EM_ANDAMENTO` vinculada ao mesmo operador e reentra no topo da fila desse operador.
 - O operador mantem visibilidade de leitura enquanto aguarda o desfecho, mas nao pode executar novas acoes sobre a demanda.
+- Toda aprovacao automatica gera trilha auditavel obrigatoria em `DemandaLog` com campos: `origem`, `ator`, `timestamp` e `motivo`. No dia util seguinte, `UsuarioInternoFGR` e `AdminOperacional` dispoem de visao dedicada para revisao pos-facto e acao correctiva/operacional quando necessario (DEC-002).
 
 ## Auditoria administrativa e justificativas
 
@@ -142,4 +143,4 @@ Se a `Regra Zero` atribuir manualmente uma nova demanda a um operador que ja pos
 - [REQ-ACE-003](../PRD/05-criterios-aceite.md#jurisdicao-logistica-sobre-preferencias-no-score)
 - [REQ-ACE-004](../PRD/05-criterios-aceite.md#audit-log-com-justificativa-em-modificacoes-gerenciais)
 - [REQ-ACE-005](../PRD/05-criterios-aceite.md#destaque-visual-de-prioridade-maxima-na-ui-mobile)
-- [REQ-ACE-006](../PRD/05-criterios-aceite.md#aprovacao-administrativa-para-cancelamentos-de-operadores)
+- [REQ-ACE-006](../PRD/05-criterios-aceite.md#cancelamento-de-demandas-em-campo-e-encerramento-por-sla)

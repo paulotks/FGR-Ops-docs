@@ -88,18 +88,36 @@ When o Operador acessa a tela de 'Minhas Tarefas' no aplicativo mobile
 Then a demanda 'MAXIMA' deve ser exibida com borda pulsante vermelha no topo da lista, mantendo as outras 2 demandas visíveis e roláveis abaixo
 ```
 
-## Aprovacao administrativa para cancelamentos de operadores
+## Cancelamento de demandas em campo e encerramento por SLA
 
-**REQ-ACE-006** O cancelamento iniciado em campo pelo operador deve transitar por revisão administrativa antes do encerramento definitivo da demanda.
+**REQ-ACE-006** O cancelamento iniciado em campo pelo operador deve transitar para `PENDENTE_APROVACAO`, ficando disponível para decisão gerencial. Se não houver decisão até ao fim do expediente da obra, o sistema encerra automaticamente a demanda como `CANCELADA` por estouro de SLA operacional. O horário de expediente é parametrizável por obra. A trilha auditável é obrigatória em todos os desfechos, e `UsuarioInternoFGR`/`AdminOperacional` dispõem de visão dedicada no dia útil seguinte para revisão pós-facto e acção correctiva (DEC-002).
 
 → SPEC: [../SPEC/03-fila-scoring-estados-sla.md#fluxo-detalhado-pendente_aprovacao](../SPEC/03-fila-scoring-estados-sla.md#fluxo-detalhado-pendente_aprovacao)
 
-**Cenário: Fluxo de cancelamento iniciado em campo**
+**Cenário 1: Fluxo de cancelamento iniciado em campo — transição para PENDENTE_APROVACAO**
 
 ```gherkin
 Given que um usuário 'Operador' solicita o cancelamento de uma demanda em 'EM_ANDAMENTO'
 When a solicitação é enviada via aplicativo
 Then o status da demanda deve transitar para 'PENDENTE_APROVACAO' e aparecer no dashboard do AdminOperacional para revisão
+```
+
+**Cenário 2: Encerramento automático por estouro de SLA no fim do expediente**
+
+```gherkin
+Given que uma demanda está em 'PENDENTE_APROVACAO' sem decisão gerencial
+  And o horário de expediente da obra está configurado como '06:00-17:00'
+When o relógio do sistema atinge o fim do expediente da obra (17:00)
+Then o sistema deve aprovar automaticamente o cancelamento, transitar a demanda para 'CANCELADA'
+  And registar na trilha auditável a origem 'estouro_sla_fim_expediente', o ator 'SISTEMA' e o timestamp
+```
+
+**Cenário 3: Revisão pós-facto no dia útil seguinte**
+
+```gherkin
+Given que uma ou mais demandas foram encerradas automaticamente por estouro de SLA no dia anterior
+When um 'AdminOperacional' ou 'UsuarioInternoFGR' acessa o painel de revisão no dia útil seguinte
+Then o sistema deve apresentar uma visão dedicada com todas as demandas encerradas automaticamente, permitindo acção correctiva ou operacional
 ```
 
 ## Isolamento Cross-Tenant Auditado

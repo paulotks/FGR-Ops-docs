@@ -75,7 +75,13 @@
       "localizacao": {
         "file": "docs/SPEC/03-fila-scoring-estados-sla.md",
         "section": "## Fluxo detalhado `PENDENTE_APROVACAO`",
-        "approx_line": 112
+        "approx_line": 116
+      },
+      "resolucao": {
+        "status": "resolvido",
+        "decisao": "DEC-002",
+        "data": "2026-03-20",
+        "descricao": "SPEC actualizada: prazo de 24h substituido por encerramento no fim do expediente parametrizavel por obra, com trilha auditavel obrigatoria e referencia a DEC-002. PRD REQ-ACE-006 reescrito para alinhar a politica de auto-encerramento por estouro de SLA."
       }
     }
   ],
@@ -112,9 +118,9 @@
       {
         "prd_id": "REQ-JOR-005",
         "spec_path": "docs/SPEC/03-fila-scoring-estados-sla.md",
-        "status": "Parcial",
-        "severidade": "importante",
-        "comentario": "A trilha em `DemandaLog` e a exigencia de justificativa estao cobertas, mas a regra de aprovacao automatica apos 24 horas acrescenta comportamento relevante sem justificativa documental."
+        "status": "Coberto",
+        "severidade": "menor",
+        "comentario": "A trilha em DemandaLog e a exigencia de justificativa estao cobertas. A regra de auto-encerramento por estouro de SLA no fim do expediente esta justificada por DEC-002 e documentada na SPEC com trilha auditavel obrigatoria."
       }
     ],
     "blocking_conflicts": []
@@ -123,16 +129,18 @@
   "decision_by_user": [],
   "executive_summary": {
     "total_findings": 4,
+    "total_findings_pendentes": 3,
+    "total_findings_resolvidos": 1,
     "bloqueantes": 0,
-    "importantes": 4,
+    "importantes": 3,
     "menores": 0,
     "coverage": {
-      "coberto": 2,
-      "parcial": 3,
+      "coberto": 3,
+      "parcial": 2,
       "nao_coberto": 0
     },
     "risco_geral": "medio",
-    "nota": "O M03 cobre bem a triagem logistica e o motor de score, mas ainda depende de inferencia para fechar a captura da localizacao inicial, a garantia de UX da fila do operador e a justificacao do fallback automatico em cancelamentos pendentes."
+    "nota": "O achado SPEC-M03-003 (cancelamento automatico sem justificacao) foi resolvido por DEC-002 (auto-encerramento por estouro de SLA no fim do expediente, parametrizavel por obra). REQ-JOR-005 passa a Coberto. Achados importantes pendentes: PRD-M03-001 (localizacao), SPEC-M03-001 (captura de localizacao), SPEC-M03-002 (UX de fila)."
   },
   "traceability_csv": "docs/audit/output/M03/traceability.csv",
   "traceability_stub_markdown": "docs/audit/output/M03/traceability-stub.md"

@@ -47,6 +47,11 @@ Este registo centraliza as decisões de produto necessárias antes das correçõ
 - **Justificação:** A decisão privilegia fluidez operacional e redução de backlog administrativo, centralizando o encerramento automático no marco de fim de expediente de cada obra em vez de prazo fixo absoluto. O processo mantém governança por exigir rastreabilidade explícita do motivo de encerramento por SLA estourado e visibilidade gerencial para revisão no dia útil seguinte.
 - **Nota MVP:** O cancelamento automático deve gravar trilha auditável obrigatória com origem "estouro de SLA no fim do expediente", ator de sistema e timestamp. `UsuarioInternoFGR`/`AdminOperacional` devem ter visão dedicada no dia seguinte para revisão pós-facto e ação corretiva/operacional quando necessário.
 - **Achados resolvidos:** `CROSS-M06-002`, `SPEC-M03-003`, `SPEC-M06-003`
+- **Aplicação (Fase 1.2 — 2026-03-20):**
+  - `PRD/05-criterios-aceite.md`: `REQ-ACE-006` reescrito — título da secção actualizado para "Cancelamento de demandas em campo e encerramento por SLA"; requisito reformulado para auto-encerramento por estouro de SLA no fim do expediente parametrizável por obra; 3 cenários Gherkin: transição para `PENDENTE_APROVACAO`, encerramento automático no fim do expediente, revisão pós-facto no dia útil seguinte.
+  - `SPEC/03-fila-scoring-estados-sla.md`: Fluxo `PENDENTE_APROVACAO` actualizado — prazo de 24h substituído por encerramento no fim do expediente da obra (parametrizável); trilha auditável obrigatória com campos `origem`, `ator`, `timestamp`, `motivo`; visão dedicada de revisão pós-facto para `UsuarioInternoFGR`/`AdminOperacional`; referência a DEC-002.
+  - Referências cruzadas corrigidas em `PRD/02-jornada-usuario.md`, `PRD/03-requisitos-funcionais.md`, `SPEC/01-modulos-plataforma.md` e `SPEC/03-fila-scoring-estados-sla.md` (novo anchor da secção).
+  - Artefactos regenerados: `M03/consolidated.json`, `M03/traceability.csv`, `M03/traceability-stub.md`, `M06/consolidated.json`, `M06/traceability.csv`, `M06/traceability-stub.md`.
 
 ## DEC-003 — Fonte canónica para `REQ-MET-002`
 
