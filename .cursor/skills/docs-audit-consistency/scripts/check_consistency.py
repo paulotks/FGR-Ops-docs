@@ -17,6 +17,8 @@ FILES_TO_CHECK = [
 LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 HEADING_RE = re.compile(r"^\s{0,3}#{1,6}\s+(.+?)\s*$", re.MULTILINE)
 CUSTOM_ANCHOR_RE = re.compile(r"\{#([A-Za-z0-9_-]+)\}")
+REQ_ID_RE = re.compile(r"REQ-[A-Z]+-\d+")
+MERMAID_BLOCK_RE = re.compile(r"```mermaid\s*\n(.*?)```", re.DOTALL | re.IGNORECASE)
 
 
 def slugify_anchor(text: str) -> str:
@@ -127,11 +129,68 @@ def check_broken_links() -> list[str]:
     return errors
 
 
+def _index_prd_req_ids() -> set[str]:
+    """Todos os REQ-* mencionados em docs/PRD (texto bruto; verificacao leve)."""
+    prd_dir = ROOT / "docs" / "PRD"
+    found: set[str] = set()
+    if not prd_dir.is_dir():
+        return found
+    for md in sorted(prd_dir.rglob("*.md")):
+        try:
+            text = md.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+        found.update(REQ_ID_RE.findall(text))
+    return found
+
+
+def check_mermaid_req_refs_in_flows() -> list[str]:
+    """
+    Verificacao leve: REQ-* citados dentro de blocos ```mermaid em docs/flows/
+    devem aparecer em algum ficheiro sob docs/PRD/.
+    """
+    errors: list[str] = []
+    flows_dir = ROOT / "docs" / "flows"
+    if not flows_dir.is_dir():
+        return errors
+
+    prd_req_ids = _index_prd_req_ids()
+    if not prd_req_ids:
+        return errors
+
+    reported: set[tuple[str, str]] = set()
+
+    for md_file in sorted(flows_dir.glob("*.md")):
+        try:
+            content = md_file.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+        rel = md_file.relative_to(ROOT)
+        for block_match in MERMAID_BLOCK_RE.finditer(content):
+            block = block_match.group(1)
+            block_body_start = block_match.start(1)
+            for req_match in REQ_ID_RE.finditer(block):
+                rid = req_match.group(0)
+                if rid in prd_req_ids:
+                    continue
+                key = (str(rel), rid)
+                if key in reported:
+                    continue
+                reported.add(key)
+                pos = block_body_start + req_match.start()
+                line_no = content.count("\n", 0, pos) + 1
+                errors.append(
+                    f"{rel}: linha ~{line_no}: {rid} em mermaid nao encontrado em docs/PRD/"
+                )
+    return errors
+
+
 def main() -> int:
     checks = [
         ("Arquivos obrigatorios", check_required_files),
         ("Redirecionamento de monoliticos", check_monolith_redirects),
         ("Links quebrados", check_broken_links),
+        ("REQ-* em mermaid (docs/flows)", check_mermaid_req_refs_in_flows),
     ]
 
     all_errors: list[str] = []
