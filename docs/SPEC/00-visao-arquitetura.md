@@ -1,6 +1,6 @@
 # Visão e arquitetura
 
-Documento migrado a partir de `FGR-OPS-SPEC.md` (secções 1–2). Paridade com o PRD: [PRD — visão e escopo](../PRD/00-visao-escopo.md).
+Documento migrado a partir de `FGR-OPS-SPEC.md` (seções 1–2). Paridade com o PRD: [PRD — visão e escopo](../PRD/00-visao-escopo.md).
 
 ## 1. Visão Geral do Sistema {#visao-geral}
 
@@ -19,7 +19,7 @@ O foco inicial (MVP) é restrito ao módulo **Machinery Link**, responsável por
 - **Ecossistema unificado**: Monorepo gerenciado via Turborepo compartilhando tipos (TypeScript) entre Frontend e Backend.
 - **Isolamento e Escalabilidade**: Separação clara entre o core de regras de negócio lógicas (DDD puro) e frameworks/adapters técnicos.
 - **Multi-tenancy lógico**: Segregação de dados por obra no mesmo banco de dados (SQL Server), filtrado automaticamente via middleware.
-- **Segurança por design**: Autenticação JWT com access token de curta expiração e refresh token rotativo. Controle de acesso granular baseado em perfis (RBAC) cobrindo transições de estado, endpoints e verbos HTTP. Rate limiting nos endpoints de autenticação e criação de demanda. Bypass de multi-tenancy para perfis cross-tenant (SuperAdmin, Board) implementado via lógica condicional no middleware, com auditoria dedicada. Política de autenticação segmentada por perfil (Campo vs Administrativo) conforme D6, cobrindo palavra-passe forte, autenticação simplificada por PIN e controlos compensatórios de segurança.
+- **Segurança por design**: Autenticação JWT com access token de curta expiração e refresh token rotativo. Controle de acesso granular baseado em perfis (RBAC) cobrindo transições de estado, endpoints e verbos HTTP. Rate limiting nos endpoints de autenticação e criação de demanda. Bypass de multi-tenancy para perfis cross-tenant (SuperAdmin, Board) implementado via lógica condicional no middleware, com auditoria dedicada. Política de autenticação segmentada por perfil (Campo vs Administrativo) conforme D6, cobrindo palavra-passe forte, autenticação simplificada por PIN e controles compensatórios de segurança.
 
 ## 2. Arquitetura da Plataforma {#arquitetura-plataforma}
 
@@ -44,9 +44,9 @@ O sistema é estruturado num Monorepo (Turborepo):
    - **Refresh Token**: TTL de 7 dias (> Decisão: 7 dias para equilibrar UX e segurança em dispositivos compartilhados). Armazenado em cookie HttpOnly no cliente web; em SecureStorage no PWA mobile. Estratégia de rotação: ROTAÇÃO A CADA USO (> Decisão: Rotação a cada uso para detectar reuso de tokens roubados).
    - **Revogação**: Blacklist por jti em Redis (> Decisão: Blacklist por jti em Redis para invalidação imediata e stateless). Em caso de logout explícito ou detecção de uso suspeito, o token é invalidado antes da expiração natural.
    - **Rate Limiting**: Aplicado nos Guards via interceptor NestJS para mitigar força bruta, abuso e negação de serviço nos endpoints mais sensíveis. Contrato normativo conforme `REQ-NFR-006`:
-     - `/auth/login` e `/auth/pin`: limite de **5 requisições por minuto** por IP ou identificador de utilizador.
-     - `POST /demandas` e `POST /demandas/bulk`: limite de **20 requisições por minuto** por utilizador autenticado.
-     - Violações retornam **`HTTP 429 Too Many Requests`** com header `Retry-After` e aplicam **bloqueio temporário de 15 minutos** ao IP ou utilizador infractor.
+     - `/auth/login` e `/auth/pin`: limite de **5 requisições por minuto** por IP ou identificador de usuário.
+     - `POST /demandas` e `POST /demandas/bulk`: limite de **20 requisições por minuto** por usuário autenticado.
+     - Violações retornam **`HTTP 429 Too Many Requests`** com header `Retry-After` e aplicam **bloqueio temporário de 15 minutos** ao IP ou usuário infrator.
      - (> Decisão: thresholds calibrados para o perfil de uso em obra; bloqueio de 15 min reduz risco de brute-force sem impactar operação legítima.)
 4. **D4: Multi-tenancy Lógico**: Todo dado específico de negócio possui uma coluna `obraId`. Requisições do frontend injetam o escopo da obra via middleware para isolamento.
 5. **D5: Bypass de Multi-tenancy para Perfis Cross-Tenant**: Os perfis SuperAdmin e Board requerem acesso a dados de múltiplas obras sem restrição de obraId. O middleware de injeção de obraId (D4) implementa a seguinte lógica condicional:
@@ -57,7 +57,7 @@ O sistema é estruturado num Monorepo (Turborepo):
 
 > Decisão: O modelo de bypass condicional no middleware foi preferido ao modelo de "supertenant" (tenant especial que contém todos os dados) por manter a lógica de isolamento centralizada em um único ponto da infraestrutura, reduzindo risco de vazamento por query mal construída.
 
-### D6: Politica de Autenticacao e Palavra-passe - segmentacao por perfil {#politica-autenticacao-senha}
+### D6: Política de Autenticação e Palavra-passe - segmentação por perfil {#politica-autenticacao-senha}
 
    **Rastreio PRD:** REQ-NFR-007 | **Decisão de produto:** DEC-004
 
@@ -77,7 +77,7 @@ O sistema é estruturado num Monorepo (Turborepo):
    | Política de troca | PIN deve ser trocado a cada 90 dias; sistema força redefinição no próximo login após expiração |
    | Armazenamento do PIN | Hash com bcrypt (cost factor ≥ 10); PIN em texto claro nunca é persistido |
 
-   > Decisão: A autenticação simplificada por PIN foi adotada para perfis de campo por reconhecer que operadores em obra acessam o sistema em condições adversas (luvas, tela suja, pressa operacional). Controlos compensatórios (lockout progressivo, sessão curta, trilha auditável) mitigam o risco de credencial fraca.
+   > Decisão: A autenticação simplificada por PIN foi adotada para perfis de campo por reconhecer que operadores em obra acessam o sistema em condições adversas (luvas, tela suja, pressa operacional). Controles compensatórios (lockout progressivo, sessão curta, trilha auditável) mitigam o risco de credencial fraca.
 
    #### 6.2 Perfis Administrativos / Suporte (`UsuarioInternoFGR`, `AdminOperacional`, `SuperAdmin`, `Board`) — Palavra-passe forte
 
@@ -90,7 +90,7 @@ O sistema é estruturado num Monorepo (Turborepo):
    | Histórico de reutilização | Bloqueio das últimas 3 palavras-passe (comparação via hash) |
    | Lockout | 5 falhas consecutivas → bloqueio temporário de 15 min por conta |
    | Resposta de erro | Mensagem genérica não enumerável |
-   | Trilha auditável | Mesmo contrato da secção 6.1 |
+   | Trilha auditável | Mesmo contrato da seção 6.1 |
    | Sessão | Access token de 15 min; refresh token de 7 dias (conforme D3) |
    | Política de troca | Palavra-passe deve ser redefinida a cada 180 dias; troca obrigatória no primeiro login |
    | Armazenamento | Hash com bcrypt (cost factor ≥ 10); palavra-passe em texto claro nunca é persistida |
@@ -100,8 +100,8 @@ O sistema é estruturado num Monorepo (Turborepo):
    #### 6.3 Regras transversais de autenticação
 
    - **Rate limiting por endpoint/perfil**: O rate limiting de D3 (5 req/min para `/auth/login`) aplica-se a ambos os grupos. Para endpoints de PIN (`/auth/pin`), aplica-se o mesmo limite de 5 req/min por IP ou identificador de dispositivo.
-   - **Gestão de sessão**: Logout explícito invalida access e refresh tokens via blacklist por `jti` em Redis (conforme D3). Em dispositivos de campo, a sessão expira automaticamente após 30 min de inactividade (idle timeout), forçando re-autenticação por PIN.
-   - **Auditoria de autenticação**: Todos os eventos de autenticação (login, logout, falha, lockout, troca de credencial) são registados em tabela dedicada `AuthAuditLog` com campos: `id`, `userId`, `perfil`, `evento`, `resultado`, `ip`, `userAgent`, `timestamp`.
+   - **Gestão de sessão**: Logout explícito invalida access e refresh tokens via blacklist por `jti` em Redis (conforme D3). Em dispositivos de campo, a sessão expira automaticamente após 30 min de inatividade (idle timeout), forçando re-autenticação por PIN.
+   - **Auditoria de autenticação**: Todos os eventos de autenticação (login, logout, falha, lockout, troca de credencial) são registrados em tabela dedicada `AuthAuditLog` com campos: `id`, `userId`, `perfil`, `evento`, `resultado`, `ip`, `userAgent`, `timestamp`.
 
 ### Arquitetura Tática (DDD) {#arquitetura-tatica-ddd}
 

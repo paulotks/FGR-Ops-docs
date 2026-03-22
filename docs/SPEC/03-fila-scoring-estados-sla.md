@@ -2,65 +2,65 @@
 
 **Rastreio PRD:** `REQ-JOR-002`, `REQ-JOR-003`, `REQ-JOR-004`, `REQ-JOR-005`, `REQ-FUNC-001`, `REQ-FUNC-002`, `REQ-FUNC-004`, `REQ-FUNC-006`, `REQ-FUNC-007`, `REQ-FUNC-008`, `REQ-FUNC-009`, `REQ-FUNC-010`, `REQ-ACE-002`, `REQ-ACE-003`, `REQ-ACE-004`, `REQ-ACE-005`, `REQ-ACE-006`
 
-Este modulo detalha o motor operacional que governa a atribuicao de demandas, o score de prioridade, os limites de SLA e a maquina de estados aplicada ao ciclo de vida da demanda.
+Este módulo detalha o motor operacional que governa a atribuição de demandas, o score de prioridade, os limites de SLA e a máquina de estados aplicada ao ciclo de vida da demanda.
 
-## Visao do motor operacional
+## Visão do motor operacional
 
-O motor de distribuicao de demandas para maquinarios atua de forma dinamica. A cada criacao ou atualizacao relevante, a fila do operador passa por um pipeline imutavel de filtragem, classificacao, auditoria e transicao de estado.
+O motor de distribuição de demandas para maquinários atua de forma dinâmica. A cada criação ou atualização relevante, a fila do operador passa por um pipeline imutável de filtragem, classificação, auditoria e transição de estado.
 
 ## Regra zero, hard filter, destaque e score
 
-1. **Regra Zero (Alocacao Manual)**: demandas com `operadorAlocadoId` preenchido sao atribuidas diretamente ao operador indicado, sobrepondo as regras automaticas de distribuicao e elegibilidade — jurisdicao territorial, proximidade e balanceamento de carga — como excecao explicita e auditavel. Uma vez na fila do operador, a demanda participa normalmente do pipeline de destaque e scoring (passos 3-5). A ordem resultante constitui organizacao recomendada de atendimento, nao bloqueio rigido de execucao, permitindo ajustes operacionais em campo com rastreabilidade (DEC-001).
-2. **Hard Filter (Filtros Eliminatorios)**: no fluxo automatico de distribuicao, demandas saem da fila elegivel do operador se pertencerem a `Setor Operacional` distinto ou se houver incompatibilidade entre equipamento e servico. Demandas atribuidas via `operadorAlocadoId` (passo 1) nao passam por este filtro.
-3. **Destaque Visual de Prioridade Maxima**: demandas classificadas com prioridade `MAXIMA` recebem destaque visual obrigatorio (borda pulsante, cor de alerta) no topo da fila do operador, antes da ordenacao final. O destaque nao deve bloquear a interface nem ocultar as restantes demandas: todas as demandas da fila permanecem simultaneamente visiveis e rolaveis abaixo da demanda destacada na UI mobile. Este comportamento constitui contrato de experiencia da fila do operador (`REQ-FUNC-008`, `REQ-ACE-005`, `REQ-JOR-004`).
-4. **Scoring Multivalorado**: as restantes demandas elegiveis recebem uma pontuacao numerica calculada por:
+1. **Regra Zero (Alocação Manual)**: demandas com `operadorAlocadoId` preenchidas são atribuídas diretamente ao operador indicado, sobrepondo as regras automáticas de distribuição e elegibilidade — jurisdição territorial, proximidade e balanceamento de carga — como exceção explícita e auditável. Uma vez na fila do operador, a demanda participa normalmente do pipeline de destaque e scoring (passos 3-5). A ordem resultante constitui organização recomendada de atendimento, não bloqueio rígido de execução, permitindo ajustes operacionais em campo com rastreabilidade (DEC-001).
+2. **Hard Filter (Filtros Eliminatórios)**: no fluxo automático de distribuição, demandas saem da fila elegível do operador se pertencerem a `Setor Operacional` distinto ou se houver incompatibilidade entre equipamento e serviço. Demandas atribuídas via `operadorAlocadoId` (passo 1) não passam por este filtro.
+3. **Destaque Visual de Prioridade Máxima**: demandas classificadas com prioridade `MAXIMA` recebem destaque visual obrigatório (borda pulsante, cor de alerta) no topo da fila do operador, antes da ordenação final. O destaque não deve bloquear a interface nem ocultar as restantes demandas: todas as demandas da fila permanecem simultaneamente visíveis e roláveis abaixo da demanda destacada na UI mobile. Este comportamento constitui contrato de experiência da fila do operador (`REQ-FUNC-008`, `REQ-ACE-005`, `REQ-JOR-004`).
+4. **Scoring Multivalorado**: as restantes demandas elegíveis recebem uma pontuação numérica calculada por:
 
 `score = (W_adj x fator_adjacencia) + (W_srv x fator_servico) + (W_mat x fator_material)`
 
-- **Pesos globais editaveis por obra**:
+- **Pesos globais editáveis por obra**:
   - `W_adj = 50`
   - `W_srv = 30`
   - `W_mat = 20`
-- **fator_adjacencia**: derivado do checkpoint manual. `1.0` para mesma quadra ou lote adjacente, e tambem para a primeira demanda do dia em modo neutro; `0.5` para mesma quadra sem adjacencia direta; `0.0` para quadra diferente com maquinas pequenas ou medias; `-1.0` para quadra diferente com maquinas grandes.
-- **fator_servico**: derivado do catalogo e escalonado em `0.0` (`Normal`), `1.0` (`Elevada`) e `2.0` (`Maxima`).
-- **fator_material**: derivado de risco logistico, em `0.0` (`Normal`) ou `1.0` (`Critico/Perecivel`).
-5. **Ordenacao Final**: renderizacao decrescente pelo valor numerico do `score`, com desempate por ordem de chegada (`FIFO` cronologico).
+- **fator_adjacencia**: derivado do checkpoint manual. `1.0` para mesma quadra ou lote adjacente, e também para a primeira demanda do dia em modo neutro; `0.5` para mesma quadra sem adjacência direta; `0.0` para quadra diferente com máquinas pequenas ou médias; `-1.0` para quadra diferente com máquinas grandes.
+- **fator_servico**: derivado do catálogo e escalonado em `0.0` (`Normal`), `1.0` (`Elevada`) e `2.0` (`Maxima`).
+- **fator_material**: derivado de risco logístico, em `0.0` (`Normal`) ou `1.0` (`Crítico/Perecível`).
+5. **Ordenação Final**: renderização decrescente pelo valor numérico do `score`, com desempate por ordem de chegada (`FIFO` cronológico).
 
-> Nota de rastreio: `REQ-ACE-003` valida o comportamento do ranking para todas as demandas na fila do operador, incluindo as atribuidas via `operadorAlocadoId`. A alocacao manual determina o operador destinatario, mas nao isenta a demanda da priorizacao por score (DEC-001).
+> Nota de rastreio: `REQ-ACE-003` valida o comportamento do ranking para todas as demandas na fila do operador, incluindo as atribuídas via `operadorAlocadoId`. A alocação manual determina o operador destinatário, mas não isenta a demanda da priorização por score (DEC-001).
 
-## Governanca de pesos e auditoria
+## Governança de pesos e auditoria
 
-Os pesos `W_adj`, `W_srv` e `W_mat` sao configuraveis por obra pelo perfil `AdminOperacional`, obedecendo as seguintes regras:
+Os pesos `W_adj`, `W_srv` e `W_mat` são configuráveis por obra pelo perfil `AdminOperacional`, obedecendo as seguintes regras:
 
-- A alteracao e tenant-scoped: mudar pesos numa obra nao afeta as restantes.
-- A alteracao nao e retroativa: demandas ja presentes na fila mantem o score calculado ate ao proximo evento de recalculo.
-- O recalculo acontece no proximo evento de fila relevante, como criacao de nova demanda, conclusao de demanda ou inicio de expediente.
-- Quando necessario, o painel administrativo pode acionar `recalcular_fila` para forcar o recalculo imediato dos scores pendentes da obra.
-- Toda alteracao de peso gera entrada obrigatoria em `DemandaLog` com valores antigos, novos, `userId` executor e `timestamp`.
-- Cada peso opera dentro do intervalo `[0, 100]`, sem obrigacao de soma total igual a `100`.
+- A alteração é tenant-scoped: mudar pesos numa obra não afeta as restantes.
+- A alteração não é retroativa: demandas já presentes na fila mantêm o score calculado até o próximo evento de recálculo.
+- O recálculo acontece no próximo evento de fila relevante, como criação de nova demanda, conclusão de demanda ou início de expediente.
+- Quando necessário, o painel administrativo pode acionar `recalcular_fila` para forçar o recálculo imediato dos scores pendentes da obra.
+- Toda alteração de peso gera entrada obrigatória em `DemandaLog` com valores antigos, novos, `userId` executor e `timestamp`.
+- Cada peso opera dentro do intervalo `[0, 100]`, sem obrigação de soma total igual a `100`.
 
-> Decisao: o recalculo lazy por evento foi preferido ao recalculo imediato automatico para reduzir impacto de performance em filas extensas.
+> Decisão: o recálculo lazy por evento foi preferido ao recálculo imediato automático para reduzir impacto de performance em filas extensas.
 
-## SLA de atendimento e governanca
+## SLA de atendimento e governança
 
-Como o motor e reativo, a demanda nao pode permanecer indefinidamente sem intervencao. O sistema estabelece os seguintes niveis de SLA:
+Como o motor é reativo, a demanda não pode permanecer indefinidamente sem intervenção. O sistema estabelece os seguintes níveis de SLA:
 
-| Nivel | Vencimento | Canal principal | Destinatario | Escalacao se sem acao | Mecanismo |
+| Nível | Vencimento | Canal principal | Destinatário | Escalação se sem ação | Mecanismo |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `MAXIMA` | 15 min | UI push de alta prioridade | Admin + Operador | `SuperAdmin` apos +5 min | Event-driven |
-| `ELEVADA` | 45 min | UI push normal | `AdminOperacional` | `SuperAdmin` apos +15 min | Event-driven |
-| `NORMAL` | 120 min | Badge em dashboard | `AdminOperacional` | Apenas log auditavel | Polling a cada 10 min |
+| `MAXIMA` | 15 min | UI push de alta prioridade | Admin + Operador | `SuperAdmin` após +5 min | Event-driven |
+| `ELEVADA` | 45 min | UI push normal | `AdminOperacional` | `SuperAdmin` após +15 min | Event-driven |
+| `NORMAL` | 120 min | Badge em dashboard | `AdminOperacional` | Apenas log auditável | Polling a cada 10 min |
 
 Regras adicionais:
 
-- O alerta e disparado uma unica vez no vencimento, mas o estado visual de SLA vencido permanece ate a transicao para `EM_ANDAMENTO`.
-- O canal secundario de todas as escalacoes e o `audit_log_sla`.
-- Para demandas originadas de agendamento, o marco zero do SLA e a `dataAgendada` original (`T-0`), e nao a transicao antecipada para `PENDENTE` (`T-60`).
-- Se o atendimento ocorrer antes da `dataAgendada`, o tempo de atendimento e considerado zero.
+- O alerta é disparado uma única vez no vencimento, mas o estado visual de SLA vencido permanece até a transição para `EM_ANDAMENTO`.
+- O canal secundário de todas as escalações é o `audit_log_sla`.
+- Para demandas originadas de agendamento, o marco zero do SLA é a `dataAgendada` original (`T-0`), e não a transição antecipada para `PENDENTE` (`T-60`).
+- Se o atendimento ocorrer antes da `dataAgendada`, o tempo de atendimento é considerado zero.
 
-## Maquina de estados da demanda
+## Máquina de estados da demanda
 
-A evolucao do ciclo de vida da `Demanda` obedece estritamente as acoes descritas no diagrama e na matriz de autorizacao. O cumprimento das transicoes e forcado pelos guards e registado em `DemandaLog`.
+A evolução do ciclo de vida da `Demanda` obedece estritamente às ações descritas no diagrama e na matriz de autorização. O cumprimento das transições é forçado pelos guards e registrado em `DemandaLog`.
 
 ```mermaid
 stateDiagram-v2
@@ -87,55 +87,55 @@ stateDiagram-v2
     CANCELADA --> [*]
 ```
 
-> Decisao: `RETORNADA` existe como estado transitorio obrigatorio; apos a devolucao administrativa, a demanda volta automaticamente a `PENDENTE` e regressa a fila generalizada.
+> Decisão: `RETORNADA` existe como estado transitório obrigatório; após a devolução administrativa, a demanda volta automaticamente a `PENDENTE` e regressa à fila generalizada.
 
-### Tabela de transicoes por perfil
+### Tabela de transições por perfil
 
-| Estado origem | Acao | Estado destino | Perfis autorizados | Justificativa obrigatoria no log |
+| Estado origem | Ação | Estado destino | Perfis autorizados | Justificativa obrigatória no log |
 | :--- | :--- | :--- | :--- | :--- |
-| `[*]` | `criar` | `PENDENTE` | `Empreiteiro`, `AdminOperacional`, `UsuarioInternoFGR` | Nao |
-| `[*]` | `criar_com_data` | `AGENDADA` | `AdminOperacional`, `UsuarioInternoFGR`, `SuperAdmin` | Nao |
-| `AGENDADA` | `transicao_temporal` | `PENDENTE` | Sistema (automatico 60 min antes) | Nao |
-| `AGENDADA` | `antecipar` | `PENDENTE` | `AdminOperacional`, `UsuarioInternoFGR`, `SuperAdmin` | Nao |
+| `[*]` | `criar` | `PENDENTE` | `Empreiteiro`, `AdminOperacional`, `UsuarioInternoFGR` | Não |
+| `[*]` | `criar_com_data` | `AGENDADA` | `AdminOperacional`, `UsuarioInternoFGR`, `SuperAdmin` | Não |
+| `AGENDADA` | `transicao_temporal` | `PENDENTE` | Sistema (automático 60 min antes) | Não |
+| `AGENDADA` | `antecipar` | `PENDENTE` | `AdminOperacional`, `UsuarioInternoFGR`, `SuperAdmin` | Não |
 | `AGENDADA` | `cancelar` | `CANCELADA` | `AdminOperacional`, `UsuarioInternoFGR`, `SuperAdmin` | Sim |
-| `PENDENTE` | `iniciar` | `EM_ANDAMENTO` | `Operador` | Nao |
+| `PENDENTE` | `iniciar` | `EM_ANDAMENTO` | `Operador` | Não |
 | `PENDENTE` | `cancelar` | `CANCELADA` | `Empreiteiro`, `AdminOperacional`, `UsuarioInternoFGR`, `SuperAdmin` | Sim |
-| `EM_ANDAMENTO` | `concluir` | `CONCLUIDA` | `Operador` | Nao |
+| `EM_ANDAMENTO` | `concluir` | `CONCLUIDA` | `Operador` | Não |
 | `EM_ANDAMENTO` | `devolver` | `RETORNADA` | `AdminOperacional`, `UsuarioInternoFGR`, `SuperAdmin` | Sim |
-| `RETORNADA` | `transicao_automatica` | `PENDENTE` | Sistema (automatico) | Nao |
+| `RETORNADA` | `transicao_automatica` | `PENDENTE` | Sistema (automático) | Não |
 | `EM_ANDAMENTO` | `solicitar_cancelamento` | `PENDENTE_APROVACAO` | `Operador` | Sim |
 | `PENDENTE_APROVACAO` | `aprovar_cancelamento` | `CANCELADA` | `AdminOperacional`, `UsuarioInternoFGR`, `SuperAdmin` | Sim |
 | `PENDENTE_APROVACAO` | `rejeitar_cancelamento` | `EM_ANDAMENTO` | `AdminOperacional`, `UsuarioInternoFGR`, `SuperAdmin` | Sim |
 
 ## Fluxo detalhado `PENDENTE_APROVACAO`
 
-Quando um `Operador` precisa invalidar uma demanda em execucao, nao pode move-la diretamente para `CANCELADA`. Em vez disso, abre uma solicitacao de cancelamento que a desloca para `PENDENTE_APROVACAO`.
+Quando um `Operador` precisa invalidar uma demanda em execução, não pode movê-la diretamente para `CANCELADA`. Em vez disso, abre uma solicitação de cancelamento que a desloca para `PENDENTE_APROVACAO`.
 
 - A demanda permanece suspensa num holding state gerencial.
-- A exclusividade do operador sobre a demanda e removida apos o pedido, libertando-o para receber a proxima tarefa do topo da fila.
-- O prazo maximo de resposta gerencial e o fim do expediente da obra. O horario de expediente e parametrizavel por obra (ex.: 06h-17h). Se nao houver decisao gerencial ate ao fim do expediente, o sistema aprova automaticamente o cancelamento com origem `estouro_sla_fim_expediente`, ator `SISTEMA` e timestamp (DEC-002).
-- `AdminOperacional`, `UsuarioInternoFGR` e `SuperAdmin` sao os avaliadores autorizados.
-- Se a solicitacao for rejeitada, a demanda regressa a `EM_ANDAMENTO` vinculada ao mesmo operador e reentra no topo da fila desse operador.
-- O operador mantem visibilidade de leitura enquanto aguarda o desfecho, mas nao pode executar novas acoes sobre a demanda.
-- Toda aprovacao automatica gera trilha auditavel obrigatoria em `DemandaLog` com campos: `origem`, `ator`, `timestamp` e `motivo`. No dia util seguinte, `UsuarioInternoFGR` e `AdminOperacional` dispoem de visao dedicada para revisao pos-facto e acao correctiva/operacional quando necessario (DEC-002).
+- A exclusividade do operador sobre a demanda é removida após o pedido, liberando-o para receber a próxima tarefa do topo da fila.
+- O prazo máximo de resposta gerencial é o fim do expediente da obra. O horário de expediente é parametrizável por obra (ex.: 06h-17h). Se não houver decisão gerencial até o fim do expediente, o sistema aprova automaticamente o cancelamento com origem `estouro_sla_fim_expediente`, ator `SISTEMA` e timestamp (DEC-002).
+- `AdminOperacional`, `UsuarioInternoFGR` e `SuperAdmin` são os avaliadores autorizados.
+- Se a solicitação for rejeitada, a demanda regressa a `EM_ANDAMENTO` vinculada ao mesmo operador e reentra no topo da fila desse operador.
+- O operador mantém visibilidade de leitura enquanto aguarda o desfecho, mas não pode executar novas ações sobre a demanda.
+- Toda aprovação automática gera trilha auditável obrigatória em `DemandaLog` com campos: `origem`, `ator`, `timestamp` e `motivo`. No dia útil seguinte, `UsuarioInternoFGR` e `AdminOperacional` dispõem de visão dedicada para revisão pós-fato e ação corretiva/operacional quando necessário (DEC-002).
 
 ## Auditoria administrativa e justificativas
 
-Toda alteracao gerencial relevante sobre a `Demanda` exige registo nao destrutivo e justificativa contextual quando aplicavel.
+Toda alteração gerencial relevante sobre a `Demanda` exige registro não destrutivo e justificativa contextual quando aplicável.
 
-- Alteracoes forcadas, devolucoes, cancelamentos administrativos e decisoes sobre `PENDENTE_APROVACAO` escrevem em `DemandaLog`.
-- O registo deve preservar ator, timestamp, valores antigo/novo e justificativa.
-- Ajustes administrativos de atribuicao de operador tambem seguem trilha auditavel obrigatoria.
+- Alterações forçadas, devoluções, cancelamentos administrativos e decisões sobre `PENDENTE_APROVACAO` escrevem em `DemandaLog`.
+- O registro deve preservar ator, timestamp, valores antigo/novo e justificativa.
+- Ajustes administrativos de atribuição de operador também seguem trilha auditável obrigatória.
 
-## Regra de conflito: alocacao manual sobre demanda `EM_ANDAMENTO`
+## Regra de conflito: alocação manual sobre demanda `EM_ANDAMENTO`
 
-Se a `Regra Zero` atribuir manualmente uma nova demanda a um operador que ja possui uma demanda em `EM_ANDAMENTO`, o sistema aplica um modelo nao destrutivo:
+Se a `Regra Zero` atribuir manualmente uma nova demanda a um operador que já possui uma demanda em `EM_ANDAMENTO`, o sistema aplica um modelo não destrutivo:
 
-1. A demanda corrente nao retorna a `PENDENTE` nem e interrompida.
-2. A nova demanda entra na fila do operador e participa do pipeline de priorizacao por score. O sistema sinaliza a demanda ao operador como atribuicao administrativa, e a ordem de atendimento pode ser ajustada em campo com rastreabilidade (DEC-001).
-3. O operador e notificado da nova carga, mas conclui a tarefa atual antes de assumir a seguinte.
+1. A demanda corrente não retorna a `PENDENTE` nem é interrompida.
+2. A nova demanda entra na fila do operador e participa do pipeline de priorização por score. O sistema sinaliza a demanda ao operador como atribuição administrativa, e a ordem de atendimento pode ser ajustada em campo com rastreabilidade (DEC-001).
+3. O operador é notificado da nova carga, mas conclui a tarefa atual antes de assumir a seguinte.
 
-> Decisao: a plataforma rejeita qualquer abordagem que interrompa uma operacao fisica em curso apenas por sobreposicao administrativa em sistema.
+> Decisão: a plataforma rejeita qualquer abordagem que interrompa uma operação física em curso apenas por sobreposição administrativa em sistema.
 
 ## Critérios de aceite suportados
 

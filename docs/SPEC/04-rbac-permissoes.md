@@ -15,14 +15,14 @@ Este módulo consolida as regras técnicas de autorização, o isolamento multi-
 
 A herança está suprimida em prol de garantias granulares imutavelmente pré-fornecidas:
 
-> **Nota de nomenclatura:** O perfil `Operador` neste documento corresponde a `Operador de Maquinário` (`REQ-RBAC-006`) no PRD. O nome curto `Operador` é o identificador canónico adoptado pela SPEC.
+> **Nota de nomenclatura:** O perfil `Operador` neste documento corresponde a `Operador de Maquinário` (`REQ-RBAC-006`) no PRD. O nome curto `Operador` é o identificador canônico adotado pela SPEC.
 
 1. **SuperAdmin**: bypass multi-tenant; visão panóptica do ecossistema.
 2. **Board (Diretoria)**: perfil focado na macrogestão (`Role: BOARD`). Bypass multi-tenant passivo via relatórios e dashboards; guard-access aos verbos HTTP restritos prioritariamente a `GET` e analytics/reports.
 3. **AdminOperacional**: administra uma ou N obras. Capaz de realizar alocações manuais em `CreateDemandaDto` e lote `CreateMultipleDemandasDto`.
-4. **UsuarioInternoFGR**: visualiza relatórios, gere contestações na máquina de estados dentro do seu tenant e pode escolher operadores manualmente na criação de demanda.
+4. **UsuarioInternoFGR**: visualiza relatórios, gerencia contestações na máquina de estados dentro do seu tenant e pode escolher operadores manualmente na criação de demanda.
 5. **Empreiteiro**: enclausurado nas demandas da sua autoria.
-6. **Operador** (sinónimo: Operador de Maquinário): PWA em campo via expediente focado, ordenação fluida e sem travas de interface cega ("blindagem"). Vê apenas a fila do motor preordenada dinamicamente.
+6. **Operador** (sinônimo: Operador de Maquinário): PWA em campo via expediente focado, ordenação fluida e sem travas de interface cega ("blindagem"). Vê apenas a fila do motor preordenada dinamicamente.
 
 ## Matriz completa de permissões por recurso (Lacuna 1)
 
@@ -212,8 +212,8 @@ Os perfis assinalados com `cross` têm autorização de atuar ignorando restriç
 | `machinery:solicitacao-cancelamento:allocate` | — | — | — | — | — | — |
 | `machinery:solicitacao-cancelamento:export` | — | — | — | — | — | — |
 
-[1] Apenas sobre utilizadores pertencentes à mesma obra e com perfil hierárquico inferior ou igual.
-[2] Permitido estritamente para leitura de registos da sua autoria ou inerentes ao seu cadastro/entidade.
+[1] Apenas sobre usuários pertencentes à mesma obra e com perfil hierárquico inferior ou igual.
+[2] Permitido estritamente para leitura de registros da sua autoria ou inerentes ao seu cadastro/entidade.
 [3] Permitido apenas se o operador autenticado estiver a agir sobre o seu próprio expediente ou sobre demandas visíveis ativamente alocadas na fila.
 [4] Permitido ao `Empreiteiro` apenas se a demanda for da sua autoria e estritamente enquanto estiver no estado inicial `PENDENTE`.
 [5] Permitido estritamente sobre a demanda pela qual está alocado em `EM_ANDAMENTO` ou sobre a qual emitiu uma solicitação de cancelamento em `PENDENTE_APROVACAO`.

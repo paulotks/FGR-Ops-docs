@@ -2,61 +2,61 @@
 
 **Rastreio PRD:** `REQ-JOR-001`, `REQ-FUNC-003`, `REQ-FUNC-004`, `REQ-FUNC-006`, `REQ-FUNC-007`, `REQ-FUNC-010`, `REQ-NFR-004`, `REQ-MET-001`
 
-Este modulo consolida as entidades principais do dominio, as relacoes entre recursos operacionais e as regras de integridade que sustentam o isolamento por obra e a rastreabilidade do Machinery Link.
+Este módulo consolida as entidades principais do domínio, as relações entre recursos operacionais e as regras de integridade que sustentam o isolamento por obra e a rastreabilidade do Machinery Link.
 
 ## Entidades principais
 
 - **Core**: `User`, `Role` e `Obra`.
-- **Organizacao espacial**: `SetorOperacional` (macro-jurisdicao alocavel), `Quadra`, `Lote`, `Rua` e `LoteAdjacencia`, usados para inferir proximidade e restringir o motor de fila. `LocalExterno` representa localizacoes operacionais da obra fora da malha de Quadra/Lote (Portaria, Pulmao, Garagem, entre outros), cadastraveis por obra e vinculados a um `SetorOperacional`.
+- **Organização espacial**: `SetorOperacional` (macro-jurisdição alocável), `Quadra`, `Lote`, `Rua` e `LoteAdjacencia`, usados para inferir proximidade e restringir o motor de fila. `LocalExterno` representa localizações operacionais da obra fora da malha de Quadra/Lote (Portaria, Pulmão, Garagem, entre outros), cadastráveis por obra e vinculados a um `SetorOperacional`.
 - **Operacional**: `Empreiteira`.
-- **Maquinario e recursos**:
-  - `TipoMaquinario`: categoria generica que define capacidades base, como escavadeira ou motoniveladora.
-  - `Maquinario`: a maquina fisica, com `placa`, `propriedade` (`FGR` ou `Terceiro`), `porte` e vinculo obrigatorio a `TipoMaquinario`.
-  - `Ajudante`: recurso humano vinculado a obra sem credencial propria.
-  - `Operador`: utilizador com perfil `OPERADOR`, vinculado em relacao N:M aos `TipoMaquinario` que esta autorizado a operar.
-- **Catalogo**:
+- **Maquinário e recursos**:
+  - `TipoMaquinario`: categoria genérica que define capacidades base, como escavadeira ou motoniveladora.
+  - `Maquinario`: a máquina física, com `placa`, `propriedade` (`FGR` ou `Terceiro`), `porte` e vínculo obrigatório a `TipoMaquinario`.
+  - `Ajudante`: recurso humano vinculado à obra sem credencial própria.
+  - `Operador`: usuário com perfil `OPERADOR`, vinculado em relação N:M aos `TipoMaquinario` que está autorizado a operar.
+- **Catálogo**:
   - `Servico`: atividade executada, vinculada operacionalmente ao `Maquinario`, seguindo a hierarquia `TipoMaquinario` -> `Maquinario` -> `Servico`.
   - `Material`.
-- **Transacional**: `Demanda` como aggregate root, `DemandaGrupo` e `DemandaLog`. A `Demanda` inclui os seguintes atributos de localizacao (`REQ-JOR-001`):
-  - `localTipo` (enum: `QUADRA_LOTE` | `LOCAL_EXTERNO`): tipo de localizacao onde o servico e necessario.
-  - `quadraId`, `loteId`: obrigatorios quando `localTipo = QUADRA_LOTE`.
-  - `localExternoId`: obrigatorio quando `localTipo = LOCAL_EXTERNO`.
-  - `setorOperacionalId`: derivado automaticamente da localizacao selecionada.
+- **Transacional**: `Demanda` como aggregate root, `DemandaGrupo` e `DemandaLog`. A `Demanda` inclui os seguintes atributos de localização (`REQ-JOR-001`):
+  - `localTipo` (enum: `QUADRA_LOTE` | `LOCAL_EXTERNO`): tipo de localização onde o serviço é necessário.
+  - `quadraId`, `loteId`: obrigatórios quando `localTipo = QUADRA_LOTE`.
+  - `localExternoId`: obrigatório quando `localTipo = LOCAL_EXTERNO`.
+  - `setorOperacionalId`: derivado automaticamente da localização selecionada.
   - `materialId` (FK para `Material`, opcional): quando preenchido, alimenta o `fator_material` no motor de score.
-  - `destinoQuadraId`, `destinoLoteId` (opcionais): contextualizam servicos de movimentacao de material (ex.: mover massa para lote adjacente).
-  - `descricaoAdicional` (texto livre, opcional): recomendado para servicos de movimentacao, onde o empreiteiro detalha a operacao (ex.: "subir grunt para laje da casa").
-- **Expediente**: `RegistroExpediente`, que formaliza a relacao temporal entre `Operador`, `Maquina` e, opcionalmente, `Ajudante`.
+  - `destinoQuadraId`, `destinoLoteId` (opcionais): contextualizam serviços de movimentação de material (ex.: mover massa para lote adjacente).
+  - `descricaoAdicional` (texto livre, opcional): recomendado para serviços de movimentação, onde o empreiteiro detalha a operação (ex.: "subir grunt para laje da casa").
+- **Expediente**: `RegistroExpediente`, que formaliza a relação temporal entre `Operador`, `Maquina` e, opcionalmente, `Ajudante`.
 
-No check-in do inicio de expediente, o operador deve:
+No check-in do início de expediente, o operador deve:
 
-1. Selecionar explicitamente a maquina que vai operar, filtrada pelos `TipoMaquinario` autorizados no seu perfil.
+1. Selecionar explicitamente a máquina que vai operar, filtrada pelos `TipoMaquinario` autorizados no seu perfil.
 2. Selecionar o ajudante ativo, quando existir.
 
-O sistema permite troca de ajudante durante o turno atraves de registos cronologicos em `TurnoAjudante`.
+O sistema permite troca de ajudante durante o turno através de registros cronológicos em `TurnoAjudante`.
 
 ## Relacionamentos e regras de integridade
 
-- **Heranca de servicos**: embora `TipoMaquinario` sugira servicos compativeis, o vinculo operacional efetivo e feito no nivel da instancia `Maquinario`.
-- **Escopo de tenant**: toda entidade tenant-scoped contem obrigatoriamente `obraId`.
-- **Soft-delete**: `Demanda`, `Maquinario` e `Empreiteira` nunca sao purgados fisicamente; o sistema utiliza `deletadoEm` para preservar historico.
-- **Auditabilidade transacional**: qualquer manipulacao, avanco, cancelamento ou alteracao da `Demanda` gera escrita nao destrutiva em `DemandaLog`.
-- **Atributos temporais da demanda** (`REQ-FUNC-007`): a `Demanda` persiste obrigatoriamente `iniciadoEm` (timestamp de transicao para `EM_ANDAMENTO`), `finalizadoEm` (timestamp de transicao para `CONCLUIDA`) e `tempoExecucaoMs` (campo calculado como `finalizadoEm - iniciadoEm` em milissegundos, persistido no momento da conclusao). Em cenarios offline, os timestamps de origem do dispositivo prevalecem sobre os de sincronizacao (conforme estrategia PWA em [06-definicoes-complementares.md](06-definicoes-complementares.md#estrategia-pwa-offline)).
+- **Herança de serviços**: embora `TipoMaquinario` sugira serviços compatíveis, o vínculo operacional efetivo é feito no nível da instância `Maquinario`.
+- **Escopo de tenant**: toda entidade tenant-scoped contém obrigatoriamente `obraId`.
+- **Soft-delete**: `Demanda`, `Maquinario` e `Empreiteira` nunca são purgados fisicamente; o sistema utiliza `deletadoEm` para preservar histórico.
+- **Auditabilidade transacional**: qualquer manipulação, avanço, cancelamento ou alteração da `Demanda` gera escrita não destrutiva em `DemandaLog`.
+- **Atributos temporais da demanda** (`REQ-FUNC-007`): a `Demanda` persiste obrigatoriamente `iniciadoEm` (timestamp de transição para `EM_ANDAMENTO`), `finalizadoEm` (timestamp de transição para `CONCLUIDA`) e `tempoExecucaoMs` (campo calculado como `finalizadoEm - iniciadoEm` em milissegundos, persistido no momento da conclusão). Em cenários offline, os timestamps de origem do dispositivo prevalecem sobre os de sincronização (conforme estratégia PWA em [06-definicoes-complementares.md](06-definicoes-complementares.md#estrategia-pwa-offline)).
 
-### Medicao canonica de tempo operacional (`REQ-MET-001`)
+### Medição canônica de tempo operacional (`REQ-MET-001`)
 
-Para suportar o indicador de tempo ocioso definido no PRD, o modelo de dados expoe os seguintes atributos e derivacoes:
+Para suportar o indicador de tempo ocioso definido no PRD, o modelo de dados expõe os seguintes atributos e derivações:
 
-- **Horas Disponiveis**: soma de `(RegistroExpediente.fimExpediente - RegistroExpediente.inicioExpediente)` para cada expediente do operador/maquina no periodo de medicao. Apenas expedientes com `inicioExpediente` e `fimExpediente` preenchidos sao contabilizados.
-- **Horas em Operacao**: soma de `tempoExecucaoMs` de todas as `Demandas` com estado terminal `CONCLUIDA` vinculadas ao mesmo operador/maquina no periodo, convertida para horas.
-- **Consulta de referencia**: `(Horas Disponiveis - Horas em Operacao) / Horas Disponiveis` por `obraId`, operador e periodo. O resultado alimenta o painel de metricas acessivel a `AdminOperacional` e `SuperAdmin`.
+- **Horas Disponíveis**: soma de `(RegistroExpediente.fimExpediente - RegistroExpediente.inicioExpediente)` para cada expediente do operador/máquina no período de medição. Apenas expedientes com `inicioExpediente` e `fimExpediente` preenchidos são contabilizados.
+- **Horas em Operação**: soma de `tempoExecucaoMs` de todas as `Demandas` com estado terminal `CONCLUIDA` vinculadas ao mesmo operador/máquina no período, convertida para horas.
+- **Consulta de referência**: `(Horas Disponíveis - Horas em Operação) / Horas Disponíveis` por `obraId`, operador e período. O resultado alimenta o painel de métricas acessível a `AdminOperacional` e `SuperAdmin`.
 
 ## Lacunas resolvidas no modelo
 
-- **Ajudantes**: a rastreabilidade e resolvida no nivel de `TurnoAjudante` e derivada por intersecao temporal com a execucao da demanda.
-- **Agendamentos**: `Demanda.dataAgendada` passa a existir como atributo proprio, com transicao controlada via shadow-queue para `PENDENTE` 60 minutos antes do horario-alvo.
-- **Servicos dinamicos**: ficam formalmente adiados para a Fase 2 por ausencia de especificacao relacional madura para exclusao mutua e dependencias simultaneas.
+- **Ajudantes**: a rastreabilidade é resolvida no nível de `TurnoAjudante` e derivada por interseção temporal com a execução da demanda.
+- **Agendamentos**: `Demanda.dataAgendada` passa a existir como atributo próprio, com transição controlada via shadow-queue para `PENDENTE` 60 minutos antes do horário-alvo.
+- **Serviços dinâmicos**: ficam formalmente adiados para a Fase 2 por ausência de especificação relacional madura para exclusão mútua e dependências simultâneas.
 
-## Relacao com outros modulos
+## Relação com outros módulos
 
-- O pipeline de elegibilidade e score que consome `SetorOperacional`, `LoteAdjacencia`, `Servico` e `Material` esta detalhado em [03-fila-scoring-estados-sla.md](03-fila-scoring-estados-sla.md).
-- As definicoes complementares de `dataAgendada`, `ServicoDinamico` e rastreabilidade de ajudantes estao detalhadas em [06-definicoes-complementares.md](06-definicoes-complementares.md).
+- O pipeline de elegibilidade e score que consome `SetorOperacional`, `LoteAdjacencia`, `Servico` e `Material` está detalhado em [03-fila-scoring-estados-sla.md](03-fila-scoring-estados-sla.md).
+- As definições complementares de `dataAgendada`, `ServicoDinamico` e rastreabilidade de ajudantes estão detalhadas em [06-definicoes-complementares.md](06-definicoes-complementares.md).
