@@ -1,54 +1,54 @@
 # Requisitos funcionais
 
-Esta secção consolida os requisitos funcionais do MVP operacional, com foco na integridade do ciclo de vida das demandas, no despacho de maquinario e na experiencia de execucao em campo.
+Esta seção consolida os requisitos funcionais do MVP operacional, com foco na integridade do ciclo de vida das demandas, no despacho de maquinário e na experiência de execução em campo.
 
-## Requisitos do modulo operacional
+## Requisitos do módulo operacional
 
-### `REQ-FUNC-001` Maquina de estados de demanda
+### `REQ-FUNC-001` Máquina de estados de demanda
 
-Uma demanda so pode avancar, retroceder, cancelar ou concluir seguindo rigorosamente os estados e transicoes autorizados. Demandas em `CONCLUIDA` sao definitivas e nao podem regressar a `PENDENTE`, preservando a integridade do cronometro operacional e da trilha de auditoria.
+Uma demanda só pode avançar, retroceder, cancelar ou concluir seguindo rigorosamente os estados e transições autorizados. Demandas em `CONCLUIDA` são definitivas e não podem regressar a `PENDENTE`, preservando a integridade do cronômetro operacional e da trilha de auditoria.
 
 -> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#maquina-de-estados-da-demanda](../SPEC/03-fila-scoring-estados-sla.md#maquina-de-estados-da-demanda)
 
-### `REQ-FUNC-002` Filtro estrito por jurisdicao e compatibilidade
+### `REQ-FUNC-002` Filtro estrito por jurisdição e compatibilidade
 
-No fluxo automatico de distribuicao, maquinas e operadores nao podem visualizar nem receber tarefas fora da jurisdicao logistica atribuida. A elegibilidade depende tambem da compatibilidade entre maquinario e servico. A alocacao manual por `operadorAlocadoId` (ver `REQ-FUNC-006`) constitui excecao explicita e auditavel a estas regras de elegibilidade (DEC-001).
+No fluxo automático de distribuição, máquinas e operadores não podem visualizar nem receber tarefas fora da jurisdição logística atribuída. A elegibilidade depende também da compatibilidade entre maquinário e serviço. A alocação manual por `operadorAlocadoId` (ver `REQ-FUNC-006`) constitui exceção explícita e auditável a estas regras de elegibilidade (DEC-001).
 
 -> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#regra-zero-hard-filter-destaque-e-score](../SPEC/03-fila-scoring-estados-sla.md#regra-zero-hard-filter-destaque-e-score)
 
-### `REQ-FUNC-003` Gestao de maquinario e ajudantes
+### `REQ-FUNC-003` Gestão de maquinário e ajudantes
 
-O sistema deve suportar o cadastro estruturado de `Tipos de Maquinario`, `Servicos`, `Maquinas` e `Ajudantes`. O `Operador` precisa de estar vinculado aos tipos de maquinario que esta autorizado a operar.
+O sistema deve suportar o cadastro estruturado de `Tipos de Maquinario`, `Servicos`, `Maquinas` e `Ajudantes`. O `Operador` precisa de estar vinculado aos tipos de maquinário que está autorizado a operar.
 
 -> SPEC: [../SPEC/01-modulos-plataforma.md#dependencias-sobre-o-core](../SPEC/01-modulos-plataforma.md#dependencias-sobre-o-core)
 -> SPEC: [../SPEC/02-modelo-dados.md#entidades-principais](../SPEC/02-modelo-dados.md#entidades-principais)
 
-### `REQ-FUNC-004` Diario operacional de expediente
+### `REQ-FUNC-004` Diário operacional de expediente
 
-O `RegistroExpediente` formaliza diariamente o uso do equipamento, associando `Operador`, `Maquina` e `Ajudante` num periodo temporal. No check-in, o operador escolhe a maquina filtrada pelas suas autorizacoes e regista o ajudante ativo; a troca de ajudante durante o turno deve permanecer auditada. A primeira demanda do dia parte de uma localizacao neutra (`Fora da Obra`) e so depois da primeira conclusao o checkpoint manual passa a influenciar a adjacencia.
+O `RegistroExpediente` formaliza diariamente o uso do equipamento, associando `Operador`, `Maquina` e `Ajudante` num período temporal. No check-in, o operador escolhe a máquina filtrada pelas suas autorizações e registra o ajudante ativo; a troca de ajudante durante o turno deve permanecer auditada. A primeira demanda do dia parte de uma localização neutra (`Fora da Obra`) e só depois da primeira conclusão o checkpoint manual passa a influenciar a adjacência.
 
 -> SPEC: [../SPEC/01-modulos-plataforma.md#capacidades-operacionais-do-machinery-link](../SPEC/01-modulos-plataforma.md#capacidades-operacionais-do-machinery-link)
 -> SPEC: [../SPEC/02-modelo-dados.md#entidades-principais](../SPEC/02-modelo-dados.md#entidades-principais)
 -> SPEC: [../SPEC/06-definicoes-complementares.md#rastreabilidade-de-ajudantes](../SPEC/06-definicoes-complementares.md#rastreabilidade-de-ajudantes)
 -> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#regra-zero-hard-filter-destaque-e-score](../SPEC/03-fila-scoring-estados-sla.md#regra-zero-hard-filter-destaque-e-score)
 
-### `REQ-FUNC-005` Agrupamento e criacao multipla
+### `REQ-FUNC-005` Agrupamento e criação múltipla
 
-O frontend deve permitir agrupar sequencias de servicos com logica estrutural partilhada e enviar um payload bulk de demandas independentes a partir da mesma experiencia de formulario.
+O frontend deve permitir agrupar sequências de serviços com lógica estrutural compartilhada e enviar um payload bulk de demandas independentes a partir da mesma experiência de formulário.
 
 -> SPEC: [../SPEC/01-modulos-plataforma.md#capacidades-operacionais-do-machinery-link](../SPEC/01-modulos-plataforma.md#capacidades-operacionais-do-machinery-link)
 -> SPEC: [../SPEC/02-modelo-dados.md#entidades-principais](../SPEC/02-modelo-dados.md#entidades-principais)
 
-### `REQ-FUNC-006` Alocacao manual e agendamentos
+### `REQ-FUNC-006` Alocação manual e agendamentos
 
-`AdminOperacional` e `UsuarioInternoFGR` podem criar demandas com atribuicao explicita de operador via `operadorAlocadoId` ou definir uma `dataAgendada` futura. Demandas agendadas permanecem em `AGENDADA` e entram automaticamente na fila pendente 60 minutos antes do horario alvo. A alocacao via `operadorAlocadoId` sobrepoe as regras automaticas de distribuicao e elegibilidade (jurisdicao, proximidade e balanceamento) como excecao de gestao auditavel, mas nao remove o motor de priorizacao da fila do operador. A ordem resultante na fila constitui organizacao recomendada de atendimento, nao bloqueio rigido de execucao (DEC-001).
+`AdminOperacional` e `UsuarioInternoFGR` podem criar demandas com atribuição explícita de operador via `operadorAlocadoId` ou definir uma `dataAgendada` futura. Demandas agendadas permanecem em `AGENDADA` e entram automaticamente na fila pendente 60 minutos antes do horário alvo. A alocação via `operadorAlocadoId` sobrepõe as regras automáticas de distribuição e elegibilidade (jurisdição, proximidade e balanceamento) como exceção de gestão auditável, mas não remove o motor de priorização da fila do operador. A ordem resultante na fila constitui organização recomendada de atendimento, não bloqueio rígido de execução (DEC-001).
 
 -> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#regra-zero-hard-filter-destaque-e-score](../SPEC/03-fila-scoring-estados-sla.md#regra-zero-hard-filter-destaque-e-score)
 -> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#maquina-de-estados-da-demanda](../SPEC/03-fila-scoring-estados-sla.md#maquina-de-estados-da-demanda)
 
 ### `REQ-FUNC-007` Timers de atendimento
 
-O sistema deve persistir e manipular os atributos temporais da demanda diretamente no dominio, incluindo `iniciadoEm`, `finalizadoEm` e o respetivo calculo de `tempoExecucaoMs`.
+O sistema deve persistir e manipular os atributos temporais da demanda diretamente no domínio, incluindo `iniciadoEm`, `finalizadoEm` e o respectivo cálculo de `tempoExecucaoMs`.
 
 -> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#sla-de-atendimento-e-governanca](../SPEC/03-fila-scoring-estados-sla.md#sla-de-atendimento-e-governanca)
 -> SPEC: [../SPEC/02-modelo-dados.md#relacionamentos-e-regras-de-integridade](../SPEC/02-modelo-dados.md#relacionamentos-e-regras-de-integridade)
@@ -56,19 +56,19 @@ O sistema deve persistir e manipular os atributos temporais da demanda diretamen
 
 ### `REQ-FUNC-008` Prioridade maxima com destaque visual
 
-Demandas de prioridade maxima nao devem bloquear a interface nem ocultar as restantes. O operador deve ver o topo da fila com styling chamativo e contexto suficiente para agir imediatamente.
+Demandas de prioridade máxima não devem bloquear a interface nem ocultar as restantes. O operador deve ver o topo da fila com styling chamativo e contexto suficiente para agir imediatamente.
 
 -> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#regra-zero-hard-filter-destaque-e-score](../SPEC/03-fila-scoring-estados-sla.md#regra-zero-hard-filter-destaque-e-score)
 
 ### `REQ-FUNC-009` Workflow de cancelamentos iniciados pelo operador
 
-O operador nao cancela diretamente uma demanda em `EM_ANDAMENTO`. Em vez disso, cria uma `SolicitacaoCancelamento` justificada, movendo a demanda para `PENDENTE_APROVACAO`, onde aguarda decisao administrativa ou aprovacao automatica apos o SLA definido.
+O operador não cancela diretamente uma demanda em `EM_ANDAMENTO`. Em vez disso, cria uma `SolicitacaoCancelamento` justificada, movendo a demanda para `PENDENTE_APROVACAO`, onde aguarda decisão administrativa ou aprovação automática após o SLA definido.
 
 -> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#fluxo-detalhado-pendente_aprovacao](../SPEC/03-fila-scoring-estados-sla.md#fluxo-detalhado-pendente_aprovacao)
 
-### `REQ-FUNC-010` Adjacencias e localizacao operacional
+### `REQ-FUNC-010` Adjacências e localização operacional
 
-O produto deve manter cadastro hierarquico espacial de `Quadras`, `Lotes` e `Ruas`, com regras de contiguidade que alimentam o motor de score e a jurisdicao logistica da fila.
+O produto deve manter cadastro hierárquico espacial de `Quadras`, `Lotes` e `Ruas`, com regras de contiguidade que alimentam o motor de score e a jurisdição logística da fila.
 
 -> SPEC: [../SPEC/01-modulos-plataforma.md#dependencias-sobre-o-core](../SPEC/01-modulos-plataforma.md#dependencias-sobre-o-core)
 -> SPEC: [../SPEC/02-modelo-dados.md#entidades-principais](../SPEC/02-modelo-dados.md#entidades-principais)

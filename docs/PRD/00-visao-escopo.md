@@ -1,6 +1,6 @@
 # Visão e escopo
 
-Documento migrado a partir de `PRD-FGR-OPS.md` (secções 1–3). Rastreio técnico: [SPEC — visão e arquitetura](../SPEC/00-visao-arquitetura.md).
+Documento migrado a partir de `PRD-FGR-OPS.md` (seções 1–3). Rastreio técnico: [SPEC — visão e arquitetura](../SPEC/00-visao-arquitetura.md).
 
 ## 1. Contexto
 
@@ -63,7 +63,7 @@ O produto viável mínimo concentra-se estritamente no fluxo operacional de máq
 
 **REQ-SCO-F2-004** **Aplicativos Nativos**: Disponibilização em lojas (`App Store`/`Google Play`).
 
-**REQ-SCO-F2-005** Migração de dados legados e roteirização em mapas geocolocados.
+**REQ-SCO-F2-005** Migração de dados legados e roteirização em mapas geocodificados.
 
 **REQ-SCO-F2-006** **Serviços Dinâmicos Automáticos (Fase 2)**: Algoritmos de resolução automática de deadlocks transacionais ou co-dependência entre múltiplas frentes de serviço sem intervenção humana. O MVP utiliza apenas agrupamentos passivos via `DemandaGrupo`.
 

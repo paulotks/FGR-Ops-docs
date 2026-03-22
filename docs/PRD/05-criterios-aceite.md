@@ -1,6 +1,6 @@
 # Critérios de aceite
 
-Esta secção agrega critérios testáveis do PRD original. Nesta etapa ficam migrados os critérios ligados a RBAC, isolamento multi-tenant e ao fluxo operacional do Machinery Link.
+Esta seção agrega critérios testáveis do PRD original. Nesta etapa ficam migrados os critérios ligados a RBAC, isolamento multi-tenant e ao fluxo operacional do Machinery Link.
 
 ## Isolamento RBAC e multi-tenancy
 
@@ -24,7 +24,7 @@ When o usuário acessa o dashboard global de produtividade
 Then o sistema deve exibir dados agregados de todas as obras cadastradas sem restrição de tenant
 ```
 
-## Maquina de estados: bloqueio de bypass pos-conclusao
+## Máquina de estados: bloqueio de bypass pós-conclusão
 
 **REQ-ACE-002** O sistema deve impedir transições inválidas após a conclusão da demanda, preservando a integridade da máquina de estados e da auditoria operacional.
 
@@ -38,7 +38,7 @@ When um usuário com perfil 'Operador' tenta executar a ação 'CANCELAR' nesta 
 Then o sistema deve rejeitar a transição e retornar uma mensagem de erro de permissão de estado
 ```
 
-## Jurisdicao logistica sobre preferencias no score
+## Jurisdição logística sobre preferências no score
 
 **REQ-ACE-003** O ranking da fila do operador deve respeitar a jurisdição logística e os fatores de score definidos para todas as demandas presentes na fila, incluindo as atribuídas via `operadorAlocadoId`. A alocação manual determina a que operador a demanda é dirigida, mas não isenta a demanda da priorização por score. A ordem resultante é uma organização recomendada de atendimento, não um bloqueio rígido de execução (DEC-001).
 
@@ -47,7 +47,7 @@ Then o sistema deve rejeitar a transição e retornar uma mensagem de erro de pe
 **Cenário 1: Adjacência espacial supera demanda alocada manualmente na ordenação da fila**
 
 ```gherkin
-Given que um Operador possui na fila uma demanda 'A' atribuída via operadorAlocadoId cuja quadra é diferente da posição actual do operador e uma demanda 'B' com 'Adjacência Espacial' favorável (mesma quadra)
+Given que um Operador possui na fila uma demanda 'A' atribuída via operadorAlocadoId cuja quadra é diferente da posição atual do operador e uma demanda 'B' com 'Adjacência Espacial' favorável (mesma quadra)
 When o motor de scoring calcula a pontuação para a fila deste Operador
 Then a demanda 'B' deve receber uma pontuação de ranking superior à demanda 'A'
 ```
@@ -60,9 +60,9 @@ When a demanda é criada no sistema
 Then a demanda deve ser atribuída ao Operador indicado, entrar na sua fila para priorização normal por score e gerar registo auditável da excepção de jurisdição
 ```
 
-## Audit log com justificativa em modificacoes gerenciais
+## Audit log com justificativa em modificações gerenciais
 
-**REQ-ACE-004** Toda modificação gerencial relevante na demanda deve gerar registo auditável com justificativa obrigatória.
+**REQ-ACE-004** Toda modificação gerencial relevante na demanda deve gerar registro auditável com justificativa obrigatória.
 
 → SPEC: [../SPEC/03-fila-scoring-estados-sla.md#auditoria-administrativa-e-justificativas](../SPEC/03-fila-scoring-estados-sla.md#auditoria-administrativa-e-justificativas)
 
@@ -74,7 +74,7 @@ When o Admin confirma a alteração inserindo o texto de justificativa obrigató
 Then o sistema deve criar um registro na tabela 'AuditLog' contendo o ID do usuário, timestamp, valores (antigo/novo) e a justificativa fornecida
 ```
 
-## Destaque visual de prioridade maxima na UI mobile
+## Destaque visual de prioridade máxima na UI mobile
 
 **REQ-ACE-005** Demandas de prioridade máxima devem permanecer visíveis e destacadas no topo da fila mobile sem suprimir as restantes.
 
@@ -90,7 +90,7 @@ Then a demanda 'MAXIMA' deve ser exibida com borda pulsante vermelha no topo da 
 
 ## Cancelamento de demandas em campo e encerramento por SLA
 
-**REQ-ACE-006** O cancelamento iniciado em campo pelo operador deve transitar para `PENDENTE_APROVACAO`, ficando disponível para decisão gerencial. Se não houver decisão até ao fim do expediente da obra, o sistema encerra automaticamente a demanda como `CANCELADA` por estouro de SLA operacional. O horário de expediente é parametrizável por obra. A trilha auditável é obrigatória em todos os desfechos, e `UsuarioInternoFGR`/`AdminOperacional` dispõem de visão dedicada no dia útil seguinte para revisão pós-facto e acção correctiva (DEC-002).
+**REQ-ACE-006** O cancelamento iniciado em campo pelo operador deve transitar para `PENDENTE_APROVACAO`, ficando disponível para decisão gerencial. Se não houver decisão até o fim do expediente da obra, o sistema encerra automaticamente a demanda como `CANCELADA` por estouro de SLA operacional. O horário de expediente é parametrizável por obra. A trilha auditável é obrigatória em todos os desfechos, e `UsuarioInternoFGR`/`AdminOperacional` dispõem de visão dedicada no dia útil seguinte para revisão pós-fato e ação corretiva (DEC-002).
 
 → SPEC: [../SPEC/03-fila-scoring-estados-sla.md#fluxo-detalhado-pendente_aprovacao](../SPEC/03-fila-scoring-estados-sla.md#fluxo-detalhado-pendente_aprovacao)
 
@@ -109,15 +109,15 @@ Given que uma demanda está em 'PENDENTE_APROVACAO' sem decisão gerencial
   And o horário de expediente da obra está configurado como '06:00-17:00'
 When o relógio do sistema atinge o fim do expediente da obra (17:00)
 Then o sistema deve aprovar automaticamente o cancelamento, transitar a demanda para 'CANCELADA'
-  And registar na trilha auditável a origem 'estouro_sla_fim_expediente', o ator 'SISTEMA' e o timestamp
+  And registrar na trilha auditável a origem 'estouro_sla_fim_expediente', o ator 'SISTEMA' e o timestamp
 ```
 
-**Cenário 3: Revisão pós-facto no dia útil seguinte**
+**Cenário 3: Revisão pós-fato no dia útil seguinte**
 
 ```gherkin
 Given que uma ou mais demandas foram encerradas automaticamente por estouro de SLA no dia anterior
 When um 'AdminOperacional' ou 'UsuarioInternoFGR' acessa o painel de revisão no dia útil seguinte
-Then o sistema deve apresentar uma visão dedicada com todas as demandas encerradas automaticamente, permitindo acção correctiva ou operacional
+Then o sistema deve apresentar uma visão dedicada com todas as demandas encerradas automaticamente, permitindo ação corretiva ou operacional
 ```
 
 ## Isolamento Cross-Tenant Auditado
@@ -138,35 +138,35 @@ When o Guard de segurança avalia a requisição
 Then o sistema deve retornar HTTP 403 independentemente do payload ou tenant
 ```
 
-## Seguranca de token e gestao de sessao
+## Segurança de token e gestão de sessão
 
-**REQ-ACE-007** O sistema deve garantir que tokens JWT seguem politica de sessao curta, rotacao de refresh token e capacidade de invalidacao imediata, conforme a arquitectura de autenticacao definida.
+**REQ-ACE-007** O sistema deve garantir que tokens JWT seguem política de sessão curta, rotação de refresh token e capacidade de invalidação imediata, conforme a arquitetura de autenticação definida.
 
 → SPEC: [../SPEC/00-visao-arquitetura.md#decisoes-arquiteturais-adrs](../SPEC/00-visao-arquitetura.md#decisoes-arquiteturais-adrs)
 
 **Cenário 1: Expiração e renovação de token**
 
 ```gherkin
-Given que um utilizador autenticado possui um access token valido
-When o access token expira apos 15 minutos
-Then o sistema deve rejeitar requisicoes com HTTP 401
-  And permitir renovacao silenciosa via refresh token rotativo (TTL de 7 dias)
-  And invalidar o refresh token anterior apos uso
+Given que um usuário autenticado possui um access token válido
+When o access token expira após 15 minutos
+Then o sistema deve rejeitar requisições com HTTP 401
+  And permitir renovação silenciosa via refresh token rotativo (TTL de 7 dias)
+  And invalidar o refresh token anterior após uso
 ```
 
 **Cenário 2: Invalidação imediata por logout**
 
 ```gherkin
-Given que um utilizador autenticado realiza logout explicito
-When o pedido de logout e processado pelo backend
+Given que um usuário autenticado realiza logout explícito
+When o pedido de logout é processado pelo backend
 Then o sistema deve adicionar o jti do access token e do refresh token a blacklist em Redis
-  And rejeitar qualquer requisicao subsequente com os tokens invalidados
+  And rejeitar qualquer requisição subsequente com os tokens invalidados
 ```
 
 **Cenário 3: Detecção de reuso de refresh token**
 
 ```gherkin
-Given que um refresh token ja foi utilizado para obter um novo par de tokens
+Given que um refresh token já foi utilizado para obter um novo par de tokens
 When um atacante tenta reutilizar o mesmo refresh token
-Then o sistema deve rejeitar a requisicao, invalidar toda a cadeia de tokens do utilizador e registar o evento em AuthAuditLog
+Then o sistema deve rejeitar a requisição, invalidar toda a cadeia de tokens do usuário e registrar o evento em AuthAuditLog
 ```
