@@ -1,149 +1,113 @@
 ---
-description: Implement tasks from an OpenSpec change (Experimental)
+description: Apply documentation tasks from docs/changes/ (requirements-first); update PRD, SPEC, traceability; run docs-audit-consistency and check_consistency
 ---
 
-Implement tasks from an OpenSpec change.
+Apply tasks from an active change under `docs/changes/<name>/`. **Do not use OpenSpec CLI.** This workflow only updates **documentation** under `docs/` and audit artifacts that **docs-audit-consistency** references (for example `docs/audit/decisions-log.md`).
 
-**Input**: Optionally specify a change name (e.g., `/opsx:apply add-auth`). If omitted, check if it can be inferred from conversation context. If vague or ambiguous you MUST prompt for available changes.
+**Input**: Optionally pass the change name (e.g. `/opsx:apply onboarding-notificacoes`). If omitted, infer from conversation; if ambiguous, list active changes and use **AskUserQuestion**.
+
+**Guardrails**
+
+- Follow **context-only-docs** (no application source code).
+- While editing, follow **docs-audit-consistency** (`.cursor/skills/docs-audit-consistency/SKILL.md`): PRD ↔ SPEC cross-links, `Rastreio PRD:` in SPEC, acceptance criteria in `docs/PRD/05-criterios-aceite.md` when applicable, `docs/traceability.md`, and `docs/audit/decisions-log.md` when there is a DEC.
+- If `tasks.md` lists application code or schema-driven implementation, treat as **out of scope** for this repo or confirm with the user.
+
+**Note**: There is **no** generator that auto-creates rows in the traceability matrix. Keeping the matrix correct is **mandatory** via this workflow, explicit checklist items in `tasks.md`, and your edits—not a separate tool (future validation scripts are optional extras).
+
+---
 
 **Steps**
 
 1. **Select the change**
 
-   If a name is provided, use it. Otherwise:
-   - Infer from conversation context if the user mentioned a change
-   - Auto-select if only one active change exists
-   - If ambiguous, run `openspec list --json` to get available changes and use the **AskUserQuestion tool** to let the user select
+   List subdirectories of `docs/changes/` **excluding** `archive/`.
+   If a name is given, verify that folder exists.
+   If exactly one active change exists, you may auto-select; if several, use **AskUserQuestion**.
 
-   Always announce: "Using change: <name>" and how to override (e.g., `/opsx:apply <other>`).
+   Always announce: `Using change: <name>` and how to override (e.g. `/opsx:apply <other>`).
 
-2. **Check status to understand the schema**
+2. **Read context**
+
+   Read `docs/changes/<name>/proposal.md`, `design.md`, and `tasks.md`.
+
+3. **Show progress**
+
+   From `tasks.md`, count incomplete `- [ ]` vs complete `- [x]`.
+   Display **N/M** tasks complete and a short overview of what remains.
+
+4. **Execute tasks (loop until done or paused)**
+
+   For each **pending** `- [ ]` item in `tasks.md`:
+
+   - State which task you are doing.
+   - Edit **only** under `docs/` (typically `docs/PRD/`, `docs/SPEC/`, `docs/traceability.md`, `docs/audit/` when applicable).
+   - Reflect the skill’s sync rules while you work: primary change plus dependent artifacts (cross-links, criteria, decisions) as needed—do not leave orphan `REQ-*` references.
+
+   **Traceability (explicit deliverable)**  
+   After PRD/SPEC content for this change is **stable**, update **`docs/traceability.md`**:
+
+   - Edit the **Matriz global** table (section *Matriz global*): columns **REQ / grupo**, **PRD**, **SPEC**, **Notas**.
+   - Add a new row or adjust existing cells so they match the **same** markdown-table style and linking pattern as neighboring rows (relative links like `PRD/...`, `SPEC/...`).
+   - Use `REQ-XXX-*` style in the first column when the row represents a **group** of requirements, consistent with the existing matrix.
+
+   When a task is done, flip its checkbox: `- [ ]` → `- [x]`.
+
+   **Pause if**:
+
+   - The task is unclear → ask.
+   - Edits conflict with `proposal.md` or `design.md` → suggest updating those files before continuing.
+   - Tooling or validation errors → report and wait.
+
+5. **Consistency check (end of session or when all tasks are done)**
+
+   Read and follow `.cursor/skills/docs-audit-consistency/SKILL.md` end-to-end for this change set.
+
+   Run:
+
    ```bash
-   openspec status --change "<name>" --json
-   ```
-   Parse the JSON to understand:
-   - `schemaName`: The workflow being used (e.g., "spec-driven")
-   - Which artifact contains the tasks (typically "tasks" for spec-driven, check status for others)
-
-3. **Get apply instructions**
-
-   ```bash
-   openspec instructions apply --change "<name>" --json
+   python .cursor/skills/docs-audit-consistency/scripts/check_consistency.py
    ```
 
-   This returns:
-   - Context file paths (varies by schema)
-   - Progress (total, complete, remaining)
-   - Task list with status
-   - Dynamic instruction based on current state
+   Report the outcome. If the script reports issues, fix documentation and re-run until clean or document agreed exceptions with the user.
 
-   **Handle states:**
-   - If `state: "blocked"` (missing artifacts): show message, suggest using `/opsx:continue`
-   - If `state: "all_done"`: congratulate, suggest archive
-   - Otherwise: proceed to implementation
+6. **Status**
 
-4. **Read context files**
+   **On completion**: Summarize tasks finished this session, overall **N/M**, and suggest `/opsx:archive` when every item in `tasks.md` is `[x]`.
 
-   Read the files listed in `contextFiles` from the apply instructions output.
-   The files depend on the schema being used:
-   - **spec-driven**: proposal, specs, design, tasks
-   - Other schemas: follow the contextFiles from CLI output
+   **On pause**: Explain why and wait for guidance.
 
-5. **Show current progress**
+---
 
-   Display:
-   - Schema being used
-   - Progress: "N/M tasks complete"
-   - Remaining tasks overview
-   - Dynamic instruction from CLI
-
-6. **Implement tasks (loop until done or blocked)**
-
-   For each pending task:
-   - Show which task is being worked on
-   - Make the code changes required
-   - Keep changes minimal and focused
-   - Mark task complete in the tasks file: `- [ ]` → `- [x]`
-   - Continue to next task
-
-   **Pause if:**
-   - Task is unclear → ask for clarification
-   - Implementation reveals a design issue → suggest updating artifacts
-   - Error or blocker encountered → report and wait for guidance
-   - User interrupts
-
-7. **On completion or pause, show status**
-
-   Display:
-   - Tasks completed this session
-   - Overall progress: "N/M tasks complete"
-   - If all done: suggest archive
-   - If paused: explain why and wait for guidance
-
-**Output During Implementation**
+**Output during work (example)**
 
 ```
-## Implementing: <change-name> (schema: <schema-name>)
+## Applying documentation: <change-name>
 
 Working on task 3/7: <task description>
-[...implementation happening...]
-✓ Task complete
-
-Working on task 4/7: <task description>
-[...implementation happening...]
 ✓ Task complete
 ```
 
-**Output On Completion**
+**Output on completion (example)**
 
 ```
-## Implementation Complete
+## Documentation apply complete
 
 **Change:** <change-name>
-**Schema:** <schema-name>
 **Progress:** 7/7 tasks complete ✓
 
-### Completed This Session
-- [x] Task 1
-- [x] Task 2
-...
-
-All tasks complete! You can archive this change with `/opsx:archive`.
+All tasks complete. You can archive with `/opsx:archive`.
 ```
 
-**Output On Pause (Issue Encountered)**
+**Output on pause (example)**
 
 ```
-## Implementation Paused
+## Apply paused
 
 **Change:** <change-name>
-**Schema:** <schema-name>
 **Progress:** 4/7 tasks complete
 
-### Issue Encountered
-<description of the issue>
+### Issue
+<description>
 
-**Options:**
-1. <option 1>
-2. <option 2>
-3. Other approach
-
-What would you like to do?
+What should we do next?
 ```
-
-**Guardrails**
-- Keep going through tasks until done or blocked
-- Always read context files before starting (from the apply instructions output)
-- If task is ambiguous, pause and ask before implementing
-- If implementation reveals issues, pause and suggest artifact updates
-- Keep code changes minimal and scoped to each task
-- Update task checkbox immediately after completing each task
-- Pause on errors, blockers, or unclear requirements - don't guess
-- Use contextFiles from CLI output, don't assume specific file names
-
-**Fluid Workflow Integration**
-
-This skill supports the "actions on a change" model:
-
-- **Can be invoked anytime**: Before all artifacts are done (if tasks exist), after partial implementation, interleaved with other actions
-- **Allows artifact updates**: If implementation reveals design issues, suggest updating artifacts - not phase-locked, work fluidly

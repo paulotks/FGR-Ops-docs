@@ -1,110 +1,76 @@
 ---
 name: openspec-propose
-description: Propose a new change with all artifacts generated in one step. Use when the user wants to quickly describe what they want to build and get a complete proposal with design, specs, and tasks ready for implementation.
+description: Propose a documentation change (requirements-first) under docs/changes/ with proposal.md, design.md, and tasks.md. Alias for /opsx:propose in FGR-Ops-Requisitos (no OpenSpec CLI).
 license: MIT
-compatibility: Requires openspec CLI.
+compatibility: FGR-Ops-Requisitos docs/changes workflow; no openspec CLI.
 metadata:
   author: openspec
   version: "1.0"
   generatedBy: "1.2.0"
 ---
 
-Propose a new change - create the change and generate all artifacts in one step.
+Propose a new documentation change. Create `docs/changes/<kebab-name>/` with:
 
-I'll create a change with artifacts:
-- proposal.md (what & why)
-- design.md (how)
-- tasks.md (implementation steps)
+- `proposal.md` (what and why; REQ inventory)
+- `design.md` (how; concrete PRD/SPEC targets)
+- `tasks.md` (documentation-only checklist)
 
-When ready to implement, run /opsx:apply
+When documentation is ready to land in PRD/SPEC/traceability, run `/opsx:apply`.
 
 ---
 
-**Input**: The user's request should include a change name (kebab-case) OR a description of what they want to build.
+**Input**: The argument after `/opsx:propose` is the change name (kebab-case), **or** a description of **which requirement or PRD–SPEC specification gap** you want to address (not “what product code to build”).
+
+**Guardrails**: Follow the skill **context-only-docs** (this repo is documentation-only). During **apply**, follow **docs-audit-consistency** (`.cursor/skills/docs-audit-consistency/SKILL.md`).
 
 **Steps**
 
-1. **If no clear input provided, ask what they want to build**
+1. **If no input, ask for requirements focus**
 
-   Use the **AskUserQuestion tool** (open-ended, no preset options) to ask:
-   > "What change do you want to work on? Describe what you want to build or fix."
+   Use the **AskUserQuestion** tool (open-ended, no preset options), for example:
+   > “What requirement or PRD–SPEC gap should we address?”
 
-   From their description, derive a kebab-case name (e.g., "add user authentication" → `add-user-auth`).
+   Derive a kebab-case folder name (e.g. “onboarding notifications” → `onboarding-notificacoes`).
 
-   **IMPORTANT**: Do NOT proceed without understanding what the user wants to build.
+   **IMPORTANT**: Do not proceed without a clear requirements focus.
 
-2. **Create the change directory**
-   ```bash
-   openspec new change "<name>"
-   ```
-   This creates a scaffolded change at `openspec/changes/<name>/` with `.openspec.yaml`.
+2. **Resolve `<kebab-name>` and collisions**
 
-3. **Get the artifact build order**
-   ```bash
-   openspec status --change "<name>" --json
-   ```
-   Parse the JSON to get:
-   - `applyRequires`: array of artifact IDs needed before implementation (e.g., `["tasks"]`)
-   - `artifacts`: list of all artifacts with their status and dependencies
+   If the user supplied a kebab name, use it; otherwise use the derived name.
+   If `docs/changes/<name>/` already exists (not under `archive/`), ask whether to continue that change or use a new name.
 
-4. **Create artifacts in sequence until apply-ready**
+3. **REQ ID inventory (avoid duplicates)**
 
-   Use the **TodoWrite tool** to track progress through the artifacts.
+   Orient the work using:
 
-   Loop through artifacts in dependency order (artifacts with no pending dependencies first):
+   - `docs/PRD/_index.md`, `docs/SPEC/_index.md`
+   - Search for `REQ-` under `docs/PRD/` and `docs/SPEC/`
+   - Patterns in `docs/traceability.md`
 
-   a. **For each artifact that is `ready` (dependencies satisfied)**:
-      - Get instructions:
-        ```bash
-        openspec instructions <artifact-id> --change "<name>" --json
-        ```
-      - The instructions JSON includes:
-        - `context`: Project background (constraints for you - do NOT include in output)
-        - `rules`: Artifact-specific rules (constraints for you - do NOT include in output)
-        - `template`: The structure to use for your output file
-        - `instruction`: Schema-specific guidance for this artifact type
-        - `outputPath`: Where to write the artifact
-        - `dependencies`: Completed artifacts to read for context
-      - Read any completed dependency files for context
-      - Create the artifact file using `template` as the structure
-      - Apply `context` and `rules` as constraints - but do NOT copy them into the file
-      - Show brief progress: "Created <artifact-id>"
+   Propose new IDs consistent with existing prefixes and numbering (canonical prefixes such as FUNC, NFR, ACE, RBAC, JOR, etc.).
 
-   b. **Continue until all `applyRequires` artifacts are complete**
-      - After creating each artifact, re-run `openspec status --change "<name>" --json`
-      - Check if every artifact ID in `applyRequires` has `status: "done"` in the artifacts array
-      - Stop when all `applyRequires` artifacts are done
+4. **Create `docs/changes/<name>/` and the three files**
 
-   c. **If an artifact requires user input** (unclear context):
-      - Use **AskUserQuestion tool** to clarify
-      - Then continue with creation
+   - **proposal.md** (minimum sections):
+     - Summary
+     - Proposed REQs (table: ID, title, type, provisional wording)
+     - REQs to change or remove
+     - Risks and ambiguities
+   - **design.md**:
+     - Target files: concrete paths under `docs/PRD/*.md` and `docs/SPEC/*.md`
+     - Planned cross-links
+     - Reference `docs/audit/decisions-log.md` if there is a product/architecture decision (DEC)
+   - **tasks.md**:
+     - Suggested order: (1) PRD, (2) SPEC including `Rastreio PRD:`, (3) acceptance criteria in `docs/PRD/05-criterios-aceite.md` if applicable, (4) row(s) in the **global matrix** in `docs/traceability.md`, (5) run `python .cursor/skills/docs-audit-consistency/scripts/check_consistency.py`
+     - **Only** documentation tasks (`- [ ]` / `- [x]`). No application code tasks.
 
-5. **Show final status**
-   ```bash
-   openspec status --change "<name>"
-   ```
+5. **Closing**
+
+   Summarize: change name, path `docs/changes/<name>/`, artifacts created.
+   State that the next step is **applying documentation** (not shipping product code).
+   Prompt: run **`/opsx:apply`** (optionally with `<name>`).
 
 **Output**
 
-After completing all artifacts, summarize:
-- Change name and location
-- List of artifacts created with brief descriptions
-- What's ready: "All artifacts created! Ready for implementation."
-- Prompt: "Run `/opsx:apply` or ask me to implement to start working on the tasks."
-
-**Artifact Creation Guidelines**
-
-- Follow the `instruction` field from `openspec instructions` for each artifact type
-- The schema defines what each artifact should contain - follow it
-- Read dependency artifacts for context before creating new ones
-- Use `template` as the structure for your output file - fill in its sections
-- **IMPORTANT**: `context` and `rules` are constraints for YOU, not content for the file
-  - Do NOT copy `<context>`, `<rules>`, `<project_context>` blocks into the artifact
-  - These guide what you write, but should never appear in the output
-
-**Guardrails**
-- Create ALL artifacts needed for implementation (as defined by schema's `apply.requires`)
-- Always read dependency artifacts before creating a new one
-- If context is critically unclear, ask the user - but prefer making reasonable decisions to keep momentum
-- If a change with that name already exists, ask if user wants to continue it or create a new one
-- Verify each artifact file exists after writing before proceeding to next
+- Change folder path and short summary of REQs
+- Reminder: `/opsx:apply` updates PRD, SPEC, `docs/traceability.md`, and runs consistency checks

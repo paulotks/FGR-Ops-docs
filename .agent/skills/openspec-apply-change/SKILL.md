@@ -1,156 +1,100 @@
 ---
 name: openspec-apply-change
-description: Implement tasks from an OpenSpec change. Use when the user wants to start implementing, continue implementation, or work through tasks.
+description: Apply documentation tasks from docs/changes/; update PRD, SPEC, traceability; run check_consistency. Alias for /opsx:apply (no OpenSpec CLI).
 license: MIT
-compatibility: Requires openspec CLI.
+compatibility: FGR-Ops-Requisitos docs/changes workflow; no openspec CLI.
 metadata:
   author: openspec
   version: "1.0"
   generatedBy: "1.2.0"
 ---
 
-Implement tasks from an OpenSpec change.
+Apply tasks from an active change under `docs/changes/<name>/`. **Do not use OpenSpec CLI.** Edit only under `docs/` (and audit artifacts referenced by **docs-audit-consistency**).
 
-**Input**: Optionally specify a change name. If omitted, check if it can be inferred from conversation context. If vague or ambiguous you MUST prompt for available changes.
+**Input**: Optionally pass the change name (e.g. `/opsx:apply onboarding-notificacoes`). If omitted, infer from conversation; if ambiguous, list active changes and use **AskUserQuestion**.
+
+**Guardrails**: Follow **context-only-docs** and **docs-audit-consistency**. **Do not** implement application source code. If `tasks.md` mentions code implementation, treat it as out of scope for this repo or clarify with the user.
 
 **Steps**
 
 1. **Select the change**
 
-   If a name is provided, use it. Otherwise:
-   - Infer from conversation context if the user mentioned a change
-   - Auto-select if only one active change exists
-   - If ambiguous, run `openspec list --json` to get available changes and use the **AskUserQuestion tool** to let the user select
+   List subdirectories of `docs/changes/` **excluding** `archive/`.
+   If a name is given, ensure that folder exists.
+   If exactly one active change exists, you may auto-select; if several, use **AskUserQuestion**.
 
-   Always announce: "Using change: <name>" and how to override (e.g., `/opsx:apply <other>`).
+   Always announce: `Using change: <name>` and how to override (e.g. `/opsx:apply <other>`).
 
-2. **Check status to understand the schema**
-   ```bash
-   openspec status --change "<name>" --json
-   ```
-   Parse the JSON to understand:
-   - `schemaName`: The workflow being used (e.g., "spec-driven")
-   - Which artifact contains the tasks (typically "tasks" for spec-driven, check status for others)
+2. **Read context**
 
-3. **Get apply instructions**
+   Read `docs/changes/<name>/proposal.md`, `design.md`, and `tasks.md`.
 
-   ```bash
-   openspec instructions apply --change "<name>" --json
-   ```
+3. **Show progress**
 
-   This returns:
-   - Context file paths (varies by schema - could be proposal/specs/design/tasks or spec/tests/implementation/docs)
-   - Progress (total, complete, remaining)
-   - Task list with status
-   - Dynamic instruction based on current state
+   From `tasks.md`, count incomplete `- [ ]` vs complete `- [x]`.
+   Display **N/M** tasks complete and a short overview of what remains.
 
-   **Handle states:**
-   - If `state: "blocked"` (missing artifacts): show message, suggest using openspec-continue-change
-   - If `state: "all_done"`: congratulate, suggest archive
-   - Otherwise: proceed to implementation
-
-4. **Read context files**
-
-   Read the files listed in `contextFiles` from the apply instructions output.
-   The files depend on the schema being used:
-   - **spec-driven**: proposal, specs, design, tasks
-   - Other schemas: follow the contextFiles from CLI output
-
-5. **Show current progress**
-
-   Display:
-   - Schema being used
-   - Progress: "N/M tasks complete"
-   - Remaining tasks overview
-   - Dynamic instruction from CLI
-
-6. **Implement tasks (loop until done or blocked)**
+4. **Execute tasks (loop until done or paused)**
 
    For each pending task:
-   - Show which task is being worked on
-   - Make the code changes required
-   - Keep changes minimal and focused
-   - Mark task complete in the tasks file: `- [ ]` → `- [x]`
-   - Continue to next task
 
-   **Pause if:**
-   - Task is unclear → ask for clarification
-   - Implementation reveals a design issue → suggest updating artifacts
-   - Error or blocker encountered → report and wait for guidance
-   - User interrupts
+   - State which task you are doing
+   - Edit only files under `docs/` (PRD, SPEC, `docs/traceability.md`, `docs/audit/` when applicable)
+   - **Traceability**: once PRD/SPEC edits for this change are stable, update **`docs/traceability.md`** — add or adjust rows/cells in the **same format** as the existing global table (use `REQ-XXX-*` style when representing a group)
+   - Mark the task complete: `- [ ]` → `- [x]`
 
-7. **On completion or pause, show status**
+   **Pause if**:
 
-   Display:
-   - Tasks completed this session
-   - Overall progress: "N/M tasks complete"
-   - If all done: suggest archive
-   - If paused: explain why and wait for guidance
+   - The task is unclear → ask
+   - Edits reveal inconsistency with `proposal.md` / `design.md` → suggest updating those files
+   - Tooling or validation errors → report and wait
 
-**Output During Implementation**
+5. **Consistency check (end of session or when all tasks are done)**
+
+   Read and follow `.cursor/skills/docs-audit-consistency/SKILL.md`.
+   Run:
+
+   ```bash
+   python .cursor/skills/docs-audit-consistency/scripts/check_consistency.py
+   ```
+
+   Report the outcome; fix documentation issues if the script reports problems.
+
+6. **Status**
+
+   On completion: tasks finished this session, overall **N/M**, suggest `/opsx:archive` when everything is `[x]`.
+   On pause: explain why and wait for guidance.
+
+**Output during work (example)**
 
 ```
-## Implementing: <change-name> (schema: <schema-name>)
+## Applying documentation: <change-name>
 
 Working on task 3/7: <task description>
-[...implementation happening...]
-✓ Task complete
-
-Working on task 4/7: <task description>
-[...implementation happening...]
 ✓ Task complete
 ```
 
-**Output On Completion**
+**Output on completion (example)**
 
 ```
-## Implementation Complete
+## Documentation apply complete
 
 **Change:** <change-name>
-**Schema:** <schema-name>
 **Progress:** 7/7 tasks complete ✓
 
-### Completed This Session
-- [x] Task 1
-- [x] Task 2
-...
-
-All tasks complete! Ready to archive this change.
+All tasks complete. You can archive with `/opsx:archive`.
 ```
 
-**Output On Pause (Issue Encountered)**
+**Output on pause (example)**
 
 ```
-## Implementation Paused
+## Apply paused
 
 **Change:** <change-name>
-**Schema:** <schema-name>
 **Progress:** 4/7 tasks complete
 
-### Issue Encountered
-<description of the issue>
+### Issue
+<description>
 
-**Options:**
-1. <option 1>
-2. <option 2>
-3. Other approach
-
-What would you like to do?
+What should we do next?
 ```
-
-**Guardrails**
-- Keep going through tasks until done or blocked
-- Always read context files before starting (from the apply instructions output)
-- If task is ambiguous, pause and ask before implementing
-- If implementation reveals issues, pause and suggest artifact updates
-- Keep code changes minimal and scoped to each task
-- Update task checkbox immediately after completing each task
-- Pause on errors, blockers, or unclear requirements - don't guess
-- Use contextFiles from CLI output, don't assume specific file names
-
-**Fluid Workflow Integration**
-
-This skill supports the "actions on a change" model:
-
-- **Can be invoked anytime**: Before all artifacts are done (if tasks exist), after partial implementation, interleaved with other actions
-- **Allows artifact updates**: If implementation reveals design issues, suggest updating artifacts - not phase-locked, work fluidly
