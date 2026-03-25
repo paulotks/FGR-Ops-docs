@@ -17,7 +17,7 @@ Artefatos derivados do PRD: diagramas em Mermaid para revisão rápida de jornad
 | Arquivo | Resumo | REQ-* principais | PRD |
 | ------- | ------ | ---------------- | --- |
 | [00-jornada-principal.md](00-jornada-principal.md) | Fluxo operacional Machinery Link: pedido → triagem → score → execução → auditoria. | REQ-JOR-001…005 | [02-jornada-usuario.md](../PRD/02-jornada-usuario.md) |
-| [01-movimentacao-concreto-lote-adjacente.md](01-movimentacao-concreto-lote-adjacente.md) | Empreiteiro: PIN, origem/destino Quadra+Lote (ex. Q01 L04→L05), Munck/concreto; motor atualiza fila. | REQ-JOR-001…004 | [02-jornada-usuario.md](../PRD/02-jornada-usuario.md) |
+| [01-movimentacao-concreto-lote-adjacente.md](01-movimentacao-concreto-lote-adjacente.md) | Empreiteiro: PIN, origem/destino Quadra+Lote (ex. Q04 L02→L03), Munck/concreto; motor atualiza fila. | REQ-JOR-001…004 | [02-jornada-usuario.md](../PRD/02-jornada-usuario.md) |
 
 - [Índice PRD](../PRD/_index.md)
 - [Matriz de rastreabilidade](../traceability.md)
