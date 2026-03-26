@@ -2,6 +2,8 @@
 
 Esta seção descreve o fluxo operacional principal do módulo Machinery Link, da abertura da demanda até a auditoria administrativa posterior.
 
+-> FLOW: [../flows/00-jornada-principal.md](../flows/00-jornada-principal.md) — diagrama Mermaid de ponta a ponta (REQ-JOR-001 a REQ-JOR-005)
+
 ## Fluxo principal
 
 ### `REQ-JOR-001` Requisição inicial pelo Empreiteiro

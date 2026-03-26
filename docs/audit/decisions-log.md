@@ -148,6 +148,22 @@ Este registo centraliza as decisões de produto necessárias antes das correçõ
   - `SPEC/00-visao-arquitetura.md`: `apps/web`, principios mobile-first e ADR **D7** alinhados a Angular 20; roadmap Fase 2 sem prescricao de React Native.
   - `docs/traceability.md`: linha `REQ-NFR-002` actualizada com referencia a DEC-007 e D7.
 
+## DEC-008 — Paradigma Zoneless e Signals como padrão de reatividade (Angular 20)
+
+- **Estado:** Decidido
+- **Data:** 2026-03-26
+- **Participantes:** Produto, Engenharia, Arquitetura
+- **Contexto:** Após fixar Angular 20 como baseline (DEC-007), alinhar o padrão de reatividade do frontend para garantir performance adequada na fila de demandas em tempo real e nos indicadores de SLA.
+- **Opções em análise:**
+  - A) Manter Zone.js como padrão de detecção de mudanças do Angular.
+  - B) Adoptar paradigma Zoneless com Signals como unidade primária de estado reativo.
+  - C) Abordagem híbrida com Zone.js para componentes existentes e Signals apenas em novos.
+- **Decisão:** B) Paradigma **Zoneless** com **Signals** como padrão de reatividade para todos os componentes novos. Coleções de demandas modeladas como `signal<Demand[]>`; RxJS mantido apenas onde a semântica de stream for estritamente necessária (ex.: WebSocket, debounce de input).
+- **Justificação:** A reordenação contínua da fila de demandas requer renderização sem *flicker* e sem custo de detecção de mudanças por árvore completa. O paradigma Zoneless com Signals elimina o overhead do Zone.js e reduz ciclos de detecção desnecessários, garantindo responsividade adequada nos dashboards de SLA e nas filas do operador mobile.
+- **Achados resolvidos:** *(n/a — decisão arquitectural documental)*
+- **Aplicação (2026-03-26):**
+  - `docs/SPEC/07-design-ui-logica.md`: §3 documenta implementação Zoneless (`providedIn: 'root'`), Signals para coleções de demandas, Reactive Forms com Zod/Valibot e componente `ActionButton` com guard RBAC integrado.
+
 ---
 
 ## Fase 2 — Correcoes de achados importantes

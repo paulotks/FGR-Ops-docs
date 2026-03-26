@@ -34,6 +34,172 @@ No check-in do início de expediente, o operador deve:
 
 O sistema permite troca de ajudante durante o turno através de registros cronológicos em `TurnoAjudante`.
 
+## Diagrama ER
+
+```mermaid
+erDiagram
+    Obra {
+        uuid id
+        string nome
+    }
+    User {
+        uuid id
+        string nome
+        string perfil
+        uuid obraId
+    }
+    SetorOperacional {
+        uuid id
+        string nome
+        uuid obraId
+    }
+    Quadra {
+        uuid id
+        string codigo
+        uuid obraId
+    }
+    Lote {
+        uuid id
+        string codigo
+        uuid quadraId
+    }
+    LoteAdjacencia {
+        uuid loteOrigemId
+        uuid loteDestinoId
+    }
+    LocalExterno {
+        uuid id
+        string nome
+        string tipo
+        uuid setorOperacionalId
+        uuid obraId
+    }
+    Empreiteira {
+        uuid id
+        string nome
+        uuid obraId
+        timestamp deletadoEm
+    }
+    TipoMaquinario {
+        uuid id
+        string nome
+        string porte
+    }
+    Maquinario {
+        uuid id
+        string placa
+        string propriedade
+        uuid tipoMaquinarioId
+        uuid obraId
+        timestamp deletadoEm
+    }
+    Servico {
+        uuid id
+        string nome
+        string prioridade
+        uuid maquinarioId
+    }
+    Material {
+        uuid id
+        string nome
+        string risco
+    }
+    Operador {
+        uuid id
+        uuid userId
+        uuid obraId
+    }
+    Ajudante {
+        uuid id
+        string nome
+        uuid obraId
+    }
+    Demanda {
+        uuid id
+        string estado
+        string localTipo
+        uuid setorOperacionalId
+        uuid quadraId
+        uuid loteId
+        uuid localExternoId
+        uuid servicoId
+        uuid maquinarioId
+        uuid operadorId
+        uuid operadorAlocadoId
+        uuid empreiteiraId
+        uuid materialId
+        uuid destinoQuadraId
+        uuid destinoLoteId
+        uuid demandaGrupoId
+        timestamp dataAgendada
+        timestamp iniciadoEm
+        timestamp finalizadoEm
+        int tempoExecucaoMs
+        uuid obraId
+        timestamp deletadoEm
+    }
+    DemandaGrupo {
+        uuid id
+        uuid obraId
+    }
+    DemandaLog {
+        uuid id
+        uuid demandaId
+        string acao
+        string estadoAnterior
+        string estadoNovo
+        uuid userId
+        timestamp timestamp
+        string justificativa
+    }
+    RegistroExpediente {
+        uuid id
+        uuid operadorId
+        uuid maquinarioId
+        uuid obraId
+        timestamp inicioExpediente
+        timestamp fimExpediente
+    }
+    TurnoAjudante {
+        uuid id
+        uuid registroExpedienteId
+        uuid ajudanteId
+        timestamp inicioEm
+        timestamp fimEm
+    }
+
+    Obra ||--o{ User : "tenant"
+    Obra ||--o{ SetorOperacional : "contém"
+    Obra ||--o{ Quadra : "contém"
+    Obra ||--o{ LocalExterno : "contém"
+    Obra ||--o{ Empreiteira : "contém"
+    Obra ||--o{ Maquinario : "contém"
+    Obra ||--o{ Ajudante : "contém"
+    SetorOperacional ||--o{ LocalExterno : "jurisdição"
+    Quadra ||--o{ Lote : "contém"
+    Lote ||--o{ LoteAdjacencia : "origem"
+    Lote ||--o{ LoteAdjacencia : "destino"
+    TipoMaquinario ||--o{ Maquinario : "instancia"
+    Maquinario ||--o{ Servico : "oferece"
+    User ||--o| Operador : "perfil"
+    Operador }o--o{ TipoMaquinario : "autorizado a operar"
+    Demanda }o--|| SetorOperacional : "jurisdição"
+    Demanda }o--o| Quadra : "origem"
+    Demanda }o--o| Lote : "origem"
+    Demanda }o--o| LocalExterno : "origem"
+    Demanda }o--|| Servico : "serviço"
+    Demanda }o--|| Maquinario : "equipamento"
+    Demanda }o--o| Operador : "atribuído"
+    Demanda }o--|| Empreiteira : "solicitante"
+    Demanda }o--o| Material : "material"
+    Demanda }o--o| DemandaGrupo : "grupo"
+    Demanda ||--o{ DemandaLog : "histórico"
+    RegistroExpediente }o--|| Operador : "operador"
+    RegistroExpediente }o--|| Maquinario : "máquina"
+    RegistroExpediente ||--o{ TurnoAjudante : "turnos de ajudante"
+    TurnoAjudante }o--|| Ajudante : "ajudante"
+```
+
 ## Relacionamentos e regras de integridade
 
 - **Herança de serviços**: embora `TipoMaquinario` sugira serviços compatíveis, o vínculo operacional efetivo é feito no nível da instância `Maquinario`.

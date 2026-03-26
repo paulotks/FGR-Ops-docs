@@ -53,122 +53,19 @@ Resumo agregado de 7 modulos auditados (actualizado em 2026-03-20, pos-Fase 3 �
 
 Detalhes por modulo e JSON global em [docs/audit/output/global/consolidated-global.json](audit/output/global/consolidated-global.json).
 
----
+### Cobertura por modulo (todos os achados resolvidos)
 
-### Auditoria M01 - bloco para `docs/traceability.md`
+| Modulo | Achados (B/I/m) | Coberto | Parcial | Decisoes-chave |
+|--------|-----------------|---------|---------|----------------|
+| M01 — Visao & Escopo | 1 / 4 / 0 | 21 | 2 | Fases 1.3, 2.2–2.6 |
+| M02 — RBAC | 0 / 2 / 2 | 6 | 0 | Fase 2.6, 3 |
+| M03 — Jornada | 0 / 4 / 0 | 5 | 0 | DEC-002, DEC-005, DEC-006; Fases 1.2, 2.1, 2.4, 2.6 |
+| M04 — Req. Funcionais | 1 / 6 / 0 | 10 | 0 | DEC-001; Fases 1.1, 2.1, 2.4, 2.6 |
+| M05 — Req. Nao Funcionais | 1 / 2 / 0 | 7 | 0 | DEC-004; Fases 1.4, 2.2, 2.5 |
+| M06 — Criterios de Aceite | 2 / 5 / 0 | 8 | 0 | DEC-001, DEC-002; Fases 1.1, 1.2, 2.1, 2.6 |
+| M07 — Metricas & Riscos | 2 / 4 / 0 | 5 | 0 | DEC-003; Fases 1.5, 2.3, 2.4, 2.6 |
 
-- **Bloqueantes**
-  - ~~`SPEC-M01-001`~~ — **Resolvido (Fase 1.3).** Rastreio `REQ-SCO-003` e texto explicito de cadastro de Maquinario e Ajudante adicionados em `00-visao-arquitetura.md`.
-- **Importantes** — Todos resolvidos na Fase 2.
-  - ~~`PRD-M01-001`~~ — **Resolvido (Fase 2.6).** Apontadores SPEC adicionados em `REQ-OBJ-003`, `REQ-OBJ-004`, `REQ-SCO-003`, `REQ-SCO-004`.
-  - ~~`PRD-M01-002`~~ — **Resolvido (Fase 2.6).** Apontadores SPEC adicionados para Fase 2 e Criterios de Promocao.
-  - ~~`SPEC-M01-002`~~ — **Resolvido (Fase 2.3).** Seccao de criterios de promocao adicionada com `REQ-SCO-GAT-001..004`.
-  - ~~`SPEC-M01-003`~~ — **Resolvido (Fase 2.3).** `REQ-SCO-F2-005` adicionado a lista de itens adiados.
-  - ~~`SPEC-M01-004`~~ — **Resolvido (Fase 2.2).** Checkpoint Manual, localizacao declarada e restricao sem GPS explicitados.
-- **Resumo de cobertura**
-  - `Coberto`: 21
-  - `Parcial`: 2
-  - `Nao coberto`: 0
-
----
-
-### Auditoria M02 - bloco para `docs/traceability.md`
-
-- **Bloqueantes**
-  - Nenhum bloqueio PRD↔SPEC identificado no modulo.
-- **Importantes** — Todos resolvidos.
-  - ~~`PRD-M02-001`~~ — **Resolvido (Fase 2.6).** PRD `REQ-RBAC-005` e `REQ-RBAC-006` agora explicitam leitura de contexto auxiliar para Empreiteiro e Operador na medida necessaria.
-  - ~~`SPEC-M02-001`~~ — **Resolvido (Fase 3).** Decisao de design adicionada em `04-rbac-permissoes.md` justificando leitura de contexto para perfis de campo: estritamente funcional, aderente a `REQ-RBAC-005`/`REQ-RBAC-006`, limitada ao tenant.
-- **Menores** — Todos resolvidos.
-  - ~~`PRD-M02-002`~~ — **Resolvido (Fase 3).** Nota de nomenclatura adicionada em `PRD/01-usuarios-rbac.md` fixando 'Operador de Maquinario' e 'Operador' como sinonimos oficiais.
-  - ~~`SPEC-M02-002`~~ — **Resolvido (Fase 3).** Nota de nomenclatura adicionada em `SPEC/04-rbac-permissoes.md` com referencia cruzada ao nome completo do PRD.
-- **Resumo de cobertura**
-  - `Coberto`: 6
-  - `Parcial`: 0
-  - `Nao coberto`: 0
-
----
-
-### Auditoria M03 - bloco para `docs/traceability.md`
-
-- **Bloqueantes**
-  - Nenhum bloqueio PRD↔SPEC identificado no modulo.
-- **Importantes** — Todos resolvidos.
-  - ~~`PRD-M03-001`~~ — **Resolvido (Fase 2.6).** `REQ-JOR-001` agora especifica seleccao de `SetorOperacional` (obrigatorio) e `Quadra`/`Lote` (opcional). *(Subsequentemente actualizado por DEC-005: Quadra/Lote obrigatorios, Local Externo introduzido, SetorOperacional derivado. Revisto por DEC-006: entrega formal de material adiada para pos-MVP; movimentacao de massas tratada como demanda regular com material e destino opcionais.)*
-  - ~~`SPEC-M03-001`~~ — **Resolvido (Fase 2.4).** Capacidade #1 (Solicitacao) expandida com captura obrigatoria de localizacao de trabalho.
-  - ~~`SPEC-M03-002`~~ — **Resolvido (Fase 2.1).** Passo 3 do motor agora explicita contrato de experiencia da fila: UI nao bloqueante, demandas visiveis e rolaveis.
-  - ~~`SPEC-M03-003`~~ — **Resolvido (Fase 1.2, DEC-002).** Encerramento por estouro de SLA no fim do expediente parametrizavel por obra.
-- **Resumo de cobertura**
-  - `Coberto`: 5
-  - `Parcial`: 0
-  - `Nao coberto`: 0
-
----
-
-### Auditoria M04 - bloco para `docs/traceability.md`
-
-- **Bloqueantes**
-  - ~~`CROSS-M04-001`~~ — **Resolvido (Fase 1.1, DEC-001).** Modelo hibrido: alocacao manual sobrepoe elegibilidade como excecao auditavel.
-- **Importantes** — Todos resolvidos.
-  - ~~`PRD-M04-001`~~ — **Resolvido (Fase 2.6).** Apontadores SPEC adicionados para `REQ-FUNC-003..010` em `PRD/03-requisitos-funcionais.md`.
-  - ~~`PRD-M04-002`~~ — **Resolvido (Fase 1.1, DEC-001).** Precedencia entre filtro e alocacao manual definida.
-  - ~~`SPEC-M04-001`~~ — **Resolvido (Fase 1.1, DEC-001).** Regra Zero documenta DEC-001 explicitamente.
-  - ~~`SPEC-M04-002`~~ — **Resolvido (Fase 2.4).** Capacidade #2 (Agrupamento e criacao multipla) adicionada com contrato funcional.
-  - ~~`SPEC-M04-003`~~ — **Resolvido (Fase 2.4).** `tempoExecucaoMs` especificado em `02-modelo-dados.md`.
-  - ~~`SPEC-M04-004`~~ — **Resolvido (Fase 2.1).** UI nao bloqueante e preservacao das demandas explicitadas.
-- **Resumo de cobertura**
-  - `Coberto`: 10
-  - `Parcial`: 0
-  - `Nao coberto`: 0
-
----
-
-### Auditoria M05 - bloco para `docs/traceability.md`
-
-- **Bloqueantes**
-  - ~~`SPEC-M05-002`~~ — **Resolvido (Fase 1.4, DEC-004).** ADR D6 adicionada com politica de autenticacao segmentada por perfil.
-- **Importantes** — Todos resolvidos.
-  - ~~`SPEC-M05-001`~~ — **Resolvido (Fase 2.2).** ADR de Rate Limiting expandida com endpoints exactos, `HTTP 429`, `Retry-After` e bloqueio de 15 minutos.
-  - ~~`SPEC-M05-003`~~ — **Resolvido (Fase 2.5).** Politica de rastreabilidade uniforme adicionada em `06-definicoes-complementares.md` com tabela de entidades e `ResourceAuditLog`.
-- **Resumo de cobertura**
-  - `Coberto`: 7
-  - `Parcial`: 0
-  - `Nao coberto`: 0
-
----
-
-### Auditoria M06 - bloco para `docs/traceability.md`
-
-- **Bloqueantes** — Todos resolvidos.
-  - ~~`CROSS-M06-001`~~ — **Resolvido (Fase 1.1, DEC-001).** PRD e SPEC alinhados no modelo hibrido de alocacao.
-  - ~~`CROSS-M06-002`~~ — **Resolvido (Fase 1.2, DEC-002).** Auto-encerramento por estouro de SLA no fim do expediente.
-- **Importantes** — Todos resolvidos.
-  - ~~`PRD-M06-001`~~ — **Resolvido (Fase 2.6).** `REQ-ACE-007` migrado com 3 cenarios Gherkin (expiracao, invalidacao, reuso).
-  - ~~`PRD-M06-002`~~ — **Resolvido (Fase 1.1, DEC-001).** `REQ-ACE-003` reescrito com terminologia canonica.
-  - ~~`SPEC-M06-001`~~ — **Resolvido (Fase 1.1, DEC-001).** Regra Zero documenta DEC-001.
-  - ~~`SPEC-M06-002`~~ — **Resolvido (Fase 2.1).** UI nao bloqueante e demandas visiveis/rolaveis explicitados.
-  - ~~`SPEC-M06-003`~~ — **Resolvido (Fase 1.2, DEC-002).** Encerramento por estouro de SLA justificado.
-- **Resumo de cobertura**
-  - `Coberto`: 8
-  - `Parcial`: 0
-  - `Nao coberto`: 0
-
----
-
-### Auditoria M07 - bloco para `docs/traceability.md`
-
-- **Bloqueantes** — Todos resolvidos.
-  - ~~`CROSS-M07-001`~~ — **Resolvido (Fase 1.5, DEC-003).** Referencia PRD corrigida para `06-definicoes-complementares.md`.
-  - ~~`SPEC-M07-002`~~ — **Resolvido (Fase 1.5, DEC-003).** Contrato analitico canonico adicionado com formula, denominador e janela temporal.
-- **Importantes** — Todos resolvidos.
-  - ~~`PRD-M07-001`~~ — **Resolvido (Fase 1.5, DEC-003).** Referencia SPEC corrigida.
-  - ~~`PRD-M07-002`~~ — **Resolvido (Fase 2.6).** Mitigacao explicita adicionada com responsavel, validacao, auditoria e relatorio.
-  - ~~`SPEC-M07-001`~~ — **Resolvido (Fase 2.4).** Seccao de medicao canonica adicionada em `02-modelo-dados.md` com Horas Disponiveis, Horas em Operacao e consulta de referencia.
-  - ~~`SPEC-M07-003`~~ — **Resolvido (Fase 2.3).** Seccao de governanca da taxonomia espacial adicionada em `05-backlog-mvp-glossario.md` com 4 regras tecnicas.
-- **Resumo de cobertura**
-  - `Coberto`: 5
-  - `Parcial`: 0
-  - `Nao coberto`: 0
+B = Bloqueante · I = Importante · m = Menor
 
 ---
 
