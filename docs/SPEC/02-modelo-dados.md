@@ -15,7 +15,7 @@ Este módulo consolida as entidades principais do domínio, as relações entre 
   - `Ajudante`: recurso humano vinculado à obra sem credencial própria.
   - `Operador`: usuário com perfil `OPERADOR`, vinculado em relação N:M aos `TipoMaquinario` que está autorizado a operar.
 - **Catálogo**:
-  - `Servico`: atividade executada, vinculada operacionalmente ao `Maquinario`, seguindo a hierarquia `TipoMaquinario` -> `Maquinario` -> `Servico`.
+  - `Servico`: atividade executada, vinculada ao `TipoMaquinario`. Um `TipoMaquinario` pode oferecer múltiplos `Servicos`. A hierarquia `TipoMaquinario` → `Servico` permite filtragem mútua com `Maquinario`: selecionar um serviço restringe os maquinários ao `TipoMaquinario` compatível e vice-versa. O campo `exigeTransporte` indica que o serviço envolve deslocamento de material dentro da obra, tornando o preenchimento de destino obrigatório na abertura da demanda.
   - `Material`.
 - **Transacional**: `Demanda` como aggregate root, `DemandaGrupo` e `DemandaLog`. A `Demanda` inclui os seguintes atributos de localização (`REQ-JOR-001`):
   - `localTipo` (enum: `QUADRA_LOTE` | `LOCAL_EXTERNO`): tipo de localização onde o serviço é necessário.
@@ -23,7 +23,8 @@ Este módulo consolida as entidades principais do domínio, as relações entre 
   - `localExternoId`: obrigatório quando `localTipo = LOCAL_EXTERNO`.
   - `setorOperacionalId`: derivado automaticamente da localização selecionada.
   - `materialId` (FK para `Material`, opcional): quando preenchido, alimenta o `fator_material` no motor de score.
-  - `destinoQuadraId`, `destinoLoteId` (opcionais): contextualizam serviços de movimentação de material (ex.: mover massa para lote adjacente).
+  - `destinoQuadraId`, `destinoLoteId`: **obrigatórios** quando o serviço selecionado possui `exigeTransporte = true` e `transporteInterno = false`; opcionais nos demais casos.
+  - `transporteInterno` (boolean, padrão `false`): quando `true`, indica que o deslocamento ocorre no mesmo `Quadra`/`Lote` de origem. O backend valida que `destinoQuadraId = quadraId` e `destinoLoteId = loteId`. Disponível apenas quando `exigeTransporte = true`.
   - `descricaoAdicional` (texto livre, opcional): recomendado para serviços de movimentação, onde o empreiteiro detalha a operação (ex.: "subir grunt para laje da casa").
 - **Expediente**: `RegistroExpediente`, que formaliza a relação temporal entre `Operador`, `Maquina` e, opcionalmente, `Ajudante`.
 
@@ -96,8 +97,10 @@ erDiagram
     Servico {
         uuid id
         string nome
+        string descricao
         string prioridade
-        uuid maquinarioId
+        boolean exigeTransporte
+        uuid tipoMaquinarioId
     }
     Material {
         uuid id
@@ -130,6 +133,7 @@ erDiagram
         uuid materialId
         uuid destinoQuadraId
         uuid destinoLoteId
+        boolean transporteInterno
         uuid demandaGrupoId
         timestamp dataAgendada
         timestamp iniciadoEm
@@ -180,7 +184,7 @@ erDiagram
     Lote ||--o{ LoteAdjacencia : "origem"
     Lote ||--o{ LoteAdjacencia : "destino"
     TipoMaquinario ||--o{ Maquinario : "instancia"
-    Maquinario ||--o{ Servico : "oferece"
+    TipoMaquinario ||--o{ Servico : "oferece"
     User ||--o| Operador : "perfil"
     Operador }o--o{ TipoMaquinario : "autorizado a operar"
     Demanda }o--|| SetorOperacional : "jurisdição"
@@ -202,7 +206,7 @@ erDiagram
 
 ## Relacionamentos e regras de integridade
 
-- **Herança de serviços**: embora `TipoMaquinario` sugira serviços compatíveis, o vínculo operacional efetivo é feito no nível da instância `Maquinario`.
+- **Catálogo de serviços por tipo**: `Servico` está vinculado a `TipoMaquinario` (não à instância física `Maquinario`). Um mesmo tipo pode oferecer vários serviços. A filtragem mútua entre serviço e maquinário é feita pela correspondência de `TipoMaquinario`: ao selecionar um serviço, a UI restringe os maquinários disponíveis àqueles do mesmo tipo; ao selecionar um maquinário, restringe os serviços àqueles do seu tipo.
 - **Escopo de tenant**: toda entidade tenant-scoped contém obrigatoriamente `obraId`.
 - **Soft-delete**: `Demanda`, `Maquinario` e `Empreiteira` nunca são purgados fisicamente; o sistema utiliza `deletadoEm` para preservar histórico.
 - **Auditabilidade transacional**: qualquer manipulação, avanço, cancelamento ou alteração da `Demanda` gera escrita não destrutiva em `DemandaLog`.

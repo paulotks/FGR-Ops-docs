@@ -129,6 +129,24 @@ Este registo centraliza as decisões de produto necessárias antes das correçõ
   - `SPEC/06-definicoes-complementares.md`: `PontoOrigem` removido da tabela de rastreabilidade.
   - `SPEC/05-backlog-mvp-glossario.md`: Adicionado item "Entrega formal de material" aos adiamentos para Fase 2.
 
+## DEC-009 — Reintrodução de `exigeTransporte` no MVP e modelo de cadastro de Serviços
+
+- **Estado:** Decidido
+- **Data:** 2026-03-26
+- **Participantes:** Produto, Operações
+- **Contexto:** Revisão de requisitos identificou quatro lacunas no modelo de `Servico`: (1) ausência do campo `descricao`; (2) vínculo incorreto de `Servico` com instância `Maquinario` em vez de `TipoMaquinario` — inconsistência entre modelo ER e contrato de API; (3) ausência da flag `exigeTransporte`, que havia sido adiada em DEC-006 por estar acoplada ao fluxo de entrega formal de material externo (`PontoOrigem`); (4) ausência de regra para destino obrigatório em serviços de transporte.
+- **Opções em análise:**
+  - A) Manter `exigeTransporte` adiado (DEC-006) e tratar transporte apenas via descrição livre.
+  - B) Reintroduzir `exigeTransporte` no MVP com escopo restrito a transporte interno da obra (sem `PontoOrigem`), vinculado ao cadastro de `Servico`.
+- **Decisão:** B) `exigeTransporte` reintroduzido no MVP com escopo distinto do que foi adiado em DEC-006. A flag indica que o serviço envolve deslocamento de material ou equipamento **dentro da obra** (não entrega de material externo). Quando `exigeTransporte = true`, a abertura de demanda exige destino (`destinoQuadraId` + `destinoLoteId`) ou declaração de **Transporte Interno** (`transporteInterno = true`), onde destino = origem. `PontoOrigem` e entrega formal de material externo permanecem adiados para Fase 2.
+- **Justificação:** A necessidade operacional de rastrear para onde o material ou equipamento será deslocado é real no MVP e não depende de `PontoOrigem`. A separação entre "transporte interno à obra" (MVP) e "entrega de material de origem externa" (Fase 2) elimina a ambiguidade de DEC-006 sem aumentar o escopo da entrega.
+- **Achados resolvidos:** Lacunas identificadas na revisão de 2026-03-26: `descricao` ausente em `Servico`, vínculo `Servico.maquinarioId` incorreto, `exigeTransporte` ausente, comportamento de destino obrigatório não documentado.
+- **Aplicação (2026-03-26):**
+  - `SPEC/02-modelo-dados.md`: Entidade `Servico` atualizada — adicionados `descricao` e `exigeTransporte`; FK alterada de `maquinarioId` → `tipoMaquinarioId`. Entidade `Demanda` atualizada — adicionado `transporteInterno`; `destinoQuadraId`/`destinoLoteId` documentados como condicionalmente obrigatórios. Diagrama ER e relacionamentos corrigidos: `TipoMaquinario ||--o{ Servico` substitui `Maquinario ||--o{ Servico`.
+  - `PRD/02-jornada-usuario.md`: `REQ-JOR-001` atualizado — seção "Material e destino" documenta obrigatoriedade condicional e opção de Transporte Interno.
+  - `PRD/03-requisitos-funcionais.md`: `REQ-FUNC-003` expandido com campos mínimos do cadastro de `Servico` e vínculo com `TipoMaquinario`.
+  - `SPEC/08-api-contratos.md`: CRUD de serviços adicionado (`POST`, `PATCH`, `DELETE /obras/:id/servicos`); `GET /obras/:id/servicos` atualizado com `exigeTransporte`; `CreateDemandaDto` atualizado com `transporteInterno` e validação condicional; erro `DEM-005` adicionado.
+
 ## DEC-007 — Stack de frontend web: Angular 20 (PWA)
 
 - **Estado:** Decidido

@@ -16,9 +16,17 @@ No fluxo automático de distribuição, máquinas e operadores não podem visual
 
 -> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#regra-zero-hard-filter-destaque-e-score](../SPEC/03-fila-scoring-estados-sla.md#regra-zero-hard-filter-destaque-e-score)
 
-### `REQ-FUNC-003` Gestão de maquinário e ajudantes
+### `REQ-FUNC-003` Gestão de maquinário, serviços e ajudantes
 
 O sistema deve suportar o cadastro estruturado de `Tipos de Maquinario`, `Servicos`, `Maquinas` e `Ajudantes`. O `Operador` precisa de estar vinculado aos tipos de maquinário que está autorizado a operar.
+
+O cadastro de `Servico` deve exigir no mínimo os seguintes campos:
+
+- **Nome** do serviço (obrigatório).
+- **Descrição** do serviço (obrigatório).
+- **Exige Transporte** (`exigeTransporte`, flag booleana, padrão `false`): indica que o serviço envolve deslocamento de material ou equipamento dentro da obra. Quando marcada, a abertura de uma demanda para este serviço exige que o empreiteiro informe o destino (Quadra/Lote) ou declare Transporte Interno.
+
+Cada `Servico` é vinculado a um `TipoMaquinario`. Um mesmo tipo pode ter múltiplos serviços associados.
 
 -> SPEC: [../SPEC/01-modulos-plataforma.md#dependencias-sobre-o-core](../SPEC/01-modulos-plataforma.md#dependencias-sobre-o-core)
 -> SPEC: [../SPEC/02-modelo-dados.md#entidades-principais](../SPEC/02-modelo-dados.md#entidades-principais)

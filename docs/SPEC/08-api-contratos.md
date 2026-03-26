@@ -135,8 +135,9 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
   "loteId": "uuid | null",
   "localExternoId": "uuid | null",
   "materialId": "uuid | null (opcional)",
-  "destinoQuadraId": "uuid | null (opcional)",
-  "destinoLoteId": "uuid | null (opcional)",
+  "destinoQuadraId": "uuid | null (obrigatório se exigeTransporte=true e transporteInterno=false)",
+  "destinoLoteId": "uuid | null (obrigatório se exigeTransporte=true e transporteInterno=false)",
+  "transporteInterno": "boolean | null (disponível apenas se exigeTransporte=true; indica destino = origem)",
   "descricaoAdicional": "string | null (opcional, recomendado para movimentação)",
   "urgencia": "ASAP | AGENDADA",
   "dataAgendada": "ISO8601 | null (obrigatório se urgencia=AGENDADA)",
@@ -157,7 +158,7 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
 }
 ```
 
-**Erros:** `400` validação DTO · `422` operador fora de setor (com alerta, não bloqueio — DEC-001) · `422` incompatibilidade serviço/maquinário
+**Erros:** `400` validação DTO · `422` operador fora de setor (com alerta, não bloqueio — DEC-001) · `422` incompatibilidade serviço/maquinário · `422` destino ausente para serviço com `exigeTransporte=true` (`DEM-005`)
 
 ---
 
@@ -303,9 +304,52 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
 
 ### GET /obras/:id/servicos — Catálogo de serviços
 
-**Query params:** `?maquinarioId=` (filtragem mútua serviço/maquinário — DEC-005)
+**Query params:** `?tipoMaquinarioId=` (filtragem por tipo — DEC-005/DEC-009)
 
-**Response 200:** lista de `Servico` com `prioridadeBase`, `tipoMaquinarioId`
+**Response 200:** lista de `Servico` com `nome`, `descricao`, `prioridadeBase`, `exigeTransporte`, `tipoMaquinarioId`
+
+---
+
+### POST /obras/:id/servicos — Criar serviço
+
+**Perfis:** `AdminOperacional`, `SuperAdmin`
+
+**Request (CreateServicoDto):**
+```json
+{
+  "nome": "string (obrigatório)",
+  "descricao": "string (obrigatório)",
+  "prioridade": "NORMAL | ELEVADA | MAXIMA",
+  "exigeTransporte": "boolean (padrão false)",
+  "tipoMaquinarioId": "uuid (obrigatório)"
+}
+```
+
+**Response 201:** `Servico` criado com `id`, `nome`, `descricao`, `prioridade`, `exigeTransporte`, `tipoMaquinarioId`
+
+**Erros:** `400` campos obrigatórios ausentes · `404` `tipoMaquinarioId` não encontrado
+
+---
+
+### PATCH /obras/:id/servicos/:servicoId — Atualizar serviço
+
+**Perfis:** `AdminOperacional`, `SuperAdmin`
+
+**Request (UpdateServicoDto):** campos parciais de `CreateServicoDto`
+
+**Response 200:** `Servico` atualizado
+
+**Erros:** `404` serviço não encontrado · `409` serviço possui demandas ativas (soft-delete bloqueado)
+
+---
+
+### DELETE /obras/:id/servicos/:servicoId — Excluir serviço (soft-delete)
+
+**Perfis:** `AdminOperacional`, `SuperAdmin`
+
+**Response 204**
+
+**Erros:** `409` serviço possui demandas ativas (`PENDENTE`, `EM_ANDAMENTO`, `AGENDADA`)
 
 ---
 
@@ -352,6 +396,7 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
 | `DEM-002` | Demanda | Localização obrigatória não fornecida |
 | `DEM-003` | Demanda | Transição de estado inválida |
 | `DEM-004` | Demanda | Justificativa obrigatória ausente |
+| `DEM-005` | Demanda | Destino obrigatório ausente para serviço com `exigeTransporte=true` |
 | `OPR-001` | Operador | Sem expediente ativo para esta ação |
 | `OPR-002` | Operador | Operador fora do setor da demanda (aviso — não bloqueio em alocação manual) |
 | `OPR-003` | Operador | Check-in duplicado no mesmo turno |

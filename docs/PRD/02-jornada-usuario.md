@@ -21,15 +21,22 @@ A interface deve oferecer alternância simples entre os dois modos de localizaç
 
 #### Seleção de serviço e maquinário
 
-O empreiteiro seleciona o serviço desejado a partir de uma lista nomeada e o maquinário correspondente. A seleção é mutuamente filtrável: escolher um serviço restringe os maquinários disponíveis e vice-versa, conforme o vínculo operacional do catálogo (`TipoMaquinario` -> `Maquinario` -> `Servico`).
+O empreiteiro seleciona o serviço desejado a partir de uma lista nomeada e o maquinário correspondente. A seleção é mutuamente filtrável: escolher um serviço restringe os maquinários disponíveis àqueles do mesmo `TipoMaquinario`, e vice-versa (conforme `TipoMaquinario` → `Servico` e `TipoMaquinario` → `Maquinario`).
 
-#### Material e destino (opcionais)
+#### Material e destino
 
-O empreiteiro pode selecionar um **Material** do catálogo (ex.: Grunt, Concreto) e informar um **Destino** (Quadra/Lote diferente da localização de origem). Ambos os campos são opcionais. Quando preenchido, o material alimenta o `fator_material` no motor de score; o destino contextualiza serviços de movimentação.
+O empreiteiro pode selecionar um **Material** do catálogo (ex.: Grunt, Concreto). Este campo é sempre opcional e, quando preenchido, alimenta o `fator_material` no motor de score.
 
-> **Nota sobre movimentação de massas:** Serviços de movimentação de materiais como Grunt, Concreto e similares constituem demandas para que o operador de máquinas desloque a massa já existente no local de obra (tipicamente armazenada em caixa d'água na frente do lote). Exemplos: "subir grunt para laje da casa", "descer massa", "levar para o lote ao lado". O empreiteiro informa a localização de origem (Quadra/Lote), seleciona serviço (ex.: Movimentação), equipamento (ex.: Munck), opcionalmente o material e o destino, e detalha a operação no campo de descrição. Não se trata de pedido de fornecimento de material externo — o material já se encontra na frente de obras.
+O campo **Destino** (Quadra/Lote) tem duas modalidades:
 
-> **Entrega formal de material (pós-MVP):** Um fluxo estruturado de entrega de material a partir de origens externas (centrais de concreto, usinas, etc.) poderá ser implementado em fase posterior, reaproveitando o catálogo de materiais e a infraestrutura de localização já existentes. Ver itens adiados em [../SPEC/05-backlog-mvp-glossario.md](../SPEC/05-backlog-mvp-glossario.md#itens-adiados-para-fase-2).
+- **Obrigatório** quando o serviço selecionado possui `exigeTransporte = true`. Neste caso, o empreiteiro deve:
+  - Informar **Quadra e Lote de destino** (diferente ou igual à origem), **ou**
+  - Marcar **Transporte Interno**, indicando que o deslocamento ocorre no mesmo Quadra/Lote de origem. O sistema preenche automaticamente `destinoQuadraId = quadraId` e `destinoLoteId = loteId`.
+- **Opcional** nos demais serviços. Quando preenchido, contextualiza operações de movimentação.
+
+> **Serviços com `exigeTransporte`:** São os serviços cadastrados com a flag de transporte marcada (ex.: Movimentação, Carregamento, Descarga). O empreiteiro deve sempre informar para onde o material ou equipamento será deslocado. Para deslocamentos no mesmo ponto de origem (ex.: içar material no próprio lote), o empreiteiro utiliza a opção **Transporte Interno**.
+
+> **Entrega formal de material (pós-MVP):** Um fluxo estruturado de entrega de material a partir de origens externas (centrais de concreto, usinas, etc.) com `PontoOrigem` fixo e pré-preenchimento automático de origem poderá ser implementado em fase posterior. Ver itens adiados em [../SPEC/05-backlog-mvp-glossario.md](../SPEC/05-backlog-mvp-glossario.md#itens-adiados-para-fase-2).
 
 #### Complemento e submissão
 
