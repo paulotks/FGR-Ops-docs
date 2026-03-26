@@ -26,7 +26,7 @@ Matriz global de rastreio entre os requisitos do PRD e os modulos da SPEC.
 | `REQ-FUNC-006`, `REQ-FUNC-007`, `REQ-FUNC-008`, `REQ-FUNC-009` | [PRD/03-requisitos-funcionais.md](PRD/03-requisitos-funcionais.md) | [SPEC/03-fila-scoring-estados-sla.md](SPEC/03-fila-scoring-estados-sla.md), [SPEC/06-definicoes-complementares.md](SPEC/06-definicoes-complementares.md) | Agendamentos, cronometros, destaque visual e tratamento de cancelamentos. |
 | `REQ-FUNC-010` | [PRD/03-requisitos-funcionais.md](PRD/03-requisitos-funcionais.md) | [SPEC/01-modulos-plataforma.md](SPEC/01-modulos-plataforma.md), [SPEC/02-modelo-dados.md](SPEC/02-modelo-dados.md) | Modelagem espacial, adjacencias e suporte ao motor de score. |
 | `REQ-NFR-001`, `REQ-NFR-003` | [PRD/04-requisitos-nao-funcionais.md](PRD/04-requisitos-nao-funcionais.md) | [SPEC/00-visao-arquitetura.md](SPEC/00-visao-arquitetura.md) | Monorepo, stack base, backend e decisoes arquiteturais. |
-| `REQ-NFR-002` | [PRD/04-requisitos-nao-funcionais.md](PRD/04-requisitos-nao-funcionais.md) | [SPEC/00-visao-arquitetura.md](SPEC/00-visao-arquitetura.md), [SPEC/06-definicoes-complementares.md](SPEC/06-definicoes-complementares.md) | PWA mobile-first em Angular (baseline major 20; validar patch 20.x na implementacao), conectividade e operacao offline; alinhado a DEC-007 e ADR D7 na SPEC. |
+| `REQ-NFR-002` | [PRD/04-requisitos-nao-funcionais.md](PRD/04-requisitos-nao-funcionais.md) | [SPEC/00-visao-arquitetura.md](SPEC/00-visao-arquitetura.md), [SPEC/06-definicoes-complementares.md](SPEC/06-definicoes-complementares.md), [SPEC/07-design-ui-logica.md](SPEC/07-design-ui-logica.md) | PWA mobile-first em Angular 20; hierarquia de telas, Zoneless/Signals e padroes de componentes em 07; alinhado a DEC-007, DEC-008 e ADR D7. Design system e especificacoes de telas em [UI-DESIGN.md](UI-DESIGN.md). |
 | `REQ-NFR-004` | [PRD/04-requisitos-nao-funcionais.md](PRD/04-requisitos-nao-funcionais.md) | [SPEC/02-modelo-dados.md](SPEC/02-modelo-dados.md) | Persistencia relacional e isolamento multi-tenant. |
 | `REQ-NFR-005`, `REQ-NFR-006` | [PRD/04-requisitos-nao-funcionais.md](PRD/04-requisitos-nao-funcionais.md) | [SPEC/00-visao-arquitetura.md](SPEC/00-visao-arquitetura.md) | JWT, refresh tokens e rate limiting. |
 | `REQ-NFR-007` | [PRD/04-requisitos-nao-funcionais.md](PRD/04-requisitos-nao-funcionais.md) | [SPEC/00-visao-arquitetura.md#politica-autenticacao-senha](SPEC/00-visao-arquitetura.md#politica-autenticacao-senha) | Politica de autenticacao segmentada por perfil (D6/DEC-004): Campo (Usuario+PIN) e Administrativo (palavra-passe forte). |
@@ -38,7 +38,7 @@ Matriz global de rastreio entre os requisitos do PRD e os modulos da SPEC.
 
 ## Resultados da auditoria PRD ↔ SPEC
 
-Resumo agregado de 7 modulos auditados (actualizado em 2026-03-20, pos-Fase 3 — revalidacao global).
+Resumo agregado de 7 modulos auditados (actualizado em 2026-03-26, pos-Fase 3 — revalidacao global; rastreabilidade de UI-DESIGN.md e SPEC/07 adicionada).
 
 | Metrica | Valor |
 |---------|-------|

@@ -82,5 +82,3 @@ Para alcançar a experiência ideal e escalável solicitada para toda a suíte F
     Componente visual `ActionButton` que consome o guard de permissões (RBAC). Se a demanda não pode ser cancelada pelo perfil logado, ou se a State Machine não permitir, o CSS de `disabled` entra automaticamente.
 
 ---
-
-> Esse documento é a base para enviarmos prompts ao Stitch. O próximo passo prático é gerar os Protótipos/Mockups das 4 telas descritas com as bibliotecas que seguem essas hierarquias visuais.

@@ -1,6 +1,6 @@
 # UI Design & Design System (FGR-OPS)
 
-This document specifies the visual identity, design system, and screen specifications for generating high-fidelity prototypes of the FGR-OPS platform using Stitch. It is derived from the technical rules mapping defined in `docs/SPEC/07-design-ui-logica.md`.
+This document specifies the visual identity, design system, and screen specifications for the FGR-OPS platform. It is derived from the technical rules mapping defined in `docs/SPEC/07-design-ui-logica.md`.
 
 ## 1. Visual Identity & Design System
 
@@ -65,4 +65,5 @@ These are the 4 main screens to be generated:
 **Description**: The secure entry hub for FGR operations.
 *   **Layout**: Split screen. Left side: Beautiful industrial image or dark gradient with FGR logo. Right side: Login form.
 *   **Form**: Email, Password, and "Entrar" button.
-*   **Aesthetic**: Corporate, highly polished, premium introduction to the software suite. 
+*   **Aesthetic**: Corporate, highly polished, premium introduction to the software suite.
+
