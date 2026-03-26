@@ -12,7 +12,7 @@ O produto deve ser implementado num monorepo em `Turborepo`, separando frontends
 
 ### `REQ-NFR-002` Interface mobile-first em PWA
 
-O acesso operacional de campo deve privilegiar um `Progressive Web App` responsivo em `Next.js`, com usabilidade mobile-first e base para funcionamento resiliente em cenários de conectividade instável.
+O acesso operacional de campo deve privilegiar um `Progressive Web App` responsivo em `Angular` na linha major estável **20**, com usabilidade mobile-first e base para funcionamento resiliente em cenários de conectividade instável. **Baseline canónica:** major **20**; validar o patch mais recente da série **20.x** no momento da implementação antes de fixar dependências de build.
 
 -> SPEC: [../SPEC/00-visao-arquitetura.md#visao-geral](../SPEC/00-visao-arquitetura.md#visao-geral)
 -> SPEC: [../SPEC/06-definicoes-complementares.md#estrategia-pwa-offline](../SPEC/06-definicoes-complementares.md#estrategia-pwa-offline)

@@ -13,7 +13,7 @@ Aplicar o padrão de serviço de domínio para encapsular regras que não perten
 
 - Considerar domínio apenas dentro de `*core/*`.
 - Não tratar `*.service.ts` de `web`, `frontend`, `api` ou infraestrutura como domínio.
-- Manter o serviço sem dependência de framework, HTTP, banco, Prisma, Nest, React ou estado global.
+- Manter o serviço sem dependência de framework de UI, HTTP, banco, Prisma, Nest ou estado global de aplicação.
 - Preferir funções/métodos puros e determinísticos.
 - Receber dados de domínio (entities, DTOs de domínio, VOs) e retornar tipos simples/valores de domínio.
 - Nomear por intenção de regra (`Policy`, `Calculator`, `Resolver`, `Specification`).

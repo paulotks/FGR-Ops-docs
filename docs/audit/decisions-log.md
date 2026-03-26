@@ -129,6 +129,25 @@ Este registo centraliza as decisões de produto necessárias antes das correçõ
   - `SPEC/06-definicoes-complementares.md`: `PontoOrigem` removido da tabela de rastreabilidade.
   - `SPEC/05-backlog-mvp-glossario.md`: Adicionado item "Entrega formal de material" aos adiamentos para Fase 2.
 
+## DEC-007 — Stack de frontend web: Angular 20 (PWA)
+
+- **Estado:** Decidido
+- **Data:** 2026-03-25
+- **Participantes:** Produto, Engenharia, Arquitetura
+- **Contexto:** alinhar documentacao canonica de plataforma a uma stack de frontend moderna e estavel, substituindo referencias legadas a Next.js e evitando roadmap de Fase 2 prescriptivo em React Native quando a decisao de canal movel ainda e aberta.
+- **Opcoes em analise:**
+  - A) Manter Next.js como referencia no PRD/SPEC.
+  - B) Adotar **Angular** major **20** como baseline do cliente web (`apps/web`), com PWA mobile-first e nota de validacao de patch **20.x** no momento da implementacao.
+  - C) Outro framework SPA sem consolidacao de versao.
+- **Decisao:** B) **Angular** major **20** como linha estavel do frontend web no monorepo; **baseline canónica** major 20; validar o patch mais recente da serie **20.x** antes de fixar dependencias de build. PWA e requisitos de conectividade/offline permanecem os de `REQ-NFR-002`; roadmap de Fase 2 para experiencia movel nativa permanece deliberadamente neutro quanto a framework (ver SPEC).
+- **Justificacao:** Centraliza a versao alvo nos artefactos PRD/SPEC, remove inconsistencia com uma stack ja descontinuada na decisao actual e separa a escolha de framework web da eventual decisao de canal nativo em Fase 2.
+- **Nota MVP:** Nenhuma alteracao de escopo funcional; apenas alinhamento de plataforma e documentacao.
+- **Achados resolvidos:** *(n/a — decisao arquitectural documental)*
+- **Aplicacao (2026-03-25):**
+  - `PRD/04-requisitos-nao-funcionais.md`: `REQ-NFR-002` actualizado para Angular 20 com baseline e nota de patch 20.x.
+  - `SPEC/00-visao-arquitetura.md`: `apps/web`, principios mobile-first e ADR **D7** alinhados a Angular 20; roadmap Fase 2 sem prescricao de React Native.
+  - `docs/traceability.md`: linha `REQ-NFR-002` actualizada com referencia a DEC-007 e D7.
+
 ---
 
 ## Fase 2 — Correcoes de achados importantes

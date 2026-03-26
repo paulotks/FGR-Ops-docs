@@ -9,7 +9,7 @@ description: "Instrução de contexto fundamental: Utilize esta skill para lembr
 
 **Aviso crítico:** Este repositório (`FGR-Ops-Requisitos`) é dedicado **restrita e exclusivamente** à especificação e documentação do sistema FGR-Ops.
 
-Não se desenvolve aqui a aplicação de produto. Não espere nem crie ficheiros de código de produto (por exemplo `*.ts`, `*.prisma`, `*.tsx`, controllers, casos de uso, componentes React) neste repositório.
+Não se desenvolve aqui a aplicação de produto. Não espere nem crie ficheiros de código de produto (por exemplo `*.ts`, `*.prisma`, `*.tsx`, controllers, casos de uso, componentes de UI do cliente web) neste repositório.
 
 ## Propostas de mudança em `docs/changes/`
 

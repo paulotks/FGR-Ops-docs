@@ -39,6 +39,16 @@ Antes de refletir uma mudanca, confirmar o minimo necessario:
 
 Se o usuario pedir apenas "altera X no PRD", assumir comportamento proativo: mapear impacto em SPEC e perguntar somente o que faltar para executar sem suposicoes arriscadas.
 
+## Mudanca de stack (ex.: frontend)
+
+Quando o pedido alterar framework ou baseline de versao do cliente (ex.: troca de stack web), verificar em sequencia:
+
+1. **PRD** — requisitos NFR afetados (ex.: `REQ-NFR-002`) com texto e IDs estaveis.
+2. **SPEC** — visao de arquitetura (`docs/SPEC/00-visao-arquitetura.md`) e ADRs relevantes.
+3. **`docs/traceability.md`** — linhas da matriz que cobrem esses REQ com notas semanticamente corretas.
+4. **`docs/audit/decisions-log.md`** — novo `DEC-*` com racional, impacto e modulos tocados.
+5. Correr `python .cursor/skills/docs-audit-consistency/scripts/check_consistency.py`.
+
 ## Regras de sincronizacao PRD <-> SPEC
 
 - Toda mudanca de requisito em PRD deve ter reflexo verificavel na SPEC (link, secao ou regra tecnica).

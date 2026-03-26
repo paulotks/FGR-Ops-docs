@@ -15,7 +15,7 @@ O foco inicial (MVP) é restrito ao módulo **Machinery Link**, responsável por
 
 **Rastreio PRD:** REQ-OBJ-002, REQ-OBJ-004, REQ-OBJ-005, REQ-SCO-001, REQ-SCO-004, REQ-SCO-005
 
-- **Estratégia Mobile-First**: PWA responsivo no MVP para operadores em campo utilizarem smartphones, preparando terreno para React Native na Fase 2.
+- **Estratégia Mobile-First**: PWA responsivo no MVP para operadores em campo utilizarem smartphones; na Fase 2, evoluir para experiência móvel nativa ou shell dedicado (decisão de canal a confirmar no roadmap de produto), sem prescrever framework de UI concreto neste documento.
 - **Ecossistema unificado**: Monorepo gerenciado via Turborepo compartilhando tipos (TypeScript) entre Frontend e Backend.
 - **Isolamento e Escalabilidade**: Separação clara entre o core de regras de negócio lógicas (DDD puro) e frameworks/adapters técnicos.
 - **Multi-tenancy lógico**: Segregação de dados por obra no mesmo banco de dados (SQL Server), filtrado automaticamente via middleware.
@@ -25,17 +25,17 @@ O foco inicial (MVP) é restrito ao módulo **Machinery Link**, responsável por
 
 ### Visão Macro {#visao-macro}
 
-**Rastreio PRD:** REQ-OBJ-001, REQ-SCO-001
+**Rastreio PRD:** REQ-OBJ-001, REQ-SCO-001, REQ-NFR-002
 
 O sistema é estruturado num Monorepo (Turborepo):
-- `apps/web`: Frontend em Next.js 15+ para todos os perfis.
+- `apps/web`: Frontend em **Angular** (major estável **20**; baseline canónica alinhada a `REQ-NFR-002`) para todos os perfis. Validar o patch mais recente da série **20.x** no momento da implementação antes de fixar dependências de build.
 - `apps/api`: Backend em NestJS 10+ fornecendo endpoints REST.
 - `packages/[dominio]/core`: Módulos de domínio puros sem dependência de framework.
 - `packages/types`, `config`, `utils`: Pacotes compartilhados.
 
 ### Decisões Arquiteturais (ADRs) {#decisoes-arquiteturais-adrs}
 
-**Rastreio PRD:** REQ-SCO-001, REQ-OBJ-002
+**Rastreio PRD:** REQ-SCO-001, REQ-OBJ-002, REQ-NFR-002
 
 1. **D1: Monorepo com Turborepo**: Facilita o compartilhamento de DTOs e tipagem ponta a ponta.
 2. **D2: SQL Server com Prisma ORM**: Aproveita a familiaridade da equipe com SQL Server e forte aderência typesafety do Prisma.
@@ -56,6 +56,8 @@ O sistema é estruturado num Monorepo (Turborepo):
    - O acesso cross-tenant de SuperAdmin e Board é registrado em log de auditoria distinto (AuditLogCrossTenant) com userId, role, endpoint, obraIdAlvo (quando inferível do payload) e timestamp.
 
 > Decisão: O modelo de bypass condicional no middleware foi preferido ao modelo de "supertenant" (tenant especial que contém todos os dados) por manter a lógica de isolamento centralizada em um único ponto da infraestrutura, reduzindo risco de vazamento por query mal construída.
+
+6. **D7: Frontend web em Angular (`apps/web`)**: Cliente PWA no monorepo com **Angular** major **20** (linha estável; validar patch **20.x** ao fixar dependências). Cobre retaguarda e campo no mesmo código base web; alinhado a `REQ-NFR-002`.
 
 ### D6: Política de Autenticação e Palavra-passe - segmentação por perfil {#politica-autenticacao-senha}
 
