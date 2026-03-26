@@ -10,8 +10,8 @@ Este módulo consolida as entidades principais do domínio, as relações entre 
 - **Organização espacial**: `SetorOperacional` (macro-jurisdição alocável), `Quadra`, `Lote`, `Rua` e `LoteAdjacencia`, usados para inferir proximidade e restringir o motor de fila. `LocalExterno` representa localizações operacionais da obra fora da malha de Quadra/Lote (Portaria, Pulmão, Garagem, entre outros), cadastráveis por obra e vinculados a um `SetorOperacional`.
 - **Operacional**: `Empreiteira`.
 - **Maquinário e recursos**:
-  - `TipoMaquinario`: categoria genérica que define capacidades base, como escavadeira ou motoniveladora.
-  - `Maquinario`: a máquina física, com `placa`, `propriedade` (`FGR` ou `Terceiro`), `porte` e vínculo obrigatório a `TipoMaquinario`.
+  - `TipoMaquinario`: categoria genérica que define capacidades base (ex.: escavadeira, motoniveladora). Catálogo global (sem `obraId`), com `nome` e `descricao` obrigatórios. Os serviços associados ao tipo são gerenciados via `Servico`.
+  - `Maquinario`: a máquina física, com `nome` (obrigatório), `placa` (opcional, para máquinas com registro veicular), `empresaProprietaria` (texto livre, obrigatório) e vínculo obrigatório a `TipoMaquinario`.
   - `Ajudante`: recurso humano vinculado à obra sem credencial própria.
   - `Operador`: usuário com perfil `OPERADOR`, vinculado em relação N:M aos `TipoMaquinario` que está autorizado a operar.
 - **Catálogo**:
@@ -84,12 +84,13 @@ erDiagram
     TipoMaquinario {
         uuid id
         string nome
-        string porte
+        string descricao
     }
     Maquinario {
         uuid id
+        string nome
         string placa
-        string propriedade
+        string empresaProprietaria
         uuid tipoMaquinarioId
         uuid obraId
         timestamp deletadoEm

@@ -147,6 +147,22 @@ Este registo centraliza as decisões de produto necessárias antes das correçõ
   - `PRD/03-requisitos-funcionais.md`: `REQ-FUNC-003` expandido com campos mínimos do cadastro de `Servico` e vínculo com `TipoMaquinario`.
   - `SPEC/08-api-contratos.md`: CRUD de serviços adicionado (`POST`, `PATCH`, `DELETE /obras/:id/servicos`); `GET /obras/:id/servicos` atualizado com `exigeTransporte`; `CreateDemandaDto` atualizado com `transporteInterno` e validação condicional; erro `DEM-005` adicionado.
 
+## DEC-010 — Modelo de cadastro de TipoMaquinario e Maquinario
+
+- **Estado:** Decidido
+- **Data:** 2026-03-26
+- **Participantes:** Produto, Operações
+- **Contexto:** Revisão dos requisitos de maquinário definiu dois fluxos de cadastro explícitos: (1) tela de tipos de maquinário e (2) tela de maquinários individuais vinculados ao tipo. O modelo existente apresentava lacunas: `TipoMaquinario` sem `descricao`; `Maquinario` sem campo `nome` e com `propriedade` como enum `FGR/Terceiro` insuficiente para identificar a empresa proprietária; campo `porte` no tipo sem uso funcional no MVP.
+- **Decisão:** Revisão do modelo para o MVP mínimo funcional:
+  - `TipoMaquinario`: adicionar `descricao` (obrigatório); remover `porte` (adiado para Fase 2, sem uso no MVP).
+  - `Maquinario`: adicionar `nome` (obrigatório); substituir `propriedade` (enum FGR/Terceiro) por `empresaProprietaria` (texto livre, obrigatório); manter `placa` como campo opcional.
+- **Justificação:** O campo `nome` é necessário para exibição no formulário de abertura de demanda (seleção de maquinário). `empresaProprietaria` como texto livre suporta tanto máquinas da FGR quanto de terceiros com identificação nominal da empresa. `placa` permanece para rastreio de máquinas com registro veicular. `porte` não tem impacto funcional no MVP (não influencia score, filtros ou SLA) e pode ser reintroduzido em fase posterior.
+- **Aplicação (2026-03-26):**
+  - `SPEC/02-modelo-dados.md`: Entidade `TipoMaquinario` — adicionado `descricao`, removido `porte`. Entidade `Maquinario` — adicionado `nome`, substituído `propriedade` por `empresaProprietaria`. Diagrama ER e narrativa atualizados.
+  - `PRD/03-requisitos-funcionais.md`: `REQ-FUNC-003` expandido com campos explícitos de `TipoMaquinario` e `Maquinario`, menção às telas dedicadas e à filtragem mútua.
+  - `SPEC/08-api-contratos.md`: CRUD de `TipoMaquinario` adicionado (`GET /tipos-maquinario`, `POST`, `PATCH`, `DELETE`); CRUD de `Maquinario` completado (`POST`, `PATCH`, `DELETE /obras/:id/maquinarios`); `GET /obras/:id/maquinarios` atualizado com novos campos.
+  - `SPEC/04-rbac-permissoes.md`: Permissões `machinery:tipo-maquinario:*` adicionadas.
+
 ## DEC-007 — Stack de frontend web: Angular 20 (PWA)
 
 - **Estado:** Decidido

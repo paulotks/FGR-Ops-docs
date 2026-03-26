@@ -18,7 +18,22 @@ No fluxo automático de distribuição, máquinas e operadores não podem visual
 
 ### `REQ-FUNC-003` Gestão de maquinário, serviços e ajudantes
 
-O sistema deve suportar o cadastro estruturado de `Tipos de Maquinario`, `Servicos`, `Maquinas` e `Ajudantes`. O `Operador` precisa de estar vinculado aos tipos de maquinário que está autorizado a operar.
+O sistema deve suportar o cadastro estruturado de `Tipos de Maquinario`, `Servicos`, `Maquinas` e `Ajudantes` via telas dedicadas de administração. O `Operador` precisa de estar vinculado aos tipos de maquinário que está autorizado a operar.
+
+O cadastro de `TipoMaquinario` deve exigir os seguintes campos:
+
+- **Nome** do tipo (obrigatório).
+- **Descrição** do tipo (obrigatório).
+- Os serviços associados são gerenciados separadamente via cadastro de `Servico`, vinculado ao tipo pelo campo `tipoMaquinarioId`.
+
+O cadastro de `Maquinario` deve exigir os seguintes campos para o MVP:
+
+- **Nome** da máquina (obrigatório).
+- **Empresa proprietária** (`empresaProprietaria`, texto livre — obrigatório).
+- **Placa** (opcional, para máquinas com registro veicular).
+- Vínculo obrigatório ao **TipoMaquinario** correspondente.
+
+A relação `TipoMaquinario → Servico` permite filtragem mútua na criação de demanda: ao selecionar um maquinário, apenas os serviços do seu tipo são exibidos; ao selecionar um serviço, apenas os maquinários do tipo compatível são exibidos.
 
 O cadastro de `Servico` deve exigir no mínimo os seguintes campos:
 

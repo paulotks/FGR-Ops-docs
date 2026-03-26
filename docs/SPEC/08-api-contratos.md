@@ -294,11 +294,103 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
 
 ---
 
+### GET /tipos-maquinario — Listar tipos de maquinário
+
+**Perfis:** todos (catálogo global)
+
+**Query params:** `?page=&limit=`
+
+**Response 200:** lista de `TipoMaquinario` com `id`, `nome`, `descricao`, `servicos[]`
+
+---
+
+### POST /tipos-maquinario — Criar tipo de maquinário
+
+**Perfis:** `SuperAdmin`, `AdminOperacional`
+
+**Request (CreateTipoMaquinarioDto):**
+```json
+{
+  "nome": "string (obrigatório)",
+  "descricao": "string (obrigatório)"
+}
+```
+
+**Response 201:** `TipoMaquinario` criado com `id`, `nome`, `descricao`
+
+**Erros:** `400` campos obrigatórios ausentes · `409` nome duplicado
+
+---
+
+### PATCH /tipos-maquinario/:id — Atualizar tipo de maquinário
+
+**Perfis:** `SuperAdmin`, `AdminOperacional`
+
+**Request (UpdateTipoMaquinarioDto):** campos parciais de `CreateTipoMaquinarioDto`
+
+**Response 200:** `TipoMaquinario` atualizado
+
+**Erros:** `404` tipo não encontrado · `409` nome duplicado
+
+---
+
+### DELETE /tipos-maquinario/:id — Excluir tipo de maquinário (soft-delete)
+
+**Perfis:** `SuperAdmin`, `AdminOperacional`
+
+**Response 204**
+
+**Erros:** `409` tipo possui maquinários ou serviços ativos vinculados
+
+---
+
 ### GET /obras/:id/maquinarios — Catálogo de maquinários
 
 **Query params:** `?disponivel=&tipoId=`
 
-**Response 200:** lista de `Maquinario` com `tipoMaquinario`, `porte`, `servicos[]`
+**Response 200:** lista de `Maquinario` com `id`, `nome`, `placa`, `empresaProprietaria`, `tipoMaquinario`, `servicos[]`
+
+---
+
+### POST /obras/:id/maquinarios — Criar maquinário
+
+**Perfis:** `AdminOperacional`, `SuperAdmin`
+
+**Request (CreateMaquinarioDto):**
+```json
+{
+  "nome": "string (obrigatório)",
+  "empresaProprietaria": "string (obrigatório)",
+  "placa": "string | null (opcional)",
+  "tipoMaquinarioId": "uuid (obrigatório)"
+}
+```
+
+**Response 201:** `Maquinario` criado com `id`, `nome`, `placa`, `empresaProprietaria`, `tipoMaquinarioId`
+
+**Erros:** `400` campos obrigatórios ausentes · `404` `tipoMaquinarioId` não encontrado
+
+---
+
+### PATCH /obras/:id/maquinarios/:maquinarioId — Atualizar maquinário
+
+**Perfis:** `AdminOperacional`, `SuperAdmin`
+
+**Request (UpdateMaquinarioDto):** campos parciais de `CreateMaquinarioDto`
+
+**Response 200:** `Maquinario` atualizado
+
+**Erros:** `404` maquinário não encontrado no tenant
+
+---
+
+### DELETE /obras/:id/maquinarios/:maquinarioId — Excluir maquinário (soft-delete)
+
+**Perfis:** `AdminOperacional`, `SuperAdmin`
+
+**Response 204**
+
+**Erros:** `409` maquinário possui expedientes ou demandas ativas
 
 ---
 
