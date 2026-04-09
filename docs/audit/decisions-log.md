@@ -243,6 +243,25 @@ Este registo centraliza as decisões de produto necessárias antes das correçõ
 
 ---
 
+## DEC-013 — Fluxo de cancelamento de demanda própria pelo Empreiteiro na UI mobile
+
+- **Estado:** Decidido
+- **Data:** 2026-04-09
+- **Participantes:** Produto, Operações
+- **Contexto:** O item 3 do TODO de correções PRD/SPEC (2026-04-09) identificou que a permissão `machinery:demanda:cancel` (condição [4]: autoria + estado `PENDENTE`) estava autorizada no RBAC mas sem representação documentada na UI de campo do empreiteiro em `SPEC/07`.
+- **Opções em análise:**
+  - A) Botão "Cancelar" direto no card sem justificativa — mais rápido, sem fricção, porém sem trilha auditável.
+  - B) Botão "Cancelar" no card + modal com campo de justificativa obrigatória.
+- **Decisão:** B) Botão "Cancelar" exibido no card da demanda em `PENDENTE` + Modal de Confirmação com campo de justificativa obrigatório (mínimo 10 caracteres). O botão não é renderizado para demandas em outros estados ou de autoria de terceiros.
+- **Justificação:** A justificativa obrigatória alinha-se à exigência de trilha auditável de `REQ-ACE-006` e ao padrão já adotado para outros fluxos de cancelamento no sistema (operadores via `SolicitacaoCancelamento`, admins). Evita cancelamentos acidentais por toque inadvertido e cria registro rastreável para revisão administrativa posterior.
+- **Achados resolvidos:** TODO-correcoes-prd item 3 (fluxo de cancelamento do Empreiteiro na UI).
+- **Aplicação (2026-04-09):**
+  - `SPEC/07-design-ui-logica.md`: subseção "Cancelamento de demanda própria em `PENDENTE`" adicionada em 1.1 com fluxo detalhado; tabela State-to-UI Mapping expandida com coluna do Empreiteiro; `REQ-ACE-006` adicionado ao bloco Rastreio PRD.
+  - `PRD/02-jornada-usuario.md`: subseção "Acompanhamento e cancelamento de demanda própria" adicionada em `REQ-JOR-001` com cross-link para SPEC/07.
+  - `docs/traceability.md`: `REQ-ACE-006` e `REQ-JOR-001` atualizados para incluir `SPEC/07` como cobertura adicional.
+
+---
+
 ## Fase 2 — Correcoes de achados importantes
 
 As correcoes abaixo nao exigiram decisao de produto nova; derivam directamente dos achados da auditoria e das decisoes ja tomadas na Fase 0.

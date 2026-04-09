@@ -43,7 +43,7 @@ Vamos revisar melhor o papel da RUA no algoritmo de adjacência e prioridades. P
 
 ---
 
-### [ ] 3. Especificar o fluxo de cancelamento do Empreiteiro na UI
+### [x] 3. Especificar o fluxo de cancelamento do Empreiteiro na UI
 
 **Arquivo:** `docs/SPEC/07-design-ui-logica.md` (seção 1.1 — Mobile do Empreiteiro)
 **O que fazer:** Adicionar ao fluxo do empreiteiro a tela/ação de cancelar demanda própria em `PENDENTE`. O RBAC já autoriza (`machinery:demanda:cancel` com condição [4]), mas a UI não documenta como isso se manifesta na interface
@@ -203,7 +203,7 @@ Response 200: lista paginada de demandas com score, operador, SLA status e posi�
 | 1   | Corrigir nomes de estados em SPEC/07       | CRÍTICO     | [x]    |
 | 1b  | Transições de `PAUSADA` em SPEC/03 + DEC-011 | CRÍTICO  | [x]    |
 | 2   | Documentar papel da entidade `Rua`         | MENOR       | [x]    |
-| 3   | Fluxo de cancelamento do Empreiteiro na UI | MENOR       | [ ]    |
+| 3   | Fluxo de cancelamento do Empreiteiro na UI | MENOR       | [x]    |
 | 4   | Sequência de setup inicial de obra         | IMPORTANTE  | [ ]    |
 | 5   | FK `setorOperacionalId` em `Quadra` no ER  | CRÍTICO     | [ ]    |
 | 6   | Vínculo `Empreiteiro` ↔ `Empreiteira`      | CRÍTICO     | [ ]    |

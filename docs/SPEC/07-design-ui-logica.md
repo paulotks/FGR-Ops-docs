@@ -6,7 +6,7 @@ area: UI/UX e Frontend
 
 # Design de UI e Lógica de Interface
 
-**Rastreio PRD:** `REQ-JOR-001`, `REQ-JOR-002`, `REQ-JOR-003`, `REQ-JOR-004`, `REQ-JOR-005`, `REQ-RBAC-001`, `REQ-RBAC-002`, `REQ-RBAC-003`, `REQ-RBAC-004`, `REQ-RBAC-005`, `REQ-RBAC-006`, `REQ-FUNC-001`, `REQ-FUNC-008`, `REQ-FUNC-009`, `REQ-FUNC-011`, `REQ-NFR-002`
+**Rastreio PRD:** `REQ-JOR-001`, `REQ-JOR-002`, `REQ-JOR-003`, `REQ-JOR-004`, `REQ-JOR-005`, `REQ-RBAC-001`, `REQ-RBAC-002`, `REQ-RBAC-003`, `REQ-RBAC-004`, `REQ-RBAC-005`, `REQ-RBAC-006`, `REQ-FUNC-001`, `REQ-FUNC-008`, `REQ-FUNC-009`, `REQ-FUNC-011`, `REQ-NFR-002`, `REQ-ACE-006`
 
 Este documento serve como a **ponte visual e técnica** entre as regras de negócio documentadas (RBAC, Fila, SLAs) e a implementação no Angular 20. Ele define as estruturas das telas que posteriormente serão prototipadas e desenvolvidas.
 
@@ -23,6 +23,26 @@ A plataforma será composta por quatro fluxos principais de experiência, cada u
     *   Opção de `dataAgendada` ou "O mais rápido possível" (`urgencia`).
     *   Geolocalização capturada automaticamente (ou seleção de praça/quadra/lote via UI adaptável a dedos grandes).
 *   **Feedback Visual:** Indicador de estado para saber se a supervisão já aprovou o pedido ou se está pendente.
+
+#### Cancelamento de demanda própria em `PENDENTE`
+
+O empreiteiro pode cancelar demandas da sua autoria enquanto estas estiverem no estado `PENDENTE` — sem aprovação administrativa — conforme autoriza `machinery:demanda:cancel` (condição [4] do RBAC — ver `docs/SPEC/04-rbac-permissoes.md`).
+
+**Fluxo:**
+
+1. Na **lista de demandas ativas** (*"Acompanhar minhas solicitações"*), cada card de demanda em estado `PENDENTE` exibe o botão **"Cancelar"** (ícone de X, cor neutra, posicionado no canto superior direito do card).
+2. O toque no botão abre o **Modal de Cancelamento** contendo:
+   - Identificação resumida da demanda (número/ID + nome do serviço solicitado)
+   - Campo de texto **"Justificativa"** — obrigatório, mínimo 10 caracteres
+   - Botão **"Confirmar cancelamento"** — habilitado somente após justificativa válida
+   - Botão **"Voltar"** — fecha o modal sem executar nenhuma ação
+3. Ao confirmar:
+   - Chamada de API: `PATCH /demandas/:id` com ação `cancel` e justificativa no payload
+   - Demanda transita `PENDENTE → CANCELADA`
+   - Card desaparece da lista ativa; Toast de confirmação exibido: *"Demanda #[ID] cancelada."*
+4. **Restrição de estado:** o botão "Cancelar" é renderizado **somente** para demandas em `PENDENTE`. Para demandas em `EM_ANDAMENTO`, `CONCLUIDA` ou `CANCELADA`, o empreiteiro não visualiza a opção de cancelamento.
+
+> **DEC-013:** Justificativa obrigatória (mínimo 10 caracteres), alinhada à exigência de trilha auditável de `REQ-ACE-006`. O componente `ActionButton` aplica a guard de permissão RBAC — demandas de autoria de terceiros não exibem o botão.
 
 ### 1.2 Mobile do Operador (Execução no Campo)
 **Objetivo:** Foco absoluto na demanda de maior prioridade. O operador não escolhe demandas, apenas segue a fila imposta pelo algoritmo de SLA.
@@ -56,14 +76,14 @@ A plataforma será composta por quatro fluxos principais de experiência, cada u
 
 Como cada transição formal da Máquina de Estados se reflete na tela (aplicando as decisões do Angular 20):
 
-| Estado da Demanda | Alteração Visual na UI do Operador (Mobile) | Alteração Visual Supervisor (Dashboard) |
-| --- | --- | --- |
-| `PENDENTE_APROVACAO` | Invisível para o Operador. | Aparece no Inbox de Aprovação / Fila global com ícone cinza "A Confirmar". |
-| `PENDENTE` | Mostrado como próxima tarefa se a fila permitir. | Entra na fila ativa ranqueada por cor de SLA. |
-| `EM_ANDAMENTO` | Card Expandido bloqueante. Ações visíveis: *"Pausar"*, *"Concluir"*. | Exibe crachá do operador responsável piscando / indicador ativo verde. |
-| `PAUSADA` *(MVP — ver REQ-FUNC-011)* | Formulário para registrar o MOTIVO da pausa preenchido previamente. | Ícone Amarelo de Alerta. Fila recalcula as próximas tarefas para a máquina do operador. |
-| `CONCLUIDA` | Card sai da view atual e histórico atualiza numeração de meta diária. | Card ganha status verde sólido e move-se para aba "Auditoria" ou de histórico. |
-| `CANCELADA` | Card desaparece; feedback discreto via Toast *("Demanda #123 cancelada")*. | Riscado/Arquivado em vermelho na visão de encerramentos do dia. |
+| Estado da Demanda | Alteração Visual na UI do Empreiteiro (Mobile) | Alteração Visual na UI do Operador (Mobile) | Alteração Visual Supervisor (Dashboard) |
+| --- | --- | --- | --- |
+| `PENDENTE_APROVACAO` | Invisível para o Empreiteiro. | Invisível para o Operador. | Aparece no Inbox de Aprovação / Fila global com ícone cinza "A Confirmar". |
+| `PENDENTE` | Card exibido na lista com botão **"Cancelar"** visível (apenas demandas da própria autoria). | Mostrado como próxima tarefa se a fila permitir. | Entra na fila ativa ranqueada por cor de SLA. |
+| `EM_ANDAMENTO` | Card exibe indicador *"Em andamento"*; botão "Cancelar" **não exibido**. | Card Expandido bloqueante. Ações visíveis: *"Pausar"*, *"Concluir"*. | Exibe crachá do operador responsável piscando / indicador ativo verde. |
+| `PAUSADA` *(MVP — ver REQ-FUNC-011)* | Card exibe indicador *"Pausada"*; sem ação disponível para o empreiteiro. | Formulário para registrar o MOTIVO da pausa preenchido previamente. | Ícone Amarelo de Alerta. Fila recalcula as próximas tarefas para a máquina do operador. |
+| `CONCLUIDA` | Card move-se para histórico de solicitações encerradas. | Card sai da view atual e histórico atualiza numeração de meta diária. | Card ganha status verde sólido e move-se para aba "Auditoria" ou de histórico. |
+| `CANCELADA` | Card desaparece da lista ativa; Toast: *"Demanda #[ID] cancelada."* | Card desaparece; feedback discreto via Toast *("Demanda #123 cancelada")*. | Riscado/Arquivado em vermelho na visão de encerramentos do dia. |
 
 ---
 

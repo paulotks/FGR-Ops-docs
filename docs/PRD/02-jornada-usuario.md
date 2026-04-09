@@ -45,6 +45,12 @@ O empreiteiro pode adicionar uma descrição complementar (campo livre, recomend
 -> SPEC: [../SPEC/01-modulos-plataforma.md#modulo-machinery-link-mvp](../SPEC/01-modulos-plataforma.md#modulo-machinery-link-mvp)
 -> SPEC: [../SPEC/02-modelo-dados.md#entidades-principais](../SPEC/02-modelo-dados.md#entidades-principais)
 
+#### Acompanhamento e cancelamento de demanda própria
+
+Após a submissão, o empreiteiro acessa a lista de chamadas ativas para acompanhar o estado das suas demandas. Enquanto uma demanda estiver em `PENDENTE`, o empreiteiro pode cancelá-la diretamente pelo card, informando obrigatoriamente uma justificativa. Demandas em `EM_ANDAMENTO` ou em estados terminais (`CONCLUIDA`, `CANCELADA`) não permitem cancelamento pelo empreiteiro.
+
+-> SPEC: [../SPEC/07-design-ui-logica.md](../SPEC/07-design-ui-logica.md) (seção 1.1 — Cancelamento de demanda própria em `PENDENTE`)
+
 ### `REQ-JOR-002` Triagem por jurisdição logística
 
 Antes de qualquer atribuição, a plataforma executa um filtro eliminatório por `Setor Operacional`. Uma demanda aberta numa determinada área apenas pode ser considerada para maquinários e operadores compatíveis com esse contexto logístico e com a compatibilidade máquina-serviço exigida.
