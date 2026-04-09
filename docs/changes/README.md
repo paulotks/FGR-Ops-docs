@@ -1,6 +1,6 @@
 # Propostas de mudança de requisitos (`docs/changes/`)
 
-Este diretório agrupa **propostas só em Markdown** para alterar PRD, SPEC e rastreio, sem depender de ferramentas externas tipo OpenSpec. Cada mudança ativa vive numa subpasta com nome **kebab-case** (ex.: `onboarding-notificacoes`).
+Este diretório agrupa **propostas só em Markdown** para alterar PRD, SPEC e rastreio. Cada mudança ativa vive numa subpasta com nome **kebab-case** (ex.: `onboarding-notificacoes`).
 
 ## Estrutura por mudança
 
@@ -14,11 +14,11 @@ O `<nome>` deve ser único entre pastas ativas (não arquivadas). Antes de criar
 
 ## Ciclo de trabalho
 
-1. **Propor** (`/opsx:propose` ou equivalente): criar `docs/changes/<nome>/` com `proposal.md`, `design.md` e `tasks.md` preenchidos conforme o inventário de requisitos.
-2. **Aplicar** (`/opsx:apply`): percorrer `tasks.md`; editar só sob `docs/` (PRD, SPEC, [traceability.md](../traceability.md), auditoria quando aplicável); no fim da sessão ou ao concluir tarefas, seguir o skill **docs-audit-consistency** e executar `python .cursor/skills/docs-audit-consistency/scripts/check_consistency.py`.
-3. **Arquivar** (`/opsx:archive`): com `tasks.md` concluído (ou aviso explícito) e verificação de consistência sem erros bloqueantes (ou aviso), mover a pasta inteira para **`docs/changes/archive/YYYY-MM-DD-<nome>/`** (data do arquivo no prefixo).
+1. **Propor**: criar `docs/changes/<nome>/` com `proposal.md`, `design.md` e `tasks.md` preenchidos conforme o inventário de requisitos.
+2. **Aplicar**: percorrer `tasks.md`; editar só sob `docs/` (PRD, SPEC, [traceability.md](../traceability.md), auditoria quando aplicável); no fim da sessão ou ao concluir tarefas, seguir o skill **docs-audit-consistency** e executar `python .cursor/skills/docs-audit-consistency/scripts/check_consistency.py`.
+3. **Arquivar**: com `tasks.md` concluído (ou aviso explícito) e verificação de consistência sem erros bloqueantes (ou aviso), mover a pasta inteira para **`docs/changes/archive/YYYY-MM-DD-<nome>/`** (data do arquivo no prefixo).
 
-Pastas em `docs/changes/archive/` são histórico; não contam como mudanças “ativas” ao listar propostas em curso.
+Pastas em `docs/changes/archive/` são histórico; não contam como mudanças "ativas" ao listar propostas em curso.
 
 ## Matriz global
 

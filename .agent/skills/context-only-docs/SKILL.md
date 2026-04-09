@@ -13,18 +13,16 @@ Não se desenvolve aqui a aplicação de produto. Não espere nem crie ficheiros
 
 ## Propostas de mudança em `docs/changes/`
 
-O fluxo **OpsX** neste repo usa pastas versionadas **`docs/changes/<nome-kebab>/`** com `proposal.md`, `design.md` e `tasks.md` (ver [docs/changes/README.md](../../../docs/changes/README.md)). **Não** há CLI OpenSpec nem pasta `openspec/`.
+As mudanças de documentação usam pastas versionadas **`docs/changes/<nome-kebab>/`** com `proposal.md`, `design.md` e `tasks.md` (ver [docs/changes/README.md](../../../docs/changes/README.md)).
 
-1. **`/opsx:propose`**
-   - Gera ou atualiza o pacote da mudança sob `docs/changes/<nome>/`.
-   - O `tasks.md` deste repositório deve conter **apenas** tarefas de documentação (PRD, SPEC, matriz, auditoria). Não listar implementação de código de produto como trabalho a executar *aqui*.
+- **`proposal.md`** — O quê e porquê: resumo; REQ novos, alterados ou removidos; riscos e ambiguidades.
+- **`design.md`** — Como: ficheiros alvo em `docs/PRD/*.md` e `docs/SPEC/*.md`, ligações cruzadas planeadas.
+- **`tasks.md`** — Checklist `- [ ]` / `- [x]` com **apenas** tarefas de documentação (sem implementação de código).
 
-2. **`/opsx:apply`**
-   - Executar **somente** o que atualiza documentação: ficheiros sob `docs/` (PRD, SPEC, **`docs/traceability.md`**, `docs/audit/` quando aplicável) e o checklist em `docs/changes/<nome>/tasks.md`.
-   - A matriz global em **`docs/traceability.md`** é entrega **obrigatória** quando PRD/SPEC da mudança estão estáveis — novas linhas ou células no **mesmo formato** da tabela existente.
-   - Ao final da sessão ou ao concluir as tarefas: seguir o skill **docs-audit-consistency** (`.cursor/skills/docs-audit-consistency/SKILL.md`) e correr `python .cursor/skills/docs-audit-consistency/scripts/check_consistency.py`.
+Ao editar, a matriz global em **`docs/traceability.md`** é entrega **obrigatória** quando PRD/SPEC da mudança estão estáveis. Ao concluir, seguir o skill **docs-audit-consistency** (`.cursor/skills/docs-audit-consistency/SKILL.md`) e correr `python .cursor/skills/docs-audit-consistency/scripts/check_consistency.py`.
 
-3. **Outras skills no repositório**
-   - Skills táticas de código (`controller`, `prisma`, `use-case`, etc.), se existirem na base de conhecimento, servem apenas como **referência arquitetural** para redigir SPEC/PRD — não para implementar código *neste* repo.
+## Skills no repositório
+
+Skills táticas de código (`controller`, `prisma`, `use-case`, etc.) servem apenas como **referência arquitetural** para redigir SPEC/PRD — não para implementar código *neste* repo.
 
 **Resumo:** Atue como **analista de requisitos / arquiteto de software** em Markdown. O encadeamento formal é **PRD ↔ SPEC ↔ `docs/traceability.md`**, com validação pelo skill e script acima.
