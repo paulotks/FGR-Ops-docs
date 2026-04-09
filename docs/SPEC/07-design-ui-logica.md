@@ -6,6 +6,8 @@ area: UI/UX e Frontend
 
 # Design de UI e Lógica de Interface
 
+**Rastreio PRD:** `REQ-JOR-001`, `REQ-JOR-002`, `REQ-JOR-003`, `REQ-JOR-004`, `REQ-JOR-005`, `REQ-RBAC-001`, `REQ-RBAC-002`, `REQ-RBAC-003`, `REQ-RBAC-004`, `REQ-RBAC-005`, `REQ-RBAC-006`, `REQ-FUNC-001`, `REQ-FUNC-008`, `REQ-FUNC-009`, `REQ-FUNC-011`, `REQ-NFR-002`
+
 Este documento serve como a **ponte visual e técnica** entre as regras de negócio documentadas (RBAC, Fila, SLAs) e a implementação no Angular 20. Ele define as estruturas das telas que posteriormente serão prototipadas e desenvolvidas.
 
 ## 1. Hierarquia de Telas (Screen Flows)
@@ -27,9 +29,10 @@ A plataforma será composta por quatro fluxos principais de experiência, cada u
 
 *   **Tela Inicial (Check-in Diário):** Se for o início do turno, uma tela bloqueante para realizar o check-in na base.
 *   **Card de Demanda Ativa Principal:**
-    *   Exibe *apenas* a demanda atual / próxima da fila (`EM_EXECUCAO` ou a primeira `PENDENTE_OPERADOR`).
+    *   Exibe *apenas* a demanda atual / próxima da fila (`EM_ANDAMENTO` ou a primeira `PENDENTE`).
     *   Dados da demanda: Local, Serviço, Empreiteiro solicitante.
-    *   Botões de Ação Dinâmicos: "Iniciar Deslocamento", "Cheguei ao Local", "Pausar", "Concluir" variando dependendo do estado atual da demanda.
+    *   Botões de Ação Dinâmicos: "Cheguei ao Local", "Pausar", "Concluir" variando dependendo do estado atual da demanda.
+    *   > **Fase 2:** Botão "Iniciar Deslocamento" removido do MVP — funcionalidade de rastreamento de deslocamento será endereçada em iteração futura.
 *   **Lista de Fila (Opcional/Secundária):** Permite ver "o que vem pela frente" apenas com caráter informativo, sem poder de escolha.
 
 ### 1.3 Dashboard Web Subordinado/Supervisor
@@ -56,9 +59,9 @@ Como cada transição formal da Máquina de Estados se reflete na tela (aplicand
 | Estado da Demanda | Alteração Visual na UI do Operador (Mobile) | Alteração Visual Supervisor (Dashboard) |
 | --- | --- | --- |
 | `PENDENTE_APROVACAO` | Invisível para o Operador. | Aparece no Inbox de Aprovação / Fila global com ícone cinza "A Confirmar". |
-| `PENDENTE_OPERADOR` | Mostrado como próxima tarefa se a fila permitir. | Entra na fila ativa ranqueada por cor de SLA. |
-| `EM_EXECUCAO` | Card Expandido bloqueante. Ações visíveis: *"Pausar"*, *"Finalizar"*. | Exibe crachá do operador responsável piscando / indicador ativo verde. |
-| `PAUSADA` | Formulário para registrar o MOTIVO da pausa preenchido previamente. | Ícone Amarelo de Alerta. Fila recalcula as próximas tarefas para a máquina do operador. |
+| `PENDENTE` | Mostrado como próxima tarefa se a fila permitir. | Entra na fila ativa ranqueada por cor de SLA. |
+| `EM_ANDAMENTO` | Card Expandido bloqueante. Ações visíveis: *"Pausar"*, *"Concluir"*. | Exibe crachá do operador responsável piscando / indicador ativo verde. |
+| `PAUSADA` *(MVP — ver REQ-FUNC-011)* | Formulário para registrar o MOTIVO da pausa preenchido previamente. | Ícone Amarelo de Alerta. Fila recalcula as próximas tarefas para a máquina do operador. |
 | `CONCLUIDA` | Card sai da view atual e histórico atualiza numeração de meta diária. | Card ganha status verde sólido e move-se para aba "Auditoria" ou de histórico. |
 | `CANCELADA` | Card desaparece; feedback discreto via Toast *("Demanda #123 cancelada")*. | Riscado/Arquivado em vermelho na visão de encerramentos do dia. |
 

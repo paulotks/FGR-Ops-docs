@@ -97,6 +97,16 @@ O produto deve manter cadastro hierárquico espacial de `Quadras`, `Lotes` e `Ru
 -> SPEC: [../SPEC/02-modelo-dados.md#entidades-principais](../SPEC/02-modelo-dados.md#entidades-principais)
 -> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#regra-zero-hard-filter-destaque-e-score](../SPEC/03-fila-scoring-estados-sla.md#regra-zero-hard-filter-destaque-e-score)
 
+### `REQ-FUNC-011` Pausa de demanda em andamento (MVP)
+
+O operador pode pausar uma demanda em `EM_ANDAMENTO`, registrando obrigatoriamente o motivo da pausa. A demanda transita para `PAUSADA` e permanece vinculada ao operador. A fila recalcula as próximas tarefas disponíveis para o equipamento enquanto a demanda estiver pausada. O operador pode retomar a demanda pausada, retornando-a a `EM_ANDAMENTO`. As transições `EM_ANDAMENTO → PAUSADA → EM_ANDAMENTO` devem ser registradas em `DemandaLog` com ator, timestamp e motivo.
+
+> **DEC-011 (decidido — 2026-04-09):** Transições `EM_ANDAMENTO → PAUSADA` (ação `pausar`, Operador, justificativa obrigatória) e `PAUSADA → EM_ANDAMENTO` (ação `retomar`, Operador) formalizadas em `SPEC/03`. SLA continua correndo durante pausa. Ver [`docs/audit/decisions-log.md#dec-011`](../audit/decisions-log.md#dec-011---estado-pausada-na-máquina-de-estados-da-demanda-mvp).
+
+-> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#fluxo-detalhado-pausada-dec-011](../SPEC/03-fila-scoring-estados-sla.md#fluxo-detalhado-pausada-dec-011)
+
+-> SPEC: [../SPEC/07-design-ui-logica.md#mapeamento-visual-de-estados-state-to-ui-mapping](../SPEC/07-design-ui-logica.md#mapeamento-visual-de-estados-state-to-ui-mapping)
+
 ## Critérios de aceite relacionados
 
 - [REQ-ACE-002](05-criterios-aceite.md#maquina-de-estados-bloqueio-de-bypass-pos-conclusao)

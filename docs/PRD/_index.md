@@ -17,3 +17,37 @@ Pacote modular de requisitos de produto. Resumos abaixo; conteúdo migrado a par
 - [Matriz de rastreabilidade](../traceability.md)
 
 [Voltar ao README dos docs](../README.md)
+
+---
+
+## Registro completo de REQ-IDs
+
+> Seção machine-readable para o hook de rastreabilidade. Expansão explícita de todos os IDs registrados neste índice.
+
+**Visão e escopo (`00-visao-escopo.md`):**
+REQ-CTX-001, REQ-CTX-002, REQ-CTX-003,
+REQ-OBJ-001, REQ-OBJ-002, REQ-OBJ-003, REQ-OBJ-004, REQ-OBJ-005,
+REQ-SCO-001, REQ-SCO-002, REQ-SCO-003, REQ-SCO-004, REQ-SCO-005,
+REQ-SCO-F2-001, REQ-SCO-F2-002, REQ-SCO-F2-003, REQ-SCO-F2-004, REQ-SCO-F2-005, REQ-SCO-F2-006,
+REQ-SCO-GAT-001, REQ-SCO-GAT-002, REQ-SCO-GAT-003, REQ-SCO-GAT-004
+
+**Usuários e RBAC (`01-usuarios-rbac.md`):**
+REQ-RBAC-001, REQ-RBAC-002, REQ-RBAC-003, REQ-RBAC-004, REQ-RBAC-005, REQ-RBAC-006
+
+**Jornada do usuário (`02-jornada-usuario.md`):**
+REQ-JOR-001, REQ-JOR-002, REQ-JOR-003, REQ-JOR-004, REQ-JOR-005
+
+**Requisitos funcionais (`03-requisitos-funcionais.md`):**
+REQ-FUNC-001, REQ-FUNC-002, REQ-FUNC-003, REQ-FUNC-004, REQ-FUNC-005,
+REQ-FUNC-006, REQ-FUNC-007, REQ-FUNC-008, REQ-FUNC-009, REQ-FUNC-010,
+REQ-FUNC-011
+
+**Requisitos não funcionais (`04-requisitos-nao-funcionais.md`):**
+REQ-NFR-001, REQ-NFR-002, REQ-NFR-003, REQ-NFR-004, REQ-NFR-005, REQ-NFR-006, REQ-NFR-007
+
+**Critérios de aceite (`05-criterios-aceite.md`):**
+REQ-ACE-001, REQ-ACE-002, REQ-ACE-003, REQ-ACE-004, REQ-ACE-005, REQ-ACE-006, REQ-ACE-007, REQ-ACE-008
+
+**Métricas e riscos (`06-metricas-riscos.md`):**
+REQ-MET-001, REQ-MET-002, REQ-MET-003,
+REQ-RISK-001, REQ-RISK-002

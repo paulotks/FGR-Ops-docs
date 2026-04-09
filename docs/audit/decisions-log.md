@@ -198,6 +198,26 @@ Este registo centraliza as decisões de produto necessárias antes das correçõ
 - **Aplicação (2026-03-26):**
   - `docs/SPEC/07-design-ui-logica.md`: §3 documenta implementação Zoneless (`providedIn: 'root'`), Signals para coleções de demandas, Reactive Forms com Zod/Valibot e componente `ActionButton` com guard RBAC integrado.
 
+## DEC-011 — Estado `PAUSADA` na máquina de estados da Demanda (MVP)
+
+- **Estado:** Decidido
+- **Data:** 2026-04-09
+- **Participantes:** Produto, Operações
+- **Contexto:** A revisão do item 1 do TODO de correções PRD/SPEC (2026-04-09) identificou que `PAUSADA` havia sido introduzido em `SPEC/07` sem ter transições formais definidas em `SPEC/03`. A opção era: (A) remover `PAUSADA` do MVP e tratar como Fase 2, ou (B) mantê-lo no MVP formalizando as transições em `SPEC/03` e abrindo `REQ-FUNC-011`.
+- **Opções em análise:**
+  - A) Remover `PAUSADA` do MVP — simplifica a máquina de estados; pausa seria Fase 2.
+  - B) Manter `PAUSADA` no MVP — atende necessidade operacional real de campo; requer formalização das transições e novo REQ.
+- **Decisão:** B) Manter `PAUSADA` no MVP. Adicionar transições `EM_ANDAMENTO → PAUSADA` (ação `pausar`, Operador, justificativa obrigatória) e `PAUSADA → EM_ANDAMENTO` (ação `retomar`, Operador) à máquina de estados canônica de `SPEC/03`. Criar `REQ-FUNC-011` no PRD.
+- **Justificação:** Operadores em campo precisam pausar demandas por razões operacionais legítimas (aguardar material, interferência de outro equipamento, intervalo obrigatório). Sem `PAUSADA`, seriam forçados a concluir falsamente ou devolver a demanda à fila geral, distorcendo métricas e perdendo a vinculação. O estado `PAUSADA` preserva o vínculo operador-demanda e mantém rastreabilidade auditável com motivo obrigatório.
+- **Restrições MVP:**
+  - SLA continua correndo durante `PAUSADA` (sem suspensão de timer).
+  - Sem limite de tempo de pausa definido no MVP.
+  - Motor de fila trata o equipamento como momentaneamente indisponível para novas atribuições automáticas enquanto houver demanda `PAUSADA`.
+- **Achados resolvidos:** TODO-correcoes-prd item 1b (transições de `PAUSADA` em SPEC/03).
+- **Aplicação (2026-04-09):**
+  - `SPEC/03-fila-scoring-estados-sla.md`: `PAUSADA` adicionado ao diagrama Mermaid com transições `pausar` e `retomar`; linhas correspondentes inseridas na tabela de transições; seção "Fluxo detalhado `PAUSADA`" criada com regras de vínculo, SLA, DemandaLog e comportamento do motor de fila; `REQ-FUNC-011` adicionado ao bloco de Rastreio PRD.
+  - `PRD/03-requisitos-funcionais.md`: `REQ-FUNC-011` já registrado (nota DEC-011 pendente atualizada como decidida na data acima).
+
 ---
 
 ## Fase 2 — Correcoes de achados importantes

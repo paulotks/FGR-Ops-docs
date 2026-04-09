@@ -2,80 +2,33 @@
 
 > Leia este arquivo no início de cada sessão para retomar contexto.
 
-**Atualizado em:** 2026-04-09 (inicialização do pipeline neuro-simbólico)
+**Atualizado em:** 2026-04-09 18:20
 
----
+## Últimos REQ-IDs / DEC-IDs Tocados
 
-## Estado Atual do Projeto
+- **DEC-IDs recentes:** DEC-007,DEC-008,DEC-009,DEC-010,DEC-011
+- **REQ-IDs tocados:** REQ-ACE-001,REQ-ACE-002,REQ-ACE-003,REQ-ACE-004,REQ-ACE-005,REQ-ACE-006,REQ-ACE-007,REQ-ACE-008,REQ-CTX-001,REQ-CTX-002,REQ-CTX-003,REQ-FUNC-001,REQ-FUNC-002,REQ-FUNC-003,REQ-FUNC-004,REQ-FUNC-005,REQ-FUNC-006,REQ-FUNC-007,REQ-FUNC-008,REQ-FUNC-009,REQ-FUNC-010,REQ-FUNC-011,REQ-JOR-001,REQ-JOR-002,REQ-JOR-003,REQ-JOR-004,REQ-JOR-005,REQ-MET-001,REQ-MET-002,REQ-MET-003,REQ-NFR-001,REQ-NFR-002,REQ-NFR-003,REQ-NFR-004,REQ-NFR-005,REQ-NFR-006,REQ-NFR-007,REQ-OBJ-001,REQ-OBJ-002,REQ-OBJ-003,REQ-OBJ-004,REQ-OBJ-005,REQ-RBAC-001,REQ-RBAC-002,REQ-RBAC-003,REQ-RBAC-004,REQ-RBAC-005,REQ-RBAC-006,REQ-RISK-001,REQ-RISK-002,REQ-SCO-001,REQ-SCO-002,REQ-SCO-003,REQ-SCO-004,REQ-SCO-005
 
-### PRD — 7 módulos estáveis
+## Pacotes OpsX Ativos (docs/changes/)
 
-| Módulo | Arquivo | REQ-IDs Principais |
-|--------|---------|---------------------|
-| Visão e escopo | `docs/PRD/00-visao-escopo.md` | CTX-001…003, OBJ-001…005, SCO-001…005, SCO-F2-001…006, SCO-GAT-001…004 |
-| Usuários e RBAC | `docs/PRD/01-usuarios-rbac.md` | RBAC-001…006 |
-| Jornada do usuário | `docs/PRD/02-jornada-usuario.md` | JOR-001…005 |
-| Requisitos funcionais | `docs/PRD/03-requisitos-funcionais.md` | FUNC-001…010 |
-| Requisitos não funcionais | `docs/PRD/04-requisitos-nao-funcionais.md` | NFR-001…007 |
-| Critérios de aceite | `docs/PRD/05-criterios-aceite.md` | ACE-001…006, ACE-008 |
-| Métricas e riscos | `docs/PRD/06-metricas-riscos.md` | MET-001…003, RISK-001…002 |
+Nenhum pacote ativo — docs/changes/ está limpo.
 
-### SPEC — 9 módulos + UI-DESIGN.md estáveis
+## Seções PRD/SPEC em Revisão
 
-| Módulo | Arquivo |
-|--------|---------|
-| Visão e arquitetura | `docs/SPEC/00-visao-arquitetura.md` |
-| Módulos da plataforma | `docs/SPEC/01-modulos-plataforma.md` |
-| Modelo de dados | `docs/SPEC/02-modelo-dados.md` |
-| Fila, scoring, estados, SLA | `docs/SPEC/03-fila-scoring-estados-sla.md` |
-| RBAC e permissões | `docs/SPEC/04-rbac-permissoes.md` |
-| Backlog MVP e glossário | `docs/SPEC/05-backlog-mvp-glossario.md` |
-| Definições complementares | `docs/SPEC/06-definicoes-complementares.md` |
-| Design UI e lógica | `docs/SPEC/07-design-ui-logica.md` |
-| Contratos de API REST | `docs/SPEC/08-api-contratos.md` |
-| Design system | `docs/UI-DESIGN.md` |
+docs/PRD/_index.md
+docs/PRD/03-requisitos-funcionais.md
+docs/SPEC/02-modelo-dados.md
+docs/SPEC/03-fila-scoring-estados-sla.md
+docs/SPEC/07-design-ui-logica.md
 
----
+## Alertas
 
-## Últimas Decisões Registradas
 
-| DEC | Título | Estado |
-|-----|--------|--------|
-| DEC-001 | Regra Zero vs filtros (`operadorAlocadoId`) | Decidido |
-| DEC-002 | Cancelamento automático vs revisão administrativa | Decidido |
-| DEC-003 | Fonte canónica para `REQ-MET-002` | Decidido |
-| DEC-004 | Política de autenticação segmentada por perfil | Decidido |
-| DEC-005 | Localização obrigatória na abertura de demanda | Decidido |
-| DEC-006 | Revisão do escopo de transporte de material no MVP | Decidido |
-| DEC-007 | Stack de frontend web: Angular 20 (PWA) | Decidido |
-| DEC-008 | Paradigma Zoneless e Signals (Angular 20) | Decidido |
-| DEC-009 | Reintrodução de `exigeTransporte` no MVP | Decidido |
-| DEC-010 | Modelo de cadastro de TipoMaquinario e Maquinario | Decidido |
+⚠️  TBD/TODO encontrados em docs/ — revise MEMORY/inbox.md
 
-**Próxima DEC disponível: DEC-011**
+## Próxima DEC Disponível
 
----
-
-## Pacotes OpsX Ativos
-
-Nenhum pacote ativo — `docs/changes/` contém apenas `archive/` e `README.md`.
-
----
-
-## Cobertura de Rastreabilidade (baseline 2026-03-26)
-
-- **Total REQ-IDs:** ~62 cobertos, 2 parciais, 0 não cobertos
-- **Auditoria:** 37 achados, todos resolvidos (7 bloqueantes + 28 importantes + 2 menores)
-- **Detalhe:** `docs/audit/output/global/consolidated-global.json`
-
----
-
-## Alertas e Pendências
-
-- Nenhum alerta crítico ativo
-- Verificar `MEMORY/inbox.md` para tarefas documentais pendentes
-
----
+DEC-012
 
 ## Referências Rápidas
 
@@ -84,4 +37,3 @@ Nenhum pacote ativo — `docs/changes/` contém apenas `archive/` e `README.md`.
 - [Traceability](docs/traceability.md)
 - [Decisions Log](docs/audit/decisions-log.md)
 - [Changes](docs/changes/)
-- [MEMORY/inbox.md](MEMORY/inbox.md)

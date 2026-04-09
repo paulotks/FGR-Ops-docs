@@ -7,7 +7,7 @@ Este módulo consolida as entidades principais do domínio, as relações entre 
 ## Entidades principais
 
 - **Core**: `User`, `Role` e `Obra`.
-- **Organização espacial**: `SetorOperacional` (macro-jurisdição alocável), `Quadra`, `Lote`, `Rua` e `LoteAdjacencia`, usados para inferir proximidade e restringir o motor de fila. `LocalExterno` representa localizações operacionais da obra fora da malha de Quadra/Lote (Portaria, Pulmão, Garagem, entre outros), cadastráveis por obra e vinculados a um `SetorOperacional`.
+- **Organização espacial**: `SetorOperacional` (macro-jurisdição alocável), `Quadra`, `Lote`, ` e `LoteAdjacencia`, usados para inferir proximidade e restringir o motor de fila. `LocalExterno` representa localizações operacionais da obra fora da malha de Quadra/Lote (Portaria, Pulmão, Garagem, entre outros), cadastráveis por obra e vinculados a um `SetorOperacional`.
 - **Operacional**: `Empreiteira`.
 - **Maquinário e recursos**:
   - `TipoMaquinario`: categoria genérica que define capacidades base (ex.: escavadeira, motoniveladora). Catálogo global (sem `obraId`), com `nome` e `descricao` obrigatórios. Os serviços associados ao tipo são gerenciados via `Servico`.

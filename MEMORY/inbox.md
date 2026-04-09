@@ -36,3 +36,18 @@ Quando resolvido:
 
 Todos os 37 achados da auditoria global (2026-03-26) foram resolvidos.
 Detalhe em: [docs/audit/output/global/consolidated-global.json](../docs/audit/output/global/consolidated-global.json)
+
+## Tasks detectadas em 2026-04-09
+
+- [ ] /c/dev/FGR-Ops-Requisitos/docs/audit/decisions-log.md:206:- **Contexto:** A revisão do item 1 do TODO de correções PRD/SPEC (2026-04-09) identificou que `PAUSADA` havia sido introduzido em `SPEC/07` sem ter transições formais definidas em `SPEC/03`. A opção era: (A) remover `PAUSADA` do MVP e tratar como Fase 2, ou (B) mantê-lo no MVP formalizando as transições em `SPEC/03` e abrindo `REQ-FUNC-011`.
+- [ ] /c/dev/FGR-Ops-Requisitos/docs/audit/decisions-log.md:216:- **Achados resolvidos:** TODO-correcoes-prd item 1b (transições de `PAUSADA` em SPEC/03).
+
+## Tasks detectadas em 2026-04-09
+
+- [ ] /c/dev/FGR-Ops-Requisitos/docs/audit/decisions-log.md:206:- **Contexto:** A revisão do item 1 do TODO de correções PRD/SPEC (2026-04-09) identificou que `PAUSADA` havia sido introduzido em `SPEC/07` sem ter transições formais definidas em `SPEC/03`. A opção era: (A) remover `PAUSADA` do MVP e tratar como Fase 2, ou (B) mantê-lo no MVP formalizando as transições em `SPEC/03` e abrindo `REQ-FUNC-011`.
+- [ ] /c/dev/FGR-Ops-Requisitos/docs/audit/decisions-log.md:216:- **Achados resolvidos:** TODO-correcoes-prd item 1b (transições de `PAUSADA` em SPEC/03).
+
+## Tasks detectadas em 2026-04-09
+
+- [ ] /c/dev/FGR-Ops-Requisitos/docs/audit/decisions-log.md:206:- **Contexto:** A revisão do item 1 do TODO de correções PRD/SPEC (2026-04-09) identificou que `PAUSADA` havia sido introduzido em `SPEC/07` sem ter transições formais definidas em `SPEC/03`. A opção era: (A) remover `PAUSADA` do MVP e tratar como Fase 2, ou (B) mantê-lo no MVP formalizando as transições em `SPEC/03` e abrindo `REQ-FUNC-011`.
+- [ ] /c/dev/FGR-Ops-Requisitos/docs/audit/decisions-log.md:216:- **Achados resolvidos:** TODO-correcoes-prd item 1b (transições de `PAUSADA` em SPEC/03).

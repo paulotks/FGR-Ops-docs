@@ -1,6 +1,6 @@
 # Fila, scoring, estados e SLA
 
-**Rastreio PRD:** `REQ-JOR-002`, `REQ-JOR-003`, `REQ-JOR-004`, `REQ-JOR-005`, `REQ-FUNC-001`, `REQ-FUNC-002`, `REQ-FUNC-004`, `REQ-FUNC-006`, `REQ-FUNC-007`, `REQ-FUNC-008`, `REQ-FUNC-009`, `REQ-FUNC-010`, `REQ-ACE-002`, `REQ-ACE-003`, `REQ-ACE-004`, `REQ-ACE-005`, `REQ-ACE-006`
+**Rastreio PRD:** `REQ-JOR-002`, `REQ-JOR-003`, `REQ-JOR-004`, `REQ-JOR-005`, `REQ-FUNC-001`, `REQ-FUNC-002`, `REQ-FUNC-004`, `REQ-FUNC-006`, `REQ-FUNC-007`, `REQ-FUNC-008`, `REQ-FUNC-009`, `REQ-FUNC-010`, `REQ-FUNC-011`, `REQ-ACE-002`, `REQ-ACE-003`, `REQ-ACE-004`, `REQ-ACE-005`, `REQ-ACE-006`
 
 Este módulo detalha o motor operacional que governa a atribuição de demandas, o score de prioridade, os limites de SLA e a máquina de estados aplicada ao ciclo de vida da demanda.
 
@@ -75,8 +75,11 @@ stateDiagram-v2
     PENDENTE --> CANCELADA : cancelar
 
     EM_ANDAMENTO --> CONCLUIDA : concluir
+    EM_ANDAMENTO --> PAUSADA : pausar
     EM_ANDAMENTO --> RETORNADA : devolver
     EM_ANDAMENTO --> PENDENTE_APROVACAO : solicitar_cancelamento
+
+    PAUSADA --> EM_ANDAMENTO : retomar
 
     RETORNADA --> PENDENTE : transicao_automatica
 
@@ -88,6 +91,8 @@ stateDiagram-v2
 ```
 
 > Decisão: `RETORNADA` existe como estado transitório obrigatório; após a devolução administrativa, a demanda volta automaticamente a `PENDENTE` e regressa à fila generalizada.
+>
+> Decisão: `PAUSADA` é mantido no MVP (DEC-011). A demanda permanece vinculada ao operador durante a pausa; a fila recalcula as próximas tarefas disponíveis para o equipamento enquanto a demanda estiver pausada. Retomada restaura `EM_ANDAMENTO` com o mesmo operador. Vínculo: `REQ-FUNC-011`.
 
 ### Tabela de transições por perfil
 
@@ -101,11 +106,27 @@ stateDiagram-v2
 | `PENDENTE` | `iniciar` | `EM_ANDAMENTO` | `Operador` | Não |
 | `PENDENTE` | `cancelar` | `CANCELADA` | `Empreiteiro`, `AdminOperacional`, `UsuarioInternoFGR`, `SuperAdmin` | Sim |
 | `EM_ANDAMENTO` | `concluir` | `CONCLUIDA` | `Operador` | Não |
+| `EM_ANDAMENTO` | `pausar` | `PAUSADA` | `Operador` | Sim |
 | `EM_ANDAMENTO` | `devolver` | `RETORNADA` | `AdminOperacional`, `UsuarioInternoFGR`, `SuperAdmin` | Sim |
-| `RETORNADA` | `transicao_automatica` | `PENDENTE` | Sistema (automático) | Não |
 | `EM_ANDAMENTO` | `solicitar_cancelamento` | `PENDENTE_APROVACAO` | `Operador` | Sim |
+| `PAUSADA` | `retomar` | `EM_ANDAMENTO` | `Operador` | Não |
+| `RETORNADA` | `transicao_automatica` | `PENDENTE` | Sistema (automático) | Não |
 | `PENDENTE_APROVACAO` | `aprovar_cancelamento` | `CANCELADA` | `AdminOperacional`, `UsuarioInternoFGR`, `SuperAdmin` | Sim |
 | `PENDENTE_APROVACAO` | `rejeitar_cancelamento` | `EM_ANDAMENTO` | `AdminOperacional`, `UsuarioInternoFGR`, `SuperAdmin` | Sim |
+
+## Fluxo detalhado `PAUSADA` (DEC-011)
+
+Quando um `Operador` precisa interromper temporariamente uma demanda em execução sem devolvê-la à fila geral, pode pausá-la registrando obrigatoriamente o motivo.
+
+- A demanda permanece vinculada ao mesmo operador durante a pausa.
+- A exclusividade do operador não é removida: o operador pode receber novas demandas da fila enquanto aguarda a retomada, mas a demanda pausada continua visível no topo do seu painel com badge de estado `PAUSADA`.
+- O motor de fila recalcula as próximas tarefas elegíveis para o equipamento enquanto a demanda estiver em `PAUSADA`, como se o equipamento estivesse momentaneamente indisponível para novas atribuições automáticas.
+- A retomada (`retomar`) é de iniciativa exclusiva do `Operador` vinculado, restaurando o estado `EM_ANDAMENTO` sem reentrar na fila geral.
+- O SLA continua correndo durante `PAUSADA`: o marcador de vencimento não é suspenso.
+- Toda transição `EM_ANDAMENTO → PAUSADA → EM_ANDAMENTO` gera entrada obrigatória em `DemandaLog` com campos: `ator`, `timestamp`, `motivo` (obrigatório na pausa, opcional na retomada).
+- Não há limite de pausa definido no MVP; o estouro do SLA durante `PAUSADA` segue as regras normais de escalação.
+
+> Rastreio: `REQ-FUNC-011`, DEC-011.
 
 ## Fluxo detalhado `PENDENTE_APROVACAO`
 
