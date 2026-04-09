@@ -29,7 +29,7 @@ Decisão: manter `PAUSADA` no MVP, abrir REQ-FUNC-011 e adicionar as transiçõe
   Arquivo: docs/SPEC/03-fila-scoring-estados-sla.md + docs/audit/decisions-log.md
   Pré-requisito para: Itens 7 e 8
 
-### [ ] 2. Documentar o papel da entidade `Rua` no domínio
+### [x] 2. Documentar o papel da entidade `Rua` no domínio
 
 **Arquivo:** `docs/SPEC/02-modelo-dados.md`
 **O que fazer:** Adicionar ao ER e ao texto a relação de `Rua` com as demais entidades espaciais. Responder:
@@ -202,7 +202,7 @@ Response 200: lista paginada de demandas com score, operador, SLA status e posi�
 | --- | ------------------------------------------ | ----------- | ------ |
 | 1   | Corrigir nomes de estados em SPEC/07       | CRÍTICO     | [x]    |
 | 1b  | Transições de `PAUSADA` em SPEC/03 + DEC-011 | CRÍTICO  | [x]    |
-| 2   | Documentar papel da entidade `Rua`         | MENOR       | [ ]    |
+| 2   | Documentar papel da entidade `Rua`         | MENOR       | [x]    |
 | 3   | Fluxo de cancelamento do Empreiteiro na UI | MENOR       | [ ]    |
 | 4   | Sequência de setup inicial de obra         | IMPORTANTE  | [ ]    |
 | 5   | FK `setorOperacionalId` em `Quadra` no ER  | CRÍTICO     | [ ]    |

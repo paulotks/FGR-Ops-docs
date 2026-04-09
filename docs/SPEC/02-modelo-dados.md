@@ -7,7 +7,8 @@ Este módulo consolida as entidades principais do domínio, as relações entre 
 ## Entidades principais
 
 - **Core**: `User`, `Role` e `Obra`.
-- **Organização espacial**: `SetorOperacional` (macro-jurisdição alocável), `Quadra`, `Lote`, ` e `LoteAdjacencia`, usados para inferir proximidade e restringir o motor de fila. `LocalExterno` representa localizações operacionais da obra fora da malha de Quadra/Lote (Portaria, Pulmão, Garagem, entre outros), cadastráveis por obra e vinculados a um `SetorOperacional`.
+- **Organização espacial**: `SetorOperacional` (macro-jurisdição alocável), `Rua`, `Quadra`, `Lote` e `LoteAdjacencia`, usados para inferir proximidade e restringir o motor de fila. `LocalExterno` representa localizações operacionais da obra fora da malha de Quadra/Lote (Portaria, Pulmão, Garagem, entre outros), cadastráveis por obra e vinculados a um `SetorOperacional`.
+  - `Rua`: entidade de agrupamento espacial que contém múltiplas `Quadras`. Uma rua de obra tem, tipicamente, quadras (blocos) distribuídas ao longo de sua extensão — ex.: Quadra X e Quadra Y estão na Rua Z. No MVP, `Rua` é **descritiva**: não participa do algoritmo de adjacência nem do cálculo de score. Sua função primária é prover referência visual para o usuário identificar onde cada máquina está e evitar colisões entre equipamentos. O vínculo entre `Quadra` e `Rua` é feito via `ruaId` **nullable** em `Quadra`, de modo que obras sem ruas cadastradas continuam operando normalmente. Gerenciada pelo mesmo perfil que gerencia `Quadra` (`AdminOperacional`), sem permissões RBAC dedicadas no MVP. Participação no motor de adjacência está adiada para Fase 2 (DEC-012).
 - **Operacional**: `Empreiteira`.
 - **Maquinário e recursos**:
   - `TipoMaquinario`: categoria genérica que define capacidades base (ex.: escavadeira, motoniveladora). Catálogo global (sem `obraId`), com `nome` e `descricao` obrigatórios. Os serviços associados ao tipo são gerenciados via `Servico`.
@@ -54,10 +55,16 @@ erDiagram
         string nome
         uuid obraId
     }
+    Rua {
+        uuid id
+        string nome
+        uuid obraId
+    }
     Quadra {
         uuid id
         string codigo
         uuid obraId
+        uuid ruaId
     }
     Lote {
         uuid id
@@ -175,8 +182,10 @@ erDiagram
 
     Obra ||--o{ User : "tenant"
     Obra ||--o{ SetorOperacional : "contém"
+    Obra ||--o{ Rua : "contém"
     Obra ||--o{ Quadra : "contém"
     Obra ||--o{ LocalExterno : "contém"
+    Rua ||--o{ Quadra : "contém"
     Obra ||--o{ Empreiteira : "contém"
     Obra ||--o{ Maquinario : "contém"
     Obra ||--o{ Ajudante : "contém"

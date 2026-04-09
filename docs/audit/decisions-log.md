@@ -220,6 +220,29 @@ Este registo centraliza as decisões de produto necessárias antes das correçõ
 
 ---
 
+## DEC-012 — Papel e posição hierárquica da entidade `Rua` no modelo espacial
+
+- **Estado:** Decidido
+- **Data:** 2026-04-09
+- **Participantes:** Produto, Operações
+- **Contexto:** O item 2 do TODO de correções PRD/SPEC (2026-04-09) exigia definir o papel da entidade `Rua` no domínio: (A) descritiva sem impacto operacional, (B) participante do algoritmo de adjacência, ou (C) entidade de agrupamento puramente visual.
+- **Opções em análise:**
+  - A) `Rua` como dado descritivo livre em `Quadra` (campo texto, sem entidade própria) — sem FK, sem impacto no motor de fila.
+  - B) `Rua` como entidade filha de `Quadra` — FK `ruaId` em `Quadra` — hierarquia Quadra → Rua.
+  - C) `Rua` como entidade de agrupamento de `Quadras` — FK `ruaId` em `Quadra` — hierarquia Rua → Quadra.
+- **Decisão:** C) `Rua` é entidade de agrupamento **pai de `Quadra`**: uma `Rua` contém múltiplas `Quadras`; `Quadra` carrega `ruaId` (FK nullable). No MVP, `Rua` é **descritiva** — não participa do algoritmo de adjacência nem do score de fila. Sua função primária é referência visual para o usuário localizar máquinas e evitar colisões entre equipamentos.
+- **Justificação:** O exemplo operacional "o posto da Quadra X e da Quadra Y estão na Rua Z" prova que a relação correta é `Rua ||--o{ Quadra`, não o inverso. Tratar `Rua` como texto livre (opção A) perderia a capacidade de filtragem e visualização agrupada; tratar como filha de `Quadra` (opção B) inverteria a hierarquia espacial. A opção C reflete a realidade de campo: uma rua de obra tem múltiplas quadras (blocos) às suas margens. O `ruaId` ser nullable preserva compatibilidade com obras que ainda não mapearam ruas. Participação no algoritmo de adjacência fica adiada para Fase 2.
+- **Restrições MVP:**
+  - `ruaId` é **nullable** em `Quadra` — obra pode funcionar sem ruas cadastradas.
+  - `Rua` **não** altera `fator_adjacencia` nem qualquer peso do motor de score no MVP.
+  - `Rua` **não** tem permissões RBAC dedicadas no MVP — gerenciada pelo mesmo perfil que gerencia `Quadra` (`AdminOperacional`).
+  - Fase 2: avaliar uso de `Rua` como critério de adjacência intermediária (máquinas na mesma rua = `fator_adjacencia` 0.5 por padrão).
+- **Achados resolvidos:** TODO-correcoes-prd item 2 (papel da entidade `Rua`).
+- **Aplicação (2026-04-09):**
+  - `SPEC/02-modelo-dados.md`: entidade `Rua` adicionada ao diagrama ER com campos `id`, `nome`, `obraId`; `ruaId` (nullable) adicionado a `Quadra`; relação `Rua ||--o{ Quadra : "contém"` e `Obra ||--o{ Rua : "contém"` inseridas; texto da seção "Organização espacial" atualizado com papel descritivo de `Rua` no MVP.
+
+---
+
 ## Fase 2 — Correcoes de achados importantes
 
 As correcoes abaixo nao exigiram decisao de produto nova; derivam directamente dos achados da auditoria e das decisoes ja tomadas na Fase 0.
