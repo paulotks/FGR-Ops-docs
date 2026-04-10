@@ -155,8 +155,8 @@ Checklist obrigatório para toda mudança documental antes de considerar estáve
 - **Cobertura de rastreabilidade:** 62 cobertos, 2 parciais, 0 não cobertos (auditoria de 2026-03-26)
 
 ### Decisions
-- **Última decisão registrada:** DEC-014 (fronteira FGR Ops plataforma ↔ Machinery Link módulo e sequência canônica de bootstrapping de obra)
-- **Próxima disponível:** DEC-015
+- **Última decisão registrada:** DEC-015 (FK `setorOperacionalId` em `Quadra` e não-conflito com `Rua`)
+- **Próxima disponível:** DEC-016
 
 ### Changes
 - **Pacotes OpsX ativos:** nenhum (diretório `docs/changes/` contém apenas `archive/` e `README.md`)

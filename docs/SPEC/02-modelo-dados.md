@@ -64,6 +64,7 @@ erDiagram
         uuid id
         string codigo
         uuid obraId
+        uuid setorOperacionalId
         uuid ruaId
     }
     Lote {
@@ -185,6 +186,7 @@ erDiagram
     Obra ||--o{ Rua : "contém"
     Obra ||--o{ Quadra : "contém"
     Obra ||--o{ LocalExterno : "contém"
+    SetorOperacional ||--o{ Quadra : "jurisdição"
     Rua ||--o{ Quadra : "contém"
     Obra ||--o{ Empreiteira : "contém"
     Obra ||--o{ Maquinario : "contém"
@@ -217,6 +219,7 @@ erDiagram
 ## Relacionamentos e regras de integridade
 
 - **Catálogo de serviços por tipo**: `Servico` está vinculado a `TipoMaquinario` (não à instância física `Maquinario`). Um mesmo tipo pode oferecer vários serviços. A filtragem mútua entre serviço e maquinário é feita pela correspondência de `TipoMaquinario`: ao selecionar um serviço, a UI restringe os maquinários disponíveis àqueles do mesmo tipo; ao selecionar um maquinário, restringe os serviços àqueles do seu tipo.
+- **Jurisdição de `Quadra`** (DEC-015): o campo `setorOperacionalId` em `Quadra` é **obrigatório e não-nulo**. Ao criar ou mover uma `Quadra`, o sistema valida que o `SetorOperacional` informado pertence à mesma `Obra`. A demanda deriva automaticamente `setorOperacionalId` a partir do `quadraId` selecionado pelo empreiteiro — esse campo nunca é preenchido manualmente pelo usuário. `ruaId` em `Quadra` continua nullable (Rua é puramente descritiva e não impacta o motor de fila).
 - **Escopo de tenant**: toda entidade tenant-scoped contém obrigatoriamente `obraId`.
 - **Soft-delete**: `Demanda`, `Maquinario` e `Empreiteira` nunca são purgados fisicamente; o sistema utiliza `deletadoEm` para preservar histórico.
 - **Auditabilidade transacional**: qualquer manipulação, avanço, cancelamento ou alteração da `Demanda` gera escrita não destrutiva em `DemandaLog`.

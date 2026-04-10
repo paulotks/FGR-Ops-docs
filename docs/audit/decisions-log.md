@@ -287,6 +287,24 @@ Este registo centraliza as decisões de produto necessárias antes das correçõ
   - `TODO-correcoes-prd.md`: item 4 marcado como `[x]`.
   - `CLAUDE.md`: "Última decisão registrada" atualizada para DEC-014; "Próxima disponível" atualizada para DEC-015.
 
+## DEC-015 — FK `setorOperacionalId` em `Quadra` e não-conflito com `Rua`
+
+- **Estado:** Decidido
+- **Data:** 2026-04-10
+- **Participantes:** Produto, Arquitetura
+- **Contexto:** O item 5 do TODO de correções PRD/SPEC (2026-04-09) identificou que o ER de `SPEC/02-modelo-dados.md` não registrava a FK `setorOperacionalId` em `Quadra`, embora o texto de `SPEC/08` e o campo `Demanda.setorOperacionalId` já mencionassem que o setor é derivado automaticamente do `quadraId`. Antes de adicionar a FK era necessário verificar se haveria conflito com a entidade `Rua` (que também agrupa `Quadras`) ou com a relação `SetorOperacional`.
+- **Opções em análise:**
+  - A) `setorOperacionalId` vai em `Rua`, e `Quadra` herda o setor via join através de `ruaId` — reduz redundância, mas impede obras sem ruas cadastradas de funcionar.
+  - B) `setorOperacionalId` vai em `Quadra` diretamente — simétrico ao padrão de `LocalExterno`; `Rua` permanece puramente descritiva e nullable.
+  - C) `SetorOperacional` agrupa `Ruas` (não `Quadras`) — exige criar FK em `Rua` e reformular toda a hierarquia espacial.
+- **Decisão:** B) `setorOperacionalId` é adicionado diretamente em `Quadra`, como campo obrigatório e não-nulo (com validação de mesma `obraId`). `Rua` não recebe `setorOperacionalId`; mantém-se como agrupador visual opcional (nullable), sem papel no motor de fila (DEC-012). A `Demanda` continua derivando `setorOperacionalId` automaticamente a partir do `quadraId` escolhido — sem input manual do usuário.
+- **Justificação:** `Quadra` é a unidade operacional primária de onde o motor de fila obtém a jurisdição de setor. `LocalExterno` já usa o mesmo padrão (FK direta). `Rua` é puramente descritiva no MVP (DEC-012) e seu `ruaId` é nullable em `Quadra`, portanto não pode ser veículo de herança de setor sem criar dependência obrigatória — o que quebraria obras sem ruas cadastradas. A opção B mantém consistência arquitetural, preserva o padrão nullable de `ruaId` e não exige nenhuma alteração na hierarquia espacial existente.
+- **Achados resolvidos:** TODO-correcoes-prd item 5 (FK `setorOperacionalId` em `Quadra` no ER).
+- **Aplicação (2026-04-10):**
+  - `SPEC/02-modelo-dados.md`: campo `setorOperacionalId` adicionado à entidade `Quadra` no diagrama Mermaid; relação `SetorOperacional ||--o{ Quadra : "jurisdição"` adicionada ao ER; regra de integridade documentada na seção "Relacionamentos e regras de integridade".
+  - `TODO-correcoes-prd.md`: item 5 marcado como `[x]`.
+  - `CLAUDE.md`: "Última decisão registrada" atualizada para DEC-015; "Próxima disponível" atualizada para DEC-016.
+
 ---
 
 ## Fase 2 — Correcoes de achados importantes
