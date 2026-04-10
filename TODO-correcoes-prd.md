@@ -52,7 +52,7 @@ Decisão: botão no card da demanda + modal com justificativa?. Replicar essa de
 
 ---
 
-### [ ] 4. Documentar a sequência de setup inicial de uma obra
+### [x] 4. Documentar a sequência de setup inicial de uma obra
 
 **Arquivo:** `docs/SPEC/01-modulos-plataforma.md` (nova seção) ou `docs/SPEC/06-definicoes-complementares.md`
 **O que fazer:** Adicionar seção "Bootstrapping de obra" descrevendo a sequência mínima de cadastros para uma obra ir ao ar:
@@ -204,7 +204,7 @@ Response 200: lista paginada de demandas com score, operador, SLA status e posi�
 | 1b  | Transições de `PAUSADA` em SPEC/03 + DEC-011 | CRÍTICO  | [x]    |
 | 2   | Documentar papel da entidade `Rua`         | MENOR       | [x]    |
 | 3   | Fluxo de cancelamento do Empreiteiro na UI | MENOR       | [x]    |
-| 4   | Sequência de setup inicial de obra         | IMPORTANTE  | [ ]    |
+| 4   | Sequência de setup inicial de obra         | IMPORTANTE  | [x]    |
 | 5   | FK `setorOperacionalId` em `Quadra` no ER  | CRÍTICO     | [ ]    |
 | 6   | Vínculo `Empreiteiro` ↔ `Empreiteira`      | CRÍTICO     | [ ]    |
 | 7   | Endpoints CRUD ausentes em SPEC/08         | CRÍTICO     | [ ]    |

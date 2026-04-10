@@ -262,6 +262,33 @@ Este registo centraliza as decisões de produto necessárias antes das correçõ
 
 ---
 
+## DEC-014 — Fronteira FGR Ops (plataforma) vs Machinery Link (módulo) e sequência de bootstrapping de obra
+
+- **Estado:** Decidido
+- **Data:** 2026-04-09
+- **Participantes:** Produto, Operações, Arquitetura
+- **Contexto:** O item 4 do TODO de correções PRD/SPEC (2026-04-09) identificou que o PRD/SPEC descrevia cadastros e perfis sem deixar claro **onde** cada responsabilidade vive: FGR Ops (plataforma multi-módulo futura) vs Machinery Link (módulo operacional entregue no MVP). O Machinery Link hoje é sistema standalone; no MVP ele é re-platformado como primeiro módulo do FGR Ops. Sem essa separação explícita, a sequência de setup inicial de uma obra ficava ambígua quanto a quem executa cada passo e em qual aplicação.
+- **Opções em análise:**
+  - A) Tratar tudo dentro do Machinery Link e ignorar a camada FGR Ops no MVP — mais simples, porém cria dívida arquitetural ao introduzir o segundo módulo (almoxarifado, IoT).
+  - B) Introduzir novos perfis específicos para FGR Ops (`AdminSistemaFGROps`, `DiretorGlobal`) — formaliza a camada, mas cascateia novos `REQ-RBAC-*` e duplica conceitos já cobertos por `SuperAdmin` e `Board`.
+  - C) Manter os perfis atuais e formalizar arquiteturalmente que `SuperAdmin` e `Board` operam na camada FGR Ops (plataforma), enquanto `AdminOperacional`, `UsuarioInternoFGR`, `Empreiteiro` e `Operador` operam na camada Machinery Link (módulo).
+- **Decisão:** C) Formalização de duas camadas sem criação de novos perfis. A camada **FGR Ops** (plataforma, cross-tenant) é responsável pelo cadastro de `Obra`, provisão de usuários e ativação de módulos — operada por `SuperAdmin` (papel funcional: "Administrador do Sistema FGR Ops") e `Board` (papel funcional: "Diretor / Gerente de Obra Global"). A camada **Machinery Link** (módulo, tenant-scoped) concentra todos os cadastros operacionais internos à obra e o ciclo de vida de `Demanda` — operada por `AdminOperacional`, `UsuarioInternoFGR`, `Empreiteiro` e `Operador`. O roteamento de login é dual: `SuperAdmin` e `Board` passam pelo shell FGR Ops (seleção de obra → hub de módulos habilitados); os demais perfis entram diretamente na aplicação do módulo. A sequência canônica de 18 passos de bootstrapping fica documentada em `SPEC/01-modulos-plataforma.md#bootstrapping-de-obra`.
+- **Justificação:** Os perfis `SuperAdmin` (cross-tenant, único com `core:obra:create`) e `Board` (cross-tenant, estritamente leitura) já existiam na matriz RBAC e cumpriam exatamente o papel de camada de plataforma — não havia ganho em duplicá-los. A decisão reusa a matriz RBAC atual sem quebrar cobertura de auditoria e esclarece o modelo mental para leitores do SPEC. O acesso direto dos perfis de campo ao módulo evita fricção em smartphone (`REQ-NFR-002`, `REQ-OBJ-005`), enquanto o shell FGR Ops fica reservado para os perfis que realmente precisam de visão cross-obra ou cross-módulo. A sequência canônica de bootstrapping com regras de integridade ("obra elegível para criação de demandas apenas quando X, Y, Z estão presentes") destrava a futura implementação do backend ao definir claramente as pré-condições operacionais.
+- **Restrições MVP:**
+  - Apenas um módulo exibido no hub FGR Ops: `Machinery Link`. O shell é construído para suportar N módulos futuros, mas a lista é hardcoded no MVP.
+  - Toggle binário de ativação: uma obra tem ou não tem Machinery Link ativo; não há configuração fina de features no nível plataforma.
+  - Painel executivo dedicado para `Board` (com cruzamento de dados entre obras: horas de maquinário, engajamento de operadores, etc.) fica na **Fase 2** como módulo futuro do FGR Ops.
+  - Nenhum novo `REQ-RBAC-*` é criado; a matriz de permissões existente já cobre integralmente as duas camadas.
+  - Empreiteira (passo #13) e LocalExterno (passo #9) são citados na sequência canônica mas têm entidade e contratos CRUD pendentes de formalização nos itens 6 e 7 do TODO-correcoes-prd.
+- **Achados resolvidos:** TODO-correcoes-prd item 4 (sequência de setup inicial de uma obra).
+- **Aplicação (2026-04-09):**
+  - `SPEC/01-modulos-plataforma.md`: nova seção `## Bootstrapping de obra` com subseções (Arquitetura de duas camadas, Fluxo de autenticação e roteamento, Sequência canônica de cadastros, Regras de integridade, Delimitação FGR Ops ↔ Machinery Link MVP). Bloco Rastreio PRD expandido com `REQ-RBAC-001..003`, `REQ-SCO-001..004`.
+  - `docs/traceability.md`: linha de `REQ-SCO-*` e `REQ-RBAC-*` enriquecida com referência à nova seção de bootstrapping.
+  - `TODO-correcoes-prd.md`: item 4 marcado como `[x]`.
+  - `CLAUDE.md`: "Última decisão registrada" atualizada para DEC-014; "Próxima disponível" atualizada para DEC-015.
+
+---
+
 ## Fase 2 — Correcoes de achados importantes
 
 As correcoes abaixo nao exigiram decisao de produto nova; derivam directamente dos achados da auditoria e das decisoes ja tomadas na Fase 0.

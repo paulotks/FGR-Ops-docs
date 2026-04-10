@@ -66,7 +66,7 @@ Este repositório (`FGR-Ops-Requisitos`) é **exclusivamente** para PRD, SPEC e 
 
 - **Requisitos PRD:** `REQ-<PREFIX>-<NNN>` — prefixes: `FUNC`, `NFR`, `ACE`, `RBAC`, `JOR`, `CTX`, `OBJ`, `MET`, `RISK`
 - **Blocos de rastreio SPEC:** toda seção SPEC que referencie requisitos PRD deve incluir `**Rastreio PRD:**` listando os `REQ-xxx`
-- **Decisões táticas:** `DEC-<NNN>` em `docs/audit/decisions-log.md` — próximo disponível: `DEC-011`
+- **Decisões táticas:** `DEC-<NNN>` em `docs/audit/decisions-log.md` — próximo disponível: `DEC-015`
 - **ADRs arquiteturais:** `D1–D7` nas SPECs
 - **Cross-links:** PRD → SPEC: `→ SPEC: relative-path#anchor`; SPEC → PRD: bloco `Rastreio PRD:`
 
@@ -155,8 +155,8 @@ Checklist obrigatório para toda mudança documental antes de considerar estáve
 - **Cobertura de rastreabilidade:** 62 cobertos, 2 parciais, 0 não cobertos (auditoria de 2026-03-26)
 
 ### Decisions
-- **Última decisão registrada:** DEC-010 (modelo de cadastro de TipoMaquinario e Maquinario)
-- **Próxima disponível:** DEC-011
+- **Última decisão registrada:** DEC-014 (fronteira FGR Ops plataforma ↔ Machinery Link módulo e sequência canônica de bootstrapping de obra)
+- **Próxima disponível:** DEC-015
 
 ### Changes
 - **Pacotes OpsX ativos:** nenhum (diretório `docs/changes/` contém apenas `archive/` e `README.md`)
