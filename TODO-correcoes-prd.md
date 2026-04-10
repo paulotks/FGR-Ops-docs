@@ -119,7 +119,7 @@ No cadastro de Maquinario, teremos o campo para vincular o maquinario a Empreite
 
 ---
 
-### [ ] 7. Adicionar endpoints de CRUD para recursos operacionais ausentes em SPEC/08
+### [x] 7. Adicionar endpoints de CRUD para recursos operacionais ausentes em SPEC/08
 
 **Arquivo:** `docs/SPEC/08-api-contratos.md`
 **O que fazer:** Adicionar seções de contrato para os recursos que têm permissões RBAC definidas mas sem endpoints documentados:
@@ -207,7 +207,7 @@ Response 200: lista paginada de demandas com score, operador, SLA status e posi�
 | 4   | Sequência de setup inicial de obra         | IMPORTANTE  | [x]    |
 | 5   | FK `setorOperacionalId` em `Quadra` no ER  | CRÍTICO     | [x]    |
 | 6   | Vínculo `Empreiteiro` ↔ `Empreiteira`      | CRÍTICO     | [x]    |
-| 7   | Endpoints CRUD ausentes em SPEC/08         | CRÍTICO     | [ ]    |
+| 7   | Endpoints CRUD ausentes em SPEC/08         | CRÍTICO     | [x]    |
 | 8   | Endpoint de checkout de expediente         | CRÍTICO     | [x]    |
 | 9   | Endpoints de configuração por obra         | IMPORTANTE  | [x]    |
 | 10  | Endpoint de fila global para admin         | IMPORTANTE  | [x]    |
@@ -216,4 +216,4 @@ Response 200: lista paginada de demandas com score, operador, SLA status e posi�
 
 ---
 
-> **Status final (2026-04-10):** 11 de 12 itens concluídos. Único pendente: **item 7** (endpoints CRUD para recursos operacionais ausentes em SPEC/08 — criticidade CRÍTICA). Arquivo arquivado em `docs/changes/archive/2026-04-10-correcoes-prd-pre-dev/`.
+> **Status final (2026-04-10):** 12 de 12 itens concluídos. Todos os gaps de contrato de API foram documentados em SPEC/08. Arquivo arquivado em `docs/changes/archive/2026-04-10-correcoes-prd-pre-dev/`.

@@ -310,6 +310,118 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
 
 ---
 
+### POST /operadores/:id/ajudante — Trocar ajudante durante expediente
+
+**Rastreio PRD:** `REQ-FUNC-004`
+
+**Perfil:** `Operador` (próprio expediente), `AdminOperacional`, `SuperAdmin`
+
+> Permite substituir o ajudante ativo durante o turno sem necessidade de checkout/checkin. Encerra o `TurnoAjudante` vigente e cria um novo registro com o ajudante informado.
+
+**Request (TrocarAjudanteDto):**
+```json
+{
+  "ajudanteId": "uuid (obrigatório)"
+}
+```
+
+**Response 200:**
+```json
+{
+  "registroExpedienteId": "uuid",
+  "turnoAjudanteAnteriorId": "uuid | null",
+  "turnoAjudanteNovoId": "uuid",
+  "ajudanteId": "uuid",
+  "inicioEm": "ISO8601"
+}
+```
+
+**Erros:** `404 OPR-001` sem expediente ativo · `404` ajudante não encontrado na obra · `409` ajudante já é o ajudante ativo do turno · `422` ajudante em turno ativo com outro operador
+
+---
+
+## 4b. Usuários (`/usuarios`)
+
+**Rastreio PRD:** `REQ-RBAC-001…006`, `REQ-FUNC-012`
+
+### GET /usuarios — Listar usuários
+
+**Perfis:** `SuperAdmin` (cross-tenant), `Board` (cross-tenant, read-only), `AdminOperacional` (escopo da obra), `UsuarioInternoFGR` (escopo da obra, read-only)
+
+**Query params:** `?perfil=&obraId=&search=&page=&limit=`
+
+**Response 200:** lista paginada de `User` com `id`, `nome`, `email`, `perfil`, `obraId`, `empreiteiraId`, `ativo`
+
+---
+
+### POST /usuarios — Criar usuário
+
+**Perfis:** `SuperAdmin`, `AdminOperacional`
+
+**Request (CreateUsuarioDto):**
+```json
+{
+  "nome": "string (obrigatório)",
+  "email": "string | null (obrigatório para perfis administrativos; opcional para Operador/Empreiteiro)",
+  "perfil": "SuperAdmin | AdminOperacional | UsuarioInternoFGR | Empreiteiro | Operador (obrigatório)",
+  "obraId": "uuid (obrigatório para perfis tenant-scoped)",
+  "empreiteiraId": "uuid | null (obrigatório quando perfil = Empreiteiro; nulo para demais perfis)",
+  "pin": "string (≥6 dígitos, obrigatório para perfis Operador e Empreiteiro)",
+  "password": "string (≥8 chars, 4 classes, obrigatório para perfis administrativos)",
+  "tiposMaquinarioIds": ["uuid (obrigatório quando perfil = Operador — lista de TipoMaquinario autorizados)"]
+}
+```
+
+> O `AdminOperacional` só pode criar usuários com perfil hierárquico inferior ou igual dentro da mesma obra (condição [1] do RBAC).
+
+**Response 201:**
+```json
+{
+  "id": "uuid",
+  "nome": "string",
+  "email": "string | null",
+  "perfil": "string",
+  "obraId": "uuid | null",
+  "empreiteiraId": "uuid | null"
+}
+```
+
+**Erros:** `400` campos obrigatórios ausentes · `404` `empreiteiraId` ou `obraId` não encontrado · `409` email duplicado · `422` `empreiteiraId` informado para perfil diferente de Empreiteiro · `422` `tiposMaquinarioIds` ausente para perfil Operador
+
+---
+
+### GET /usuarios/:id — Detalhe de usuário
+
+**Perfis:** `SuperAdmin`, `Board`, `AdminOperacional`, `UsuarioInternoFGR`
+
+**Response 200:** `User` completo com `id`, `nome`, `email`, `perfil`, `obraId`, `empreiteiraId`, `empreiteira` (expandido), `tiposMaquinario[]` (quando Operador)
+
+**Erros:** `404` não encontrado · `403` tentativa de acessar usuário de outra obra (para perfis tenant-scoped)
+
+---
+
+### PATCH /usuarios/:id — Atualizar usuário
+
+**Perfis:** `SuperAdmin`, `AdminOperacional` (condição [1])
+
+**Request (UpdateUsuarioDto):** campos parciais de `CreateUsuarioDto` (exceto `perfil`, que é imutável)
+
+**Response 200:** `User` atualizado
+
+**Erros:** `404` não encontrado · `409` email duplicado · `403` tentativa de alterar usuário de perfil superior
+
+---
+
+### DELETE /usuarios/:id — Excluir usuário (soft-delete)
+
+**Perfis:** `SuperAdmin`, `AdminOperacional` (condição [1])
+
+**Response 204**
+
+**Erros:** `404` não encontrado · `403` tentativa de excluir usuário de perfil superior · `409` usuário possui expedientes ou demandas ativas
+
+---
+
 ## 5. Obras e recursos espaciais (`/obras`)
 
 ### GET /obras/:id — Detalhe de obra
@@ -318,9 +430,393 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
 
 ---
 
-### GET /obras/:id/setores — Setores operacionais
+### GET /obras/:id/setores — Listar setores operacionais
 
-**Response 200:** lista de `SetorOperacional` com `quadras[]` e `locaisExternos[]`
+**Perfis:** todos (leitura de contexto)
+
+**Response 200:** lista de `SetorOperacional` com `id`, `nome`, `quadras[]` e `locaisExternos[]`
+
+---
+
+### POST /obras/:id/setores — Criar setor operacional
+
+**Perfis:** `AdminOperacional`, `SuperAdmin`
+
+**Request (CreateSetorOperacionalDto):**
+```json
+{
+  "nome": "string (obrigatório)"
+}
+```
+
+**Response 201:**
+```json
+{
+  "id": "uuid",
+  "nome": "string",
+  "obraId": "uuid"
+}
+```
+
+**Erros:** `400` campos obrigatórios ausentes · `409` nome duplicado na mesma obra
+
+---
+
+### PATCH /obras/:id/setores/:setorId — Atualizar setor operacional
+
+**Perfis:** `AdminOperacional`, `SuperAdmin`
+
+**Request (UpdateSetorOperacionalDto):** campos parciais de `CreateSetorOperacionalDto`
+
+**Response 200:** `SetorOperacional` atualizado
+
+**Erros:** `404` setor não encontrado · `409` nome duplicado
+
+---
+
+### DELETE /obras/:id/setores/:setorId — Excluir setor operacional (soft-delete)
+
+**Perfis:** `AdminOperacional`, `SuperAdmin`
+
+**Response 204**
+
+**Erros:** `409` setor possui quadras ou locais externos ativos vinculados
+
+---
+
+### GET /obras/:id/quadras — Listar quadras
+
+**Perfis:** todos (leitura de contexto)
+
+**Query params:** `?setorId=&ruaId=&page=&limit=`
+
+**Response 200:** lista paginada de `Quadra` com `id`, `codigo`, `setorOperacionalId`, `ruaId`, `lotes[]`
+
+---
+
+### POST /obras/:id/quadras — Criar quadra
+
+**Perfis:** `AdminOperacional`, `SuperAdmin`
+
+**Request (CreateQuadraDto):**
+```json
+{
+  "codigo": "string (obrigatório)",
+  "setorOperacionalId": "uuid (obrigatório)",
+  "ruaId": "uuid | null (opcional)"
+}
+```
+
+> `setorOperacionalId` deve referenciar um `SetorOperacional` da mesma obra (DEC-015).
+
+**Response 201:**
+```json
+{
+  "id": "uuid",
+  "codigo": "string",
+  "obraId": "uuid",
+  "setorOperacionalId": "uuid",
+  "ruaId": "uuid | null"
+}
+```
+
+**Erros:** `400` campos obrigatórios ausentes · `404` `setorOperacionalId` ou `ruaId` não encontrado na obra · `409` código duplicado na mesma obra
+
+---
+
+### PATCH /obras/:id/quadras/:quadraId — Atualizar quadra
+
+**Perfis:** `AdminOperacional`, `SuperAdmin`
+
+**Request (UpdateQuadraDto):** campos parciais de `CreateQuadraDto`
+
+**Response 200:** `Quadra` atualizada
+
+**Erros:** `404` quadra não encontrada · `409` código duplicado · `422` `setorOperacionalId` de obra diferente
+
+---
+
+### DELETE /obras/:id/quadras/:quadraId — Excluir quadra (soft-delete)
+
+**Perfis:** `AdminOperacional`, `SuperAdmin`
+
+**Response 204**
+
+**Erros:** `409` quadra possui lotes ativos vinculados ou demandas ativas
+
+---
+
+### GET /obras/:id/quadras/:quadraId/lotes — Listar lotes
+
+**Perfis:** todos (leitura de contexto)
+
+**Query params:** `?page=&limit=`
+
+**Response 200:** lista paginada de `Lote` com `id`, `codigo`, `quadraId`
+
+---
+
+### POST /obras/:id/quadras/:quadraId/lotes — Criar lote
+
+**Perfis:** `AdminOperacional`, `SuperAdmin`
+
+**Request (CreateLoteDto):**
+```json
+{
+  "codigo": "string (obrigatório)"
+}
+```
+
+**Response 201:**
+```json
+{
+  "id": "uuid",
+  "codigo": "string",
+  "quadraId": "uuid"
+}
+```
+
+**Erros:** `400` campos obrigatórios ausentes · `404` `quadraId` não encontrado na obra · `409` código duplicado na mesma quadra
+
+---
+
+### PATCH /obras/:id/quadras/:quadraId/lotes/:loteId — Atualizar lote
+
+**Perfis:** `AdminOperacional`, `SuperAdmin`
+
+**Request (UpdateLoteDto):** campos parciais de `CreateLoteDto`
+
+**Response 200:** `Lote` atualizado
+
+**Erros:** `404` lote não encontrado · `409` código duplicado
+
+---
+
+### DELETE /obras/:id/quadras/:quadraId/lotes/:loteId — Excluir lote (soft-delete)
+
+**Perfis:** `AdminOperacional`, `SuperAdmin`
+
+**Response 204**
+
+**Erros:** `409` lote possui adjacências ativas ou demandas ativas
+
+---
+
+### GET /obras/:id/quadras/:quadraId/lotes/:loteId/adjacencias — Listar adjacências do lote
+
+**Perfis:** todos (leitura de contexto)
+
+**Response 200:** lista de `LoteAdjacencia` com `loteOrigemId`, `loteDestinoId` e dados descritivos do lote destino (`codigo`, `quadraCodigo`)
+
+---
+
+### POST /obras/:id/quadras/:quadraId/lotes/:loteId/adjacencias — Criar adjacência
+
+**Perfis:** `AdminOperacional`, `SuperAdmin`
+
+**Request (CreateLoteAdjacenciaDto):**
+```json
+{
+  "loteDestinoId": "uuid (obrigatório)"
+}
+```
+
+> A relação é bidirecional: ao criar `A → B`, o backend cria automaticamente `B → A`. A validação garante que os dois lotes pertencem à mesma obra.
+
+**Response 201:**
+```json
+{
+  "loteOrigemId": "uuid",
+  "loteDestinoId": "uuid"
+}
+```
+
+**Erros:** `400` `loteDestinoId` ausente · `404` lote destino não encontrado na obra · `409` adjacência já existente · `422` lote destino é o próprio lote origem
+
+---
+
+### DELETE /obras/:id/quadras/:quadraId/lotes/:loteId/adjacencias/:loteDestinoId — Remover adjacência
+
+**Perfis:** `AdminOperacional`, `SuperAdmin`
+
+> Remove a relação bidirecional: exclui tanto `A → B` quanto `B → A`.
+
+**Response 204**
+
+**Erros:** `404` adjacência não encontrada
+
+---
+
+### GET /obras/:id/locais-externos — Listar locais externos
+
+**Perfis:** todos (leitura de contexto)
+
+**Query params:** `?setorId=&tipo=&page=&limit=`
+
+**Response 200:** lista paginada de `LocalExterno` com `id`, `nome`, `tipo`, `setorOperacionalId`
+
+---
+
+### POST /obras/:id/locais-externos — Criar local externo
+
+**Perfis:** `AdminOperacional`, `SuperAdmin`
+
+**Request (CreateLocalExternoDto):**
+```json
+{
+  "nome": "string (obrigatório)",
+  "tipo": "string (obrigatório — ex.: PORTARIA, PULMAO, GARAGEM, OUTRO)",
+  "setorOperacionalId": "uuid (obrigatório)"
+}
+```
+
+**Response 201:**
+```json
+{
+  "id": "uuid",
+  "nome": "string",
+  "tipo": "string",
+  "setorOperacionalId": "uuid",
+  "obraId": "uuid"
+}
+```
+
+**Erros:** `400` campos obrigatórios ausentes · `404` `setorOperacionalId` não encontrado na obra · `409` nome duplicado no mesmo setor
+
+---
+
+### PATCH /obras/:id/locais-externos/:localExternoId — Atualizar local externo
+
+**Perfis:** `AdminOperacional`, `SuperAdmin`
+
+**Request (UpdateLocalExternoDto):** campos parciais de `CreateLocalExternoDto`
+
+**Response 200:** `LocalExterno` atualizado
+
+**Erros:** `404` local externo não encontrado · `409` nome duplicado · `422` `setorOperacionalId` de obra diferente
+
+---
+
+### DELETE /obras/:id/locais-externos/:localExternoId — Excluir local externo (soft-delete)
+
+**Perfis:** `AdminOperacional`, `SuperAdmin`
+
+**Response 204**
+
+**Erros:** `409` local externo possui demandas ativas
+
+---
+
+### GET /obras/:id/ajudantes — Listar ajudantes
+
+**Perfis:** `AdminOperacional`, `UsuarioInternoFGR`, `SuperAdmin`, `Operador` (leitura de contexto)
+
+**Query params:** `?search=&page=&limit=`
+
+**Response 200:** lista paginada de `Ajudante` com `id`, `nome`, `obraId`
+
+---
+
+### POST /obras/:id/ajudantes — Criar ajudante
+
+**Perfis:** `AdminOperacional`, `SuperAdmin`
+
+**Request (CreateAjudanteDto):**
+```json
+{
+  "nome": "string (obrigatório)"
+}
+```
+
+**Response 201:**
+```json
+{
+  "id": "uuid",
+  "nome": "string",
+  "obraId": "uuid"
+}
+```
+
+**Erros:** `400` campos obrigatórios ausentes · `409` nome duplicado na mesma obra
+
+---
+
+### PATCH /obras/:id/ajudantes/:ajudanteId — Atualizar ajudante
+
+**Perfis:** `AdminOperacional`, `SuperAdmin`
+
+**Request (UpdateAjudanteDto):** campos parciais de `CreateAjudanteDto`
+
+**Response 200:** `Ajudante` atualizado
+
+**Erros:** `404` ajudante não encontrado
+
+---
+
+### DELETE /obras/:id/ajudantes/:ajudanteId — Excluir ajudante (soft-delete)
+
+**Perfis:** `AdminOperacional`, `SuperAdmin`
+
+**Response 204**
+
+**Erros:** `409` ajudante possui turnos ativos vinculados
+
+---
+
+### GET /obras/:id/materiais — Listar materiais
+
+**Perfis:** todos (leitura de contexto)
+
+**Query params:** `?search=&risco=&page=&limit=`
+
+**Response 200:** lista paginada de `Material` com `id`, `nome`, `risco`
+
+---
+
+### POST /obras/:id/materiais — Criar material
+
+**Perfis:** `AdminOperacional`, `SuperAdmin`
+
+**Request (CreateMaterialDto):**
+```json
+{
+  "nome": "string (obrigatório)",
+  "risco": "string | null (opcional — classificação de risco, ex.: BAIXO, MEDIO, ALTO)"
+}
+```
+
+**Response 201:**
+```json
+{
+  "id": "uuid",
+  "nome": "string",
+  "risco": "string | null"
+}
+```
+
+**Erros:** `400` campos obrigatórios ausentes · `409` nome duplicado na mesma obra
+
+---
+
+### PATCH /obras/:id/materiais/:materialId — Atualizar material
+
+**Perfis:** `AdminOperacional`, `SuperAdmin`
+
+**Request (UpdateMaterialDto):** campos parciais de `CreateMaterialDto`
+
+**Response 200:** `Material` atualizado
+
+**Erros:** `404` material não encontrado · `409` nome duplicado
+
+---
+
+### DELETE /obras/:id/materiais/:materialId — Excluir material (soft-delete)
+
+**Perfis:** `AdminOperacional`, `SuperAdmin`
+
+**Response 204**
+
+**Erros:** `409` material possui demandas ativas vinculadas
 
 ---
 
@@ -657,7 +1153,7 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
 
 ### EmpreiteiraId no payload de criação de usuário Empreiteiro
 
-Ao criar um usuário com `perfil = Empreiteiro`, o payload de criação de usuário (endpoint a ser documentado em TODO item 7) deve incluir obrigatoriamente:
+Ao criar um usuário com `perfil = Empreiteiro`, o payload de `POST /usuarios` (seção 4b) deve incluir obrigatoriamente:
 
 ```json
 {
@@ -718,6 +1214,15 @@ Ao criar um usuário com `perfil = Empreiteiro`, o payload de criação de usuá
 | `OPR-003` | Operador | Check-in duplicado no mesmo turno |
 | `OPR-004` | Operador | Checkout sem expediente ativo |
 | `OPR-005` | Operador | Checkout bloqueado — demanda em `EM_ANDAMENTO` ou `PAUSADA` pendente de conclusão |
+| `OPR-006` | Operador | Ajudante já é o ajudante ativo do turno |
+| `OPR-007` | Operador | Ajudante em turno ativo com outro operador |
+| `REC-001` | Recurso espacial | Nome/código duplicado na mesma obra |
+| `REC-002` | Recurso espacial | Recurso possui dependências ativas (não pode ser excluído) |
+| `REC-003` | Recurso espacial | Adjacência já existente |
+| `REC-004` | Recurso espacial | Lote destino é o próprio lote origem |
+| `USR-001` | Usuário | Email duplicado |
+| `USR-002` | Usuário | Perfil hierárquico superior ao do solicitante |
+| `USR-003` | Usuário | `empreiteiraId` inválido para o perfil informado |
 | `AUTH-001` | Autenticação | Credenciais inválidas (mensagem genérica) |
 | `AUTH-002` | Autenticação | Token expirado |
 | `AUTH-003` | Autenticação | Perfil sem permissão (RBAC) |
