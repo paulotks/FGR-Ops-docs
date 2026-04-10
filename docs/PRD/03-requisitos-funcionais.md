@@ -107,6 +107,25 @@ O operador pode pausar uma demanda em `EM_ANDAMENTO`, registrando obrigatoriamen
 
 -> SPEC: [../SPEC/07-design-ui-logica.md#mapeamento-visual-de-estados-state-to-ui-mapping](../SPEC/07-design-ui-logica.md#mapeamento-visual-de-estados-state-to-ui-mapping)
 
+### `REQ-FUNC-012` Gestão de Empreiteiras e vínculo com usuário Empreiteiro
+
+O sistema deve suportar o cadastro, consulta, atualização e remoção (soft-delete) de `Empreiteiras` como entidade global — reutilizável entre obras e módulos futuros. O `AdminOperacional` e o `SuperAdmin` são os perfis autorizados a criar e editar. O perfil `Board` e o `UsuarioInternoFGR` possuem acesso de leitura. O `Empreiteiro` pode ler os dados da sua própria empreiteira.
+
+O cadastro de `Empreiteira` deve incluir:
+
+- **Nome** (obrigatório).
+- **CNPJ** (opcional no MVP; quando informado, deve ser único globalmente — preparado para tornar-se obrigatório em versão futura).
+- **Telefone**, **E-mail**, **Responsável**, **Endereço** (todos opcionais no MVP).
+
+Ao criar um usuário com perfil `Empreiteiro`, o `AdminOperacional` deve obrigatoriamente informar o `empreiteiraId` correspondente. Um usuário `Empreiteiro` sem vínculo com uma `Empreiteira` não pode ser criado. Uma `Empreiteira` pode ter múltiplos usuários `Empreiteiro` vinculados.
+
+O `Maquinario` deve registrar o tipo de propriedade (`proprietarioTipo: FGR | EMPREITEIRA`) e, quando `EMPREITEIRA`, referenciar a `Empreiteira` proprietária via `empreiteiraId`.
+
+> **DEC-016 (decidido — 2026-04-10):** `Empreiteira` promovida a entidade global (sem `obraId`); `User.empreiteiraId` como FK de vínculo; discriminador `proprietarioTipo` em `Maquinario`; sem FK permanente `operadorPadraoId` em `Maquinario`. Ver [`docs/audit/decisions-log.md#dec-016`](../audit/decisions-log.md#dec-016--empreiteira-global-vínculo-empreiteiro--empreiteira-e-modelo-de-propriedade-de-maquinario).
+
+-> SPEC: [../SPEC/02-modelo-dados.md#relacionamentos-e-regras-de-integridade](../SPEC/02-modelo-dados.md#relacionamentos-e-regras-de-integridade)
+-> SPEC: [../SPEC/08-api-contratos.md#6-empreiteiras-empreiteiras](../SPEC/08-api-contratos.md#6-empreiteiras-empreiteiras)
+
 ## Critérios de aceite relacionados
 
 - [REQ-ACE-002](05-criterios-aceite.md#maquina-de-estados-bloqueio-de-bypass-pos-conclusao)

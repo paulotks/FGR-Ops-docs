@@ -47,8 +47,8 @@ Como o motor é reativo, a demanda não pode permanecer indefinidamente sem inte
 
 | Nível | Vencimento | Canal principal | Destinatário | Escalação se sem ação | Mecanismo |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `MAXIMA` | 15 min | UI push de alta prioridade | Admin + Operador | `SuperAdmin` após +5 min | Event-driven |
-| `ELEVADA` | 45 min | UI push normal | `AdminOperacional` | `SuperAdmin` após +15 min | Event-driven |
+| `MAXIMA` | 15 min | WebSocket `DEMAND_QUEUED` + `SLA_ALERT` (ver [SPEC/06 §notificação](06-definicoes-complementares.md#mecanismo-notificacao-realtime)) | Admin + Operador | WebSocket `SLA_ESCALATION` para SuperAdmin após +5 min | Event-driven |
+| `ELEVADA` | 45 min | WebSocket `SLA_ALERT` | `AdminOperacional` | WebSocket `SLA_ESCALATION` para SuperAdmin após +15 min | Event-driven |
 | `NORMAL` | 120 min | Badge em dashboard | `AdminOperacional` | Apenas log auditável | Polling a cada 10 min |
 
 Regras adicionais:

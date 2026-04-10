@@ -305,6 +305,80 @@ Este registo centraliza as decisões de produto necessárias antes das correçõ
   - `TODO-correcoes-prd.md`: item 5 marcado como `[x]`.
   - `CLAUDE.md`: "Última decisão registrada" atualizada para DEC-015; "Próxima disponível" atualizada para DEC-016.
 
+## DEC-016 — Empreiteira global, vínculo Empreiteiro ↔ Empreiteira e modelo de propriedade de Maquinario
+
+- **Estado:** Decidido
+- **Data:** 2026-04-10
+- **Participantes:** Produto, Arquitetura
+- **Contexto:** O item 6 do TODO de correções PRD/SPEC (2026-04-09) exigia formalizar três aspectos inter-relacionados: (a) como o usuário `Empreiteiro` fica vinculado à entidade `Empreiteira`; (b) como o `Maquinario` registra sua propriedade (FGR ou terceirizada); (c) qual é o escopo de `Empreiteira` — por obra ou global. Adicionalmente, foi analisada a necessidade de um vínculo permanente `Maquinario → Operador`.
+- **Opções em análise:**
+  - Vínculo Empreiteiro: FK `empreiteiraId` diretamente em `User` vs entidade de perfil separada.
+  - Propriedade de Maquinario: (A) FK nullable `empreiteiraId` onde `null = FGR`; (B) discriminador explícito `proprietarioTipo` + `empreiteiraId` nullable.
+  - Operador em Maquinario: (A) `operadorPadraoId` FK permanente; (B) vínculo apenas via `RegistroExpediente` (dinâmico).
+  - Escopo Empreiteira: (A) tenant-scoped (com `obraId`); (B) global (sem `obraId`), reutilizável entre obras e módulos.
+- **Decisão:**
+  1. **Vínculo Empreiteiro ↔ Empreiteira:** `empreiteiraId` (UUID nullable) adicionado diretamente ao `User`. Campo obrigatório quando `perfil = Empreiteiro`, nulo para os demais perfis. O vínculo é estabelecido pelo `AdminOperacional` na criação do usuário (payload documentado em `SPEC/08`).
+  2. **Propriedade de Maquinario:** Opção B — `proprietarioTipo: enum(FGR, EMPREITEIRA)` (obrigatório) + `empreiteiraId: uuid | null` (obrigatório quando `proprietarioTipo = EMPREITEIRA`, nulo quando `FGR`). Campo `empresaProprietaria` (texto livre, DEC-010) removido e supersedido por este modelo estruturado.
+  3. **Operador em Maquinario:** Opção B — sem `operadorPadraoId`. O vínculo entre `Maquinario` e `Operador` é sempre dinâmico, gerenciado via `RegistroExpediente` por expediente. Um `operadorPadraoId` permanente criaria inconsistência quando o operador muda de máquina no turno.
+  4. **Escopo de Empreiteira:** Global (sem `obraId`). `Empreiteira` é entidade de catálogo reutilizável entre obras e futuros módulos (almoxarifado, IoT etc.). Campos adicionados ao MVP: `cnpj` (opcional; chave única global quando informado, preparado para futura obrigatoriedade), `telefone`, `email`, `responsavel`, `endereco`. A associação implícita a uma obra é derivada via `User` com `perfil = Empreiteiro` e `obraId` correspondente. Relação explícita N:M `Empreiteira ↔ Obra` adiada para Fase 2.
+- **Justificação:** FK direta em `User` evita entidade de perfil desnecessária para o MVP. O discriminador `proprietarioTipo` elimina a ambiguidade semântica entre "pertence à FGR" e "sem proprietário definido" que ocorreria com `empreiteiraId = null` sem discriminador. Escopo global preserva integridade referencial quando a mesma construtora terceirizada participar de múltiplas obras — CNPJ como chave única global impede duplicatas semânticas e prepara o terreno para futura reutilização cross-módulo (D4 se aplica internamente ao módulo, mas o catálogo de parceiros de negócio é naturalmente global). O vínculo `Maquinario → Operador` via `RegistroExpediente` é suficiente para relatórios e fila, sem criar rigidez operacional.
+- **Achados resolvidos:** TODO-correcoes-prd item 6 (vínculo Empreiteiro ↔ Empreiteira).
+- **Aplicação (2026-04-10):**
+  - `SPEC/02-modelo-dados.md`: `Empreiteira` promovida a global (removido `obraId`, adicionados `cnpj`/`telefone`/`email`/`responsavel`/`endereco`); `User` recebe `empreiteiraId` nullable; `Maquinario` recebe `proprietarioTipo` + `empreiteiraId`, remove `empresaProprietaria`; relações e regras de integridade atualizadas.
+  - `SPEC/08-api-contratos.md`: nova seção CRUD `Empreiteira` (`/empreiteiras`); payloads de criação e atualização de `Maquinario` atualizados; `empreiteiraId` adicionado ao payload de criação de usuário `Empreiteiro`.
+  - `PRD/03-requisitos-funcionais.md`: `REQ-FUNC-012` criado — CRUD de `Empreiteira` e vínculo com `User (Empreiteiro)`.
+  - `docs/PRD/_index.md`, `docs/traceability.md`: atualizados com `REQ-FUNC-012`.
+  - `TODO-correcoes-prd.md`: item 6 marcado como `[x]`.
+  - `CLAUDE.md`: "Última decisão registrada" atualizada para DEC-016; "Próxima disponível" atualizada para DEC-017.
+
+---
+
+## DEC-017 — Canal WebSocket como mecanismo único de notificação em tempo real no MVP
+
+- **Data:** 2026-04-10
+- **Contexto:** SPEC/03 referenciava "UI push de alta prioridade" e "UI push normal" para os níveis de SLA `MAXIMA` e `ELEVADA`, sem definir o canal técnico. O item 11 do TODO de correções do PRD exigia a especificação do mecanismo — tecnologia, payload, deduplicação e escalação.
+- **Decisão:**
+  1. **Transporte:** WebSocket (`wss://`) via NestJS Gateway — único canal de eventos em tempo real para o MVP. Não haverá Web Push API (notificações nativas de sistema operacional) nesta fase.
+  2. **Justificativa:** WebSocket já era mencionado em SPEC/06 para o sinal `INVALIDATE_QUEUE`. Unificar todos os eventos em um único gateway reduz a complexidade de infraestrutura. Web Push exigiria VAPID keys, service worker de push dedicado e gestão de subscrições por dispositivo — overhead desnecessário para um MVP em que o operador mantém o PWA aberto durante o expediente.
+  3. **Eventos canônicos definidos:**
+     - `DEMAND_QUEUED` — nova demanda entra na fila do operador (operadores)
+     - `SLA_ALERT` — SLA vencido, disparado uma única vez no `slaVencimentoEm` (operadores)
+     - `INVALIDATE_QUEUE` — invalida cache local da fila (operadores + admins)
+     - `SLA_ESCALATION` — escalação após +5 min (`MAXIMA`) ou +15 min (`ELEVADA`) sem ação (admins + SuperAdmin)
+     - `DEMAND_STATUS_CHANGED` — qualquer transição de estado de demanda (admins)
+  4. **Deduplicação:** `SLA_ALERT` disparado uma única vez por demanda; estado visual de SLA vencido persiste até transição de estado. `SLA_ESCALATION` não é deduplicado — cada etapa de escalação gera evento distinto.
+  5. **Escalação para SuperAdmin:** via mesmo canal WebSocket. Email ou canal externo adiados para Fase 2.
+  6. **Vibração PWA:** `DEMAND_QUEUED` com `prioridade = MAXIMA` aciona API Vibration (`[200, 100, 200]`).
+  7. **Degradação:** queda do WebSocket ativa o banner offline existente; fila permanece visível via cache stale; reconexão com back-off exponencial (1 s → 2 s → 4 s, máximo 30 s) seguida de reidratação via `GET /operadores/:id/fila`.
+- **Achados resolvidos:** TODO-correcoes-prd item 11.
+- **Aplicação (2026-04-10):**
+  - `SPEC/06-definicoes-complementares.md`: nova seção `## Mecanismo de notificação em tempo real` com transporte, autenticação, envelope, payloads por evento, regras de deduplicação e degradação graceful.
+  - `SPEC/03-fila-scoring-estados-sla.md`: tabela de SLA atualizada — "Canal principal" agora nomeia os eventos WebSocket e referencia SPEC/06; "Mecanismo" atualizado para `Event-driven (WebSocket, DEC-017)`.
+  - `TODO-correcoes-prd.md`: item 11 marcado como `[x]`.
+  - `CLAUDE.md`: "Última decisão registrada" atualizada para DEC-017; "Próxima disponível" atualizada para DEC-018.
+
+---
+
+## DEC-018 — Remoção da integração RH/Folha; denominador de REQ-MET-002 via sistema
+
+- **Estado:** Decidido
+- **Data:** 2026-04-10
+- **Contexto:** O item 12 do TODO de correções do PRD requeria definir o contrato de integração com o sistema de RH/Folha da FGR para alimentar o denominador de `REQ-MET-002` (adoção e engajamento operacional). Após revisão de escopo, decidiu-se que essa integração está fora do MVP.
+- **Decisão:**
+  1. A integração com sistema externo de RH/Folha é removida do escopo do MVP.
+  2. O denominador de `REQ-MET-002` (`operadores_cadastrados_quinzena`) passa a ser calculado diretamente a partir dos operadores cadastrados e ativos no sistema FGR-OPS para a obra (`User` com perfil `OPERADOR`, `deletadoEm IS NULL`, criados antes ou no último dia da quinzena).
+  3. A subsecção "Fonte do denominador e integração" em SPEC/06 é removida. O artefato de validação renomeia `total_folha` → `total_cadastrados`.
+  4. O campo `operadoresNaFolha` no contrato de `GET /relatorios/sla` (SPEC/08) é renomeado para `operadoresCadastrados`.
+  5. Integração com RH/Folha poderá ser endereçada numa fase futura como módulo independente do FGR-OPS.
+- **Justificativa:** Reduzir acoplamento externo no MVP. O denominador baseado no cadastro interno é suficiente para medir adoção em obras-piloto; refinamento com folha de pagamento pode ser adicionado na Fase 2 sem quebra de contrato.
+- **Achados resolvidos:** TODO-correcoes-prd item 12.
+- **Aplicação (2026-04-10):**
+  - `SPEC/06-definicoes-complementares.md`: denominador atualizado; subsecção "Fonte do denominador e integração" removida; `total_folha` → `total_cadastrados` na tabela do artefato de validação.
+  - `SPEC/08-api-contratos.md`: `operadoresNaFolha` → `operadoresCadastrados` em `GET /relatorios/sla`.
+  - `PRD/06-metricas-riscos.md`: `REQ-MET-002` — referência à "folha da quinzena" substituída por "operadores cadastrados e ativos no sistema".
+  - `TODO-correcoes-prd.md`: item 12 marcado como `[x]`.
+  - `CLAUDE.md`: "Última decisão registrada" atualizada para DEC-018; "Próxima disponível" atualizada para DEC-019.
+
 ---
 
 ## Fase 2 — Correcoes de achados importantes

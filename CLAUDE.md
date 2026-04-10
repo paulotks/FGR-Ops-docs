@@ -147,7 +147,7 @@ Checklist obrigatório para toda mudança documental antes de considerar estáve
 
 ### PRD
 - **7 módulos PRD** estáveis: `00-visao-escopo`, `01-usuarios-rbac`, `02-jornada-usuario`, `03-requisitos-funcionais`, `04-requisitos-nao-funcionais`, `05-criterios-aceite`, `06-metricas-riscos`
-- **REQ-IDs registrados:** CTX-001…003, OBJ-001…005, SCO-001…005, SCO-F2-001…006, SCO-GAT-001…004, RBAC-001…006, JOR-001…005, FUNC-001…010, NFR-001…007, ACE-001…006 + ACE-008, MET-001…003, RISK-001…002
+- **REQ-IDs registrados:** CTX-001…003, OBJ-001…005, SCO-001…005, SCO-F2-001…006, SCO-GAT-001…004, RBAC-001…006, JOR-001…005, FUNC-001…012, NFR-001…007, ACE-001…006 + ACE-008, MET-001…003, RISK-001…002
 - **Último prefixo não-sequencial:** REQ-ACE-007 marcado como cobertura arquitetural base em `SPEC/00`
 
 ### SPEC
@@ -155,8 +155,8 @@ Checklist obrigatório para toda mudança documental antes de considerar estáve
 - **Cobertura de rastreabilidade:** 62 cobertos, 2 parciais, 0 não cobertos (auditoria de 2026-03-26)
 
 ### Decisions
-- **Última decisão registrada:** DEC-015 (FK `setorOperacionalId` em `Quadra` e não-conflito com `Rua`)
-- **Próxima disponível:** DEC-016
+- **Última decisão registrada:** DEC-018 (Remoção da integração RH/Folha; denominador de REQ-MET-002 via sistema)
+- **Próxima disponível:** DEC-019
 
 ### Changes
 - **Pacotes OpsX ativos:** nenhum (diretório `docs/changes/` contém apenas `archive/` e `README.md`)

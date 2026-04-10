@@ -15,7 +15,7 @@ Percentual de horas em que a máquina está disponível mas sem demanda vinculad
 
 ### `REQ-MET-002` Adoção e engajamento operacional
 
-Razão entre o número de operadores que realizaram pelo menos 1 check-in ou ação no app e o número total de operadores ativos na folha da quinzena.
+Razão entre o número de operadores que realizaram pelo menos 1 check-in ou ação no app e o número total de operadores cadastrados e ativos no sistema para a obra na quinzena (DEC-018).
 
 - Baseline: `0%`, dado que o processo atual é analógico ou via rádio.
 - Meta MVP: `100%` dos operadores das obras-piloto a registrar todas as movimentações via sistema em até 2 meses.

@@ -1,6 +1,6 @@
 # Modelo de dados
 
-**Rastreio PRD:** `REQ-JOR-001`, `REQ-FUNC-003`, `REQ-FUNC-004`, `REQ-FUNC-006`, `REQ-FUNC-007`, `REQ-FUNC-010`, `REQ-NFR-004`, `REQ-MET-001`
+**Rastreio PRD:** `REQ-JOR-001`, `REQ-FUNC-003`, `REQ-FUNC-004`, `REQ-FUNC-006`, `REQ-FUNC-007`, `REQ-FUNC-010`, `REQ-FUNC-012`, `REQ-NFR-004`, `REQ-MET-001`
 
 Este módulo consolida as entidades principais do domínio, as relações entre recursos operacionais e as regras de integridade que sustentam o isolamento por obra e a rastreabilidade do Machinery Link.
 
@@ -9,10 +9,10 @@ Este módulo consolida as entidades principais do domínio, as relações entre 
 - **Core**: `User`, `Role` e `Obra`.
 - **Organização espacial**: `SetorOperacional` (macro-jurisdição alocável), `Rua`, `Quadra`, `Lote` e `LoteAdjacencia`, usados para inferir proximidade e restringir o motor de fila. `LocalExterno` representa localizações operacionais da obra fora da malha de Quadra/Lote (Portaria, Pulmão, Garagem, entre outros), cadastráveis por obra e vinculados a um `SetorOperacional`.
   - `Rua`: entidade de agrupamento espacial que contém múltiplas `Quadras`. Uma rua de obra tem, tipicamente, quadras (blocos) distribuídas ao longo de sua extensão — ex.: Quadra X e Quadra Y estão na Rua Z. No MVP, `Rua` é **descritiva**: não participa do algoritmo de adjacência nem do cálculo de score. Sua função primária é prover referência visual para o usuário identificar onde cada máquina está e evitar colisões entre equipamentos. O vínculo entre `Quadra` e `Rua` é feito via `ruaId` **nullable** em `Quadra`, de modo que obras sem ruas cadastradas continuam operando normalmente. Gerenciada pelo mesmo perfil que gerencia `Quadra` (`AdminOperacional`), sem permissões RBAC dedicadas no MVP. Participação no motor de adjacência está adiada para Fase 2 (DEC-012).
-- **Operacional**: `Empreiteira`.
+- **Operacional**: `Empreiteira` — entidade de catálogo **global** (sem `obraId`), reutilizável entre obras e módulos. Campos MVP: `nome` (obrigatório), `cnpj` (opcional, chave única global), `telefone`, `email`, `responsavel`, `endereco`. A associação implícita a uma obra é derivada pelos usuários com `perfil = Empreiteiro` e `obraId` correspondente (DEC-016).
 - **Maquinário e recursos**:
   - `TipoMaquinario`: categoria genérica que define capacidades base (ex.: escavadeira, motoniveladora). Catálogo global (sem `obraId`), com `nome` e `descricao` obrigatórios. Os serviços associados ao tipo são gerenciados via `Servico`.
-  - `Maquinario`: a máquina física, com `nome` (obrigatório), `placa` (opcional, para máquinas com registro veicular), `empresaProprietaria` (texto livre, obrigatório) e vínculo obrigatório a `TipoMaquinario`.
+  - `Maquinario`: a máquina física, com `nome` (obrigatório), `placa` (opcional, para máquinas com registro veicular), `proprietarioTipo` (enum `FGR | EMPREITEIRA`, obrigatório) e `empreiteiraId` (FK obrigatório quando `proprietarioTipo = EMPREITEIRA`, nulo quando `FGR`) e vínculo obrigatório a `TipoMaquinario`. O vínculo com o operador que opera a máquina é sempre dinâmico, gerenciado via `RegistroExpediente` — sem FK permanente (DEC-016).
   - `Ajudante`: recurso humano vinculado à obra sem credencial própria.
   - `Operador`: usuário com perfil `OPERADOR`, vinculado em relação N:M aos `TipoMaquinario` que está autorizado a operar.
 - **Catálogo**:
@@ -49,6 +49,7 @@ erDiagram
         string nome
         string perfil
         uuid obraId
+        uuid empreiteiraId
     }
     SetorOperacional {
         uuid id
@@ -86,7 +87,11 @@ erDiagram
     Empreiteira {
         uuid id
         string nome
-        uuid obraId
+        string cnpj
+        string telefone
+        string email
+        string responsavel
+        string endereco
         timestamp deletadoEm
     }
     TipoMaquinario {
@@ -98,7 +103,8 @@ erDiagram
         uuid id
         string nome
         string placa
-        string empresaProprietaria
+        string proprietarioTipo
+        uuid empreiteiraId
         uuid tipoMaquinarioId
         uuid obraId
         timestamp deletadoEm
@@ -188,8 +194,9 @@ erDiagram
     Obra ||--o{ LocalExterno : "contém"
     SetorOperacional ||--o{ Quadra : "jurisdição"
     Rua ||--o{ Quadra : "contém"
-    Obra ||--o{ Empreiteira : "contém"
+    User }o--o| Empreiteira : "vínculo de empreiteiro"
     Obra ||--o{ Maquinario : "contém"
+    Maquinario }o--o| Empreiteira : "proprietária"
     Obra ||--o{ Ajudante : "contém"
     SetorOperacional ||--o{ LocalExterno : "jurisdição"
     Quadra ||--o{ Lote : "contém"
@@ -221,6 +228,9 @@ erDiagram
 - **Catálogo de serviços por tipo**: `Servico` está vinculado a `TipoMaquinario` (não à instância física `Maquinario`). Um mesmo tipo pode oferecer vários serviços. A filtragem mútua entre serviço e maquinário é feita pela correspondência de `TipoMaquinario`: ao selecionar um serviço, a UI restringe os maquinários disponíveis àqueles do mesmo tipo; ao selecionar um maquinário, restringe os serviços àqueles do seu tipo.
 - **Jurisdição de `Quadra`** (DEC-015): o campo `setorOperacionalId` em `Quadra` é **obrigatório e não-nulo**. Ao criar ou mover uma `Quadra`, o sistema valida que o `SetorOperacional` informado pertence à mesma `Obra`. A demanda deriva automaticamente `setorOperacionalId` a partir do `quadraId` selecionado pelo empreiteiro — esse campo nunca é preenchido manualmente pelo usuário. `ruaId` em `Quadra` continua nullable (Rua é puramente descritiva e não impacta o motor de fila).
 - **Escopo de tenant**: toda entidade tenant-scoped contém obrigatoriamente `obraId`.
+- **Propriedade de `Maquinario`** (DEC-016): `proprietarioTipo` é obrigatório com valores `FGR` ou `EMPREITEIRA`. Quando `proprietarioTipo = EMPREITEIRA`, `empreiteiraId` é obrigatório e deve referenciar uma `Empreiteira` existente. Quando `proprietarioTipo = FGR`, `empreiteiraId` deve ser nulo. O campo `empresaProprietaria` (texto livre, DEC-010) foi removido e supersedido por este modelo estruturado.
+- **Vínculo `Empreiteiro` ↔ `Empreiteira`** (DEC-016): `User.empreiteiraId` é obrigatório quando `perfil = Empreiteiro` e deve referenciar uma `Empreiteira` global existente. Para todos os demais perfis, o campo é nulo. O vínculo é estabelecido pelo `AdminOperacional` na criação do usuário.
+- **Escopo global de `Empreiteira`** (DEC-016): `Empreiteira` não possui `obraId` — é entidade de catálogo global reutilizável entre obras e futuros módulos. O CNPJ, quando informado, é chave única global (índice único). A associação implícita a uma obra é derivada pelos `User` com `perfil = Empreiteiro` e `obraId` correspondente. A relação explícita N:M `Empreiteira ↔ Obra` fica para Fase 2.
 - **Soft-delete**: `Demanda`, `Maquinario` e `Empreiteira` nunca são purgados fisicamente; o sistema utiliza `deletadoEm` para preservar histórico.
 - **Auditabilidade transacional**: qualquer manipulação, avanço, cancelamento ou alteração da `Demanda` gera escrita não destrutiva em `DemandaLog`.
 - **Atributos temporais da demanda** (`REQ-FUNC-007`): a `Demanda` persiste obrigatoriamente `iniciadoEm` (timestamp de transição para `EM_ANDAMENTO`), `finalizadoEm` (timestamp de transição para `CONCLUIDA`) e `tempoExecucaoMs` (campo calculado como `finalizadoEm - iniciadoEm` em milissegundos, persistido no momento da conclusão). Em cenários offline, os timestamps de origem do dispositivo prevalecem sobre os de sincronização (conforme estratégia PWA em [06-definicoes-complementares.md](06-definicoes-complementares.md#estrategia-pwa-offline)).

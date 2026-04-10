@@ -6,7 +6,7 @@ area: Backend / Integração
 
 # Contratos de API REST
 
-**Rastreio PRD:** `REQ-NFR-005`, `REQ-NFR-006`, `REQ-NFR-007`, `REQ-FUNC-001`, `REQ-FUNC-002`, `REQ-FUNC-003`, `REQ-FUNC-004`, `REQ-FUNC-005`, `REQ-FUNC-006`, `REQ-FUNC-007`, `REQ-FUNC-008`, `REQ-FUNC-009`, `REQ-FUNC-010`, `REQ-RBAC-001…006`
+**Rastreio PRD:** `REQ-NFR-005`, `REQ-NFR-006`, `REQ-NFR-007`, `REQ-FUNC-001`, `REQ-FUNC-002`, `REQ-FUNC-003`, `REQ-FUNC-004`, `REQ-FUNC-005`, `REQ-FUNC-006`, `REQ-FUNC-007`, `REQ-FUNC-008`, `REQ-FUNC-009`, `REQ-FUNC-010`, `REQ-FUNC-011`, `REQ-FUNC-012`, `REQ-RBAC-001…006`
 
 Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os schemas de request/response são validados via **Zod** ou **Valibot**, partilhados com o frontend Angular 20 através dos pacotes `packages/types` no monorepo (D1).
 
@@ -278,6 +278,36 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
 
 **Response 201:** `RegistroExpediente` criado com `id`, `inicioEm`
 
+**Erros:** `409 OPR-003` check-in duplicado no mesmo turno
+
+---
+
+### POST /operadores/:id/checkout — Checkout de expediente
+
+**Rastreio PRD:** `REQ-FUNC-004`
+
+**Perfil:** `Operador`
+
+**Request:**
+```json
+{
+  "ajudanteId": "uuid | null"
+}
+```
+
+> Campo `ajudanteId` opcional — usado apenas para registrar o ajudante ativo no encerramento, se diferente do informado no check-in.
+
+**Response 200:**
+```json
+{
+  "expedienteId": "uuid",
+  "fimEm": "ISO8601",
+  "totalDemandas": "number"
+}
+```
+
+**Erros:** `404 OPR-004` sem expediente ativo · `409 OPR-005` demanda em `EM_ANDAMENTO` ou `PAUSADA` pendente de conclusão — encerrar ou retornar a demanda antes do checkout
+
 ---
 
 ## 5. Obras e recursos espaciais (`/obras`)
@@ -291,6 +321,113 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
 ### GET /obras/:id/setores — Setores operacionais
 
 **Response 200:** lista de `SetorOperacional` com `quadras[]` e `locaisExternos[]`
+
+---
+
+### GET /obras/:id/fila — Fila global da obra (kanban administrativo)
+
+**Rastreio PRD:** `REQ-FUNC-001`, `REQ-FUNC-002`, `REQ-FUNC-008`
+
+**Perfis:** `AdminOperacional`, `UsuarioInternoFGR`, `SuperAdmin`
+
+> Corresponde ao kanban em tempo real descrito em [07-design-ui-logica.md](07-design-ui-logica.md). Retorna todas as demandas ativas da obra com posição de fila, score e status de SLA, permitindo supervisão e filtragem cruzada.
+
+**Query params:** `?status=&setorId=&operadorId=&prioridade=&page=&limit=`
+
+| Param | Tipo | Descrição |
+|-------|------|-----------|
+| `status` | `string` | Filtrar por estado (`PENDENTE`, `EM_ANDAMENTO`, `PAUSADA`, `AGENDADA`, `PENDENTE_APROVACAO`) |
+| `setorId` | `uuid` | Filtrar por setor operacional |
+| `operadorId` | `uuid` | Filtrar por operador alocado |
+| `prioridade` | `string` | Filtrar por nível SLA (`NORMAL`, `ELEVADA`, `MAXIMA`) |
+| `page` | `number` | Página (padrão 1) |
+| `limit` | `number` | Itens por página (padrão 20, máx 100) |
+
+**Response 200:**
+```json
+{
+  "data": [
+    {
+      "demandaId": "uuid",
+      "posicao": "number",
+      "score": "number",
+      "status": "PENDENTE | EM_ANDAMENTO | PAUSADA | AGENDADA | PENDENTE_APROVACAO",
+      "prioridade": "NORMAL | ELEVADA | MAXIMA",
+      "slaVencimentoEm": "ISO8601 | null",
+      "slaViolado": "boolean",
+      "operadorId": "uuid | null",
+      "operadorNome": "string | null",
+      "setorOperacionalId": "uuid",
+      "empreiteiroNome": "string",
+      "servicoNome": "string",
+      "criadoEm": "ISO8601"
+    }
+  ],
+  "total": "number",
+  "page": "number",
+  "limit": "number"
+}
+```
+
+**Erros:** `404` obra não encontrada no tenant
+
+---
+
+### PATCH /obras/:id/configuracoes — Atualizar configurações da obra
+
+**Rastreio PRD:** `REQ-FUNC-001`, `REQ-FUNC-002`, `REQ-FUNC-004`
+
+**Perfis:** `AdminOperacional`, `SuperAdmin`
+
+**Request (UpdateObraConfiguracoesDto):**
+```json
+{
+  "expedienteInicio": "HH:MM | null",
+  "expedienteFim": "HH:MM | null",
+  "pesoAdjacencia": "number (0.0–1.0) | null",
+  "pesoServico": "number (0.0–1.0) | null",
+  "pesoMaterial": "number (0.0–1.0) | null"
+}
+```
+
+> Campos omitidos mantêm o valor atual. Quando informados, os três pesos (`pesoAdjacencia + pesoServico + pesoMaterial`) devem somar exatamente `1.0`. Padrão do sistema: `W_adj = 0.5`, `W_srv = 0.3`, `W_mat = 0.2` (conforme [03-fila-scoring-estados-sla.md](03-fila-scoring-estados-sla.md)).
+
+**Response 200:**
+```json
+{
+  "obraId": "uuid",
+  "expedienteInicio": "HH:MM",
+  "expedienteFim": "HH:MM",
+  "pesoAdjacencia": "number",
+  "pesoServico": "number",
+  "pesoMaterial": "number"
+}
+```
+
+**Erros:** `400` pesos não somam 1.0 · `404` obra não encontrada · `422` `expedienteInicio` igual ou posterior a `expedienteFim`
+
+---
+
+### POST /obras/:id/fila/recalcular — Forçar recálculo de scores pendentes
+
+**Rastreio PRD:** `REQ-FUNC-001`, `REQ-FUNC-002`
+
+**Perfis:** `AdminOperacional`, `SuperAdmin`
+
+> Força o recálculo dos scores de todas as demandas em `PENDENTE` e `AGENDADA` da obra, aplicando os pesos de fila atuais. Útil após alteração de configurações (`PATCH /obras/:id/configuracoes`) ou ajustes manuais de adjacência. Mencionado em [03-fila-scoring-estados-sla.md](03-fila-scoring-estados-sla.md).
+
+**Request:** sem body
+
+**Response 200:**
+```json
+{
+  "obraId": "uuid",
+  "demandasRecalculadas": "number",
+  "recalculadoEm": "ISO8601"
+}
+```
+
+**Erros:** `404` obra não encontrada
 
 ---
 
@@ -348,7 +485,7 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
 
 **Query params:** `?disponivel=&tipoId=`
 
-**Response 200:** lista de `Maquinario` com `id`, `nome`, `placa`, `empresaProprietaria`, `tipoMaquinario`, `servicos[]`
+**Response 200:** lista de `Maquinario` com `id`, `nome`, `placa`, `proprietarioTipo`, `empreiteiraId`, `empreiteira` (objeto quando `proprietarioTipo = EMPREITEIRA`), `tipoMaquinario`, `servicos[]`
 
 ---
 
@@ -360,13 +497,14 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
 ```json
 {
   "nome": "string (obrigatório)",
-  "empresaProprietaria": "string (obrigatório)",
+  "proprietarioTipo": "FGR | EMPREITEIRA (obrigatório)",
+  "empreiteiraId": "uuid | null (obrigatório quando proprietarioTipo = EMPREITEIRA; null quando FGR)",
   "placa": "string | null (opcional)",
   "tipoMaquinarioId": "uuid (obrigatório)"
 }
 ```
 
-**Response 201:** `Maquinario` criado com `id`, `nome`, `placa`, `empresaProprietaria`, `tipoMaquinarioId`
+**Response 201:** `Maquinario` criado com `id`, `nome`, `placa`, `proprietarioTipo`, `empreiteiraId`, `tipoMaquinarioId`
 
 **Erros:** `400` campos obrigatórios ausentes · `404` `tipoMaquinarioId` não encontrado
 
@@ -445,7 +583,93 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
 
 ---
 
-## 6. Relatórios e métricas (`/relatorios`)
+## 6. Empreiteiras (`/empreiteiras`)
+
+**Rastreio PRD:** `REQ-FUNC-012`
+
+`Empreiteira` é entidade de catálogo global (sem escopo por obra). Para `AdminOperacional`, a listagem retorna as empreiteiras cujos usuários `Empreiteiro` pertencem à obra do header `X-Obra-Id`. Para `SuperAdmin` e `Board`, retorna todas.
+
+---
+
+### GET /empreiteiras — Listar empreiteiras
+
+**Perfis:** `SuperAdmin` (todas), `Board` (todas, read-only), `AdminOperacional` (escopo da obra via `X-Obra-Id`), `UsuarioInternoFGR` (escopo da obra, read-only)
+
+**Query params:** `?search=&page=&limit=`
+
+**Response 200:** lista paginada com `id`, `nome`, `cnpj`, `telefone`, `email`, `responsavel`, `endereco`
+
+---
+
+### POST /empreiteiras — Criar empreiteira
+
+**Perfis:** `SuperAdmin`, `AdminOperacional`
+
+**Request (CreateEmpreiteiraDto):**
+```json
+{
+  "nome": "string (obrigatório)",
+  "cnpj": "string | null (opcional; único global quando informado)",
+  "telefone": "string | null (opcional)",
+  "email": "string | null (opcional)",
+  "responsavel": "string | null (opcional)",
+  "endereco": "string | null (opcional)"
+}
+```
+
+**Response 201:** `Empreiteira` criada com `id`, `nome`, `cnpj`
+
+**Erros:** `400` campos obrigatórios ausentes · `409` CNPJ já cadastrado globalmente
+
+---
+
+### GET /empreiteiras/:id — Detalhe de empreiteira
+
+**Perfis:** `SuperAdmin`, `Board`, `AdminOperacional`, `UsuarioInternoFGR`, `Empreiteiro` (própria empreiteira)
+
+**Response 200:** `Empreiteira` completa com todos os campos
+
+**Erros:** `404` não encontrada · `403` Empreiteiro tentando acessar empreiteira diferente da sua
+
+---
+
+### PATCH /empreiteiras/:id — Atualizar empreiteira
+
+**Perfis:** `SuperAdmin`, `AdminOperacional`
+
+**Request (UpdateEmpreiteiraDto):** campos parciais de `CreateEmpreiteiraDto`
+
+**Response 200:** `Empreiteira` atualizada
+
+**Erros:** `404` não encontrada · `409` CNPJ duplicado
+
+---
+
+### DELETE /empreiteiras/:id — Excluir empreiteira (soft-delete)
+
+**Perfis:** `SuperAdmin`, `AdminOperacional`
+
+**Response 204**
+
+**Erros:** `409` empreiteira possui usuários `Empreiteiro` ativos ou demandas em andamento vinculadas
+
+---
+
+### EmpreiteiraId no payload de criação de usuário Empreiteiro
+
+Ao criar um usuário com `perfil = Empreiteiro`, o payload de criação de usuário (endpoint a ser documentado em TODO item 7) deve incluir obrigatoriamente:
+
+```json
+{
+  "empreiteiraId": "uuid (obrigatório quando perfil = Empreiteiro)"
+}
+```
+
+**Validação:** `empreiteiraId` referenciado deve existir (não deletado). Para todos os demais perfis, o campo deve ser omitido ou nulo.
+
+---
+
+## 7. Relatórios e métricas (`/relatorios`)
 
 ### GET /relatorios/sla — Métricas de SLA
 
@@ -461,7 +685,7 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
   "atendimentoNoPrazo": "number",
   "taxaAtendimento": "number (0-1)",
   "operadoresAtivos": "number (numerador REQ-MET-002)",
-  "operadoresNaFolha": "number (denominador REQ-MET-002)",
+  "operadoresCadastrados": "number (denominador REQ-MET-002 — operadores cadastrados e ativos no sistema para a obra na quinzena)",
   "engajamentoOperacional": "number (0-1)"
 }
 ```
@@ -480,7 +704,7 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
 
 ---
 
-## 7. Erros operacionais por domínio
+## 8. Erros operacionais por domínio
 
 | Código | Domínio | Causa |
 |--------|---------|-------|
@@ -492,6 +716,8 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
 | `OPR-001` | Operador | Sem expediente ativo para esta ação |
 | `OPR-002` | Operador | Operador fora do setor da demanda (aviso — não bloqueio em alocação manual) |
 | `OPR-003` | Operador | Check-in duplicado no mesmo turno |
+| `OPR-004` | Operador | Checkout sem expediente ativo |
+| `OPR-005` | Operador | Checkout bloqueado — demanda em `EM_ANDAMENTO` ou `PAUSADA` pendente de conclusão |
 | `AUTH-001` | Autenticação | Credenciais inválidas (mensagem genérica) |
 | `AUTH-002` | Autenticação | Token expirado |
 | `AUTH-003` | Autenticação | Perfil sem permissão (RBAC) |
@@ -500,7 +726,7 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
 
 ---
 
-## 8. Rate limiting — resumo
+## 9. Rate limiting — resumo
 
 | Endpoint | Limite | Janela | Bloqueio |
 |----------|--------|--------|----------|
