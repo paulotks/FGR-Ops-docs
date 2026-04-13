@@ -20,7 +20,7 @@ A herança está suprimida em prol de garantias granulares imutavelmente pré-fo
 1. **SuperAdmin**: bypass multi-tenant; visão panóptica do ecossistema.
 2. **Board (Diretoria)**: perfil focado na macrogestão (`Role: BOARD`). Bypass multi-tenant passivo via relatórios e dashboards; guard-access aos verbos HTTP restritos prioritariamente a `GET` e analytics/reports.
 3. **AdminOperacional**: administra uma ou N obras. Capaz de realizar alocações manuais em `CreateDemandaDto` e lote `CreateMultipleDemandasDto`.
-4. **UsuarioInternoFGR**: visualiza relatórios, gerencia contestações na máquina de estados dentro do seu tenant e pode escolher operadores manualmente na criação de demanda.
+4. **UsuarioInternoFGR** (Gerentes, Engenheiros, Encarregados de Obra): acesso ao painel web completo do módulo Machinery-Link para visibilidade gerencial (leitura total); acesso ao aplicativo mobile para criação de demandas simples (view equivalente ao `Empreiteiro`, sem pré-seleção de operador). Não pode cancelar, redistribuir ou realocar demandas, criar agendamentos, nem gerir cadastros operacionais. (DEC-020)
 5. **Empreiteiro**: enclausurado nas demandas da sua autoria.
 6. **Operador** (sinônimo: Operador de Maquinário): PWA em campo via expediente focado, ordenação fluida e sem travas de interface cega ("blindagem"). Vê apenas a fila do motor preordenada dinamicamente.
 
@@ -105,21 +105,21 @@ Os perfis assinalados com `cross` têm autorização de atuar ignorando restriç
 | `machinery:demanda:read` | cross | cross | ✓ | ✓ | ✓*[2] | ✓*[3] |
 | `machinery:demanda:update` | ✓ | ✗ | ✓ | ✓ | ✓*[4] | ✗ |
 | `machinery:demanda:delete` | ✓ | ✗ | ✗ | ✗ | ✗ | ✗ |
-| `machinery:demanda:cancel` | ✓ | ✗ | ✓ | ✓ | ✓*[4] | ✗ |
-| `machinery:demanda:cancel-request` | ✗ | ✗ | ✗ | ✗ | ✗ | ✓*[5] |
-| `machinery:demanda:approve` | ✓ | ✗ | ✓ | ✓ | ✗ | ✗ |
-| `machinery:demanda:reject` | ✓ | ✗ | ✓ | ✓ | ✗ | ✗ |
-| `machinery:demanda:allocate` | ✓ | ✗ | ✓ | ✓ | ✗ | ✗ |
+| `machinery:demanda:cancel` | ✓ | ✗ | ✓ | ✗ | ✓*[4] | ✓*[7] |
+| `machinery:demanda:cancel-request` | — | — | — | — | — | — |
+| `machinery:demanda:approve` | — | — | — | — | — | — |
+| `machinery:demanda:reject` | — | — | — | — | — | — |
+| `machinery:demanda:allocate` | ✓ | ✗ | ✓ | ✗ | ✗ | ✗ |
 | `machinery:demanda:export` | cross | cross | ✓ | ✓ | ✗ | ✗ |
 | `machinery:demanda-grupo:create` | ✓ | ✗ | ✓ | ✓ | ✓ | ✗ |
 | `machinery:demanda-grupo:read` | cross | cross | ✓ | ✓ | ✓*[2] | ✗ |
 | `machinery:demanda-grupo:update` | ✓ | ✗ | ✓ | ✓ | ✓*[4] | ✗ |
 | `machinery:demanda-grupo:delete` | ✓ | ✗ | ✗ | ✗ | ✗ | ✗ |
-| `machinery:demanda-grupo:cancel` | ✓ | ✗ | ✓ | ✓ | ✓*[4] | ✗ |
+| `machinery:demanda-grupo:cancel` | ✓ | ✗ | ✓ | ✗ | ✓*[4] | ✗ |
 | `machinery:demanda-grupo:cancel-request` | — | — | — | — | — | — |
 | `machinery:demanda-grupo:approve` | — | — | — | — | — | — |
 | `machinery:demanda-grupo:reject` | — | — | — | — | — | — |
-| `machinery:demanda-grupo:allocate` | ✓ | ✗ | ✓ | ✓ | ✗ | ✗ |
+| `machinery:demanda-grupo:allocate` | ✓ | ✗ | ✓ | ✗ | ✗ | ✗ |
 | `machinery:demanda-grupo:export` | cross | cross | ✓ | ✓ | ✗ | ✗ |
 | `machinery:expediente:create` | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ |
 | `machinery:expediente:read` | cross | cross | ✓ | ✓ | ✗ | ✓*[3] |
@@ -212,13 +212,13 @@ Os perfis assinalados com `cross` têm autorização de atuar ignorando restriç
 | `machinery:relatorio:allocate` | — | — | — | — | — | — |
 | `machinery:relatorio:export` | cross | cross | ✓ | ✓ | ✗ | ✗ |
 | `machinery:solicitacao-cancelamento:create` | — | — | — | — | — | — |
-| `machinery:solicitacao-cancelamento:read` | cross | cross | ✓ | ✓ | ✗ | ✓*[5] |
+| `machinery:solicitacao-cancelamento:read` | — | — | — | — | — | — |
 | `machinery:solicitacao-cancelamento:update` | — | — | — | — | — | — |
 | `machinery:solicitacao-cancelamento:delete` | — | — | — | — | — | — |
 | `machinery:solicitacao-cancelamento:cancel` | — | — | — | — | — | — |
 | `machinery:solicitacao-cancelamento:cancel-request` | — | — | — | — | — | — |
-| `machinery:solicitacao-cancelamento:approve` | ✓ | ✗ | ✓ | ✓ | ✗ | ✗ |
-| `machinery:solicitacao-cancelamento:reject` | ✓ | ✗ | ✓ | ✓ | ✗ | ✗ |
+| `machinery:solicitacao-cancelamento:approve` | — | — | — | — | — | — |
+| `machinery:solicitacao-cancelamento:reject` | — | — | — | — | — | — |
 | `machinery:solicitacao-cancelamento:allocate` | — | — | — | — | — | — |
 | `machinery:solicitacao-cancelamento:export` | — | — | — | — | — | — |
 
@@ -226,8 +226,8 @@ Os perfis assinalados com `cross` têm autorização de atuar ignorando restriç
 [2] Permitido estritamente para leitura de registros da sua autoria ou inerentes ao seu cadastro/entidade.
 [3] Permitido apenas se o operador autenticado estiver a agir sobre o seu próprio expediente ou sobre demandas visíveis ativamente alocadas na fila.
 [4] Permitido ao `Empreiteiro` apenas se a demanda for da sua autoria e estritamente enquanto estiver no estado inicial `PENDENTE`.
-[5] Permitido estritamente sobre a demanda pela qual está alocado em `EM_ANDAMENTO` ou sobre a qual emitiu uma solicitação de cancelamento em `PENDENTE_APROVACAO`.
 [6] Permitido apenas para consultar relatórios formatados ou metadados do seu próprio vínculo.
+[7] Permitido ao `Operador` apenas sobre a demanda que está atualmente em `EM_ANDAMENTO` sob sua responsabilidade; justificativa obrigatória (DEC-019).
 
 ## Matriz de permissões condicionadas ao estado da demanda (Lacuna 2)
 
@@ -235,21 +235,19 @@ A tabela abaixo exibe exaustivamente o cruzamento do recurso `demanda` por `Esta
 
 | Estado | Ação | Perfis autorizados | Condição adicional |
 | :--- | :--- | :--- | :--- |
-| `[*]` (nulo) | `create` | `SuperAdmin`, `AdminOperacional`, `UsuarioInternoFGR`, `Empreiteiro` | Cria e transita o fluxo em `PENDENTE`. Caso o payload possua `dataAgendada` e seja emitido por admin, cai em `AGENDADA`. |
-| `AGENDADA` | `update` | `SuperAdmin`, `AdminOperacional`, `UsuarioInternoFGR` | Permite correções do agendamento, do horário cravado ou realocações manuais. |
-| `AGENDADA` | `cancel` | `SuperAdmin`, `AdminOperacional`, `UsuarioInternoFGR` | Cancela diretamente a demanda ainda dormente e futura da esteira. |
-| `AGENDADA` | `allocate` / `antecipar` | `SuperAdmin`, `AdminOperacional`, `UsuarioInternoFGR` | Bypass manual coercivo injetando preemptivamente o agendamento em `PENDENTE` em tempo real. |
+| `[*]` (nulo) | `create` | `SuperAdmin`, `AdminOperacional`, `UsuarioInternoFGR`, `Empreiteiro` | Cria e transita o fluxo em `PENDENTE`. Apenas `AdminOperacional` e `SuperAdmin` podem incluir `dataAgendada` para cair em `AGENDADA` (DEC-020). |
+| `AGENDADA` | `update` | `SuperAdmin`, `AdminOperacional` | Permite correções do agendamento, do horário cravado ou realocações manuais. |
+| `AGENDADA` | `cancel` | `SuperAdmin`, `AdminOperacional` | Cancela diretamente a demanda ainda dormente e futura da esteira. Justificativa obrigatória no log. |
+| `AGENDADA` | `allocate` / `antecipar` | `SuperAdmin`, `AdminOperacional` | Bypass manual coercivo injetando preemptivamente o agendamento em `PENDENTE` em tempo real. |
 | `[*]` | `read` / `export` | `SuperAdmin`, `Board`, `AdminOperacional`, `UsuarioInternoFGR`, `Empreiteiro`, `Operador` | Visualização geral ou condicional ao perfil; `Operador` e `Empreiteiro` restritos à própria posse. |
 | `PENDENTE` | `update` | `SuperAdmin`, `AdminOperacional`, `UsuarioInternoFGR`, `Empreiteiro` | Administradores podem corrigir alocações etc.; `Empreiteiro` pode alterar ordens exclusivamente criadas por si. |
-| `PENDENTE` | `cancel` | `SuperAdmin`, `AdminOperacional`, `UsuarioInternoFGR`, `Empreiteiro` | Transita para `CANCELADA`. Justificativa sempre guardada no log. |
-| `PENDENTE` | `allocate` | `SuperAdmin`, `AdminOperacional`, `UsuarioInternoFGR` | Bypass manual coercivo (Regra Zero), injetando `operadorAlocadoId`. |
+| `PENDENTE` | `cancel` | `SuperAdmin`, `AdminOperacional`, `Empreiteiro` | Transita para `CANCELADA`. Justificativa sempre guardada no log. |
+| `PENDENTE` | `allocate` | `SuperAdmin`, `AdminOperacional` | Bypass manual coercivo (Regra Zero), injetando `operadorAlocadoId`. |
 | `PENDENTE` | `iniciar` | `Operador` | Permite engajamento estritamente ao operador que recebeu a demanda como topo da fila ou por alocação explícita. |
 | `EM_ANDAMENTO` | `update` | `SuperAdmin`, `AdminOperacional`, `UsuarioInternoFGR` | Útil para corrigir metadados sem devolver o serviço em execução. |
 | `EM_ANDAMENTO` | `concluir` | `Operador` | Transita terminalmente para `CONCLUIDA`; restrito ao operador atualmente vinculado. |
-| `EM_ANDAMENTO` | `cancel-request` | `Operador` | Invoca a transição `solicitar_cancelamento` para `PENDENTE_APROVACAO`. |
-| `EM_ANDAMENTO` | `devolver` | `SuperAdmin`, `AdminOperacional`, `UsuarioInternoFGR` | Força administrativa que aliena o operador da execução e reinjeta a demanda após `RETORNADA`. |
-| `PENDENTE_APROVACAO` | `approve` | `SuperAdmin`, `AdminOperacional`, `UsuarioInternoFGR` | Acata a solicitação de cancelamento e transita definitivamente para `CANCELADA`. |
-| `PENDENTE_APROVACAO` | `reject` | `SuperAdmin`, `AdminOperacional`, `UsuarioInternoFGR` | Rejeita formalmente o pedido do operador e devolve o fluxo a `EM_ANDAMENTO`. |
+| `EM_ANDAMENTO` | `cancel` | `Operador`, `AdminOperacional`, `SuperAdmin` | Transita diretamente para `CANCELADA` com justificativa obrigatória. Para o `Operador`, restrito à demanda sob sua responsabilidade (DEC-019). |
+| `EM_ANDAMENTO` | `devolver` | `SuperAdmin`, `AdminOperacional` | Força administrativa que aliena o operador da execução e reinjeta a demanda após `RETORNADA`. |
 | `CONCLUIDA` | mutação | nenhum | Demanda terminal concluída para uso contábil e de medição; ações reescreventes, operacionais e destrutivas perdem validade. |
 | `CANCELADA` | mutação | nenhum | Demanda finalizada como supressa; impede modificações subsequentes. |
 

@@ -60,29 +60,18 @@ flowchart TD
     P3 --> F1
 ```
 
-## Subfluxo — solicitação de cancelamento pelo operador
+## Subfluxo — cancelamento direto pelo operador (DEC-019)
 
 ```mermaid
 sequenceDiagram
     actor Op as Operador
     participant SM as Máquina de Estados
-    participant Ger as AdminOperacional/UsuarioInternoFGR
     participant Log as DemandaLog
 
-    Op->>SM: solicitar_cancelamento (justificativa obrigatória)
-    SM-->>Op: Demanda → PENDENTE_APROVACAO
-    Note over Op: Operador liberado para próxima tarefa da fila
-    SM->>Ger: Notificação no Approval Inbox
-
-    alt Decisão gerencial antes do fim do expediente
-        Ger->>SM: aprovar_cancelamento
-        SM-->>Log: origem, ator, timestamp, motivo
-        SM-->>Op: Toast "Demanda #ID cancelada"
-    else Sem decisão até fim do expediente [DEC-002]
-        SM->>SM: estouro_sla_fim_expediente
-        SM-->>Log: origem=estouro_sla_fim_expediente, ator=SISTEMA
-        Note over Ger: Visão de revisão pós-facto no dia útil seguinte
-    end
+    Op->>SM: cancelar (justificativa obrigatória)
+    SM-->>Log: ator=Op, timestamp, motivo
+    SM-->>Op: Demanda → CANCELADA
+    Note over Op: Operador disponível para próxima tarefa da fila
 ```
 
 ---

@@ -151,42 +151,33 @@ Then a demanda MAXIMA deve aparecer em posicao=1 com campo prioridade='MAXIMA'
 
 ---
 
-## REQ-ACE-006 — Cancelamento e encerramento por SLA
+## REQ-ACE-006 — Cancelamento de demanda em execução pelo operador (DEC-019)
 
-→ SPEC: [../SPEC/03-fila-scoring-estados-sla.md#fluxo-detalhado-pendente_aprovacao](../SPEC/03-fila-scoring-estados-sla.md#fluxo-detalhado-pendente_aprovacao)
+→ SPEC: [../SPEC/03-fila-scoring-estados-sla.md#maquina-de-estados-da-demanda](../SPEC/03-fila-scoring-estados-sla.md#maquina-de-estados-da-demanda)
 
-### ACE-006-1: Solicitação de cancelamento → PENDENTE_APROVACAO `[INT]`
-
-```gherkin
-Given que um 'Operador' solicita cancelamento de demanda em 'EM_ANDAMENTO'
-When a solicitação é enviada
-Then status transita para 'PENDENTE_APROVACAO' e aparece no dashboard do AdminOperacional
-```
-
-**Endpoint:** `PATCH /api/v1/demandas/:id/estado` com `{ "acao": "solicitar_cancelamento", "justificativa": "..." }`
-**Validação:** `HTTP 200`; `statusNovo === 'PENDENTE_APROVACAO'`; operador liberado (não vinculado à demanda)
-
-### ACE-006-2: Encerramento automático por estouro de SLA `[INT]`
+### ACE-006-1: Cancelamento direto pelo Operador com justificativa `[INT]`
 
 ```gherkin
-Given que demanda está em 'PENDENTE_APROVACAO' sem decisão gerencial
-  e o horário de expediente está configurado como '06:00-17:00'
-When o sistema processa o fim do expediente (17:00)
-Then demanda transita para 'CANCELADA' com origem 'estouro_sla_fim_expediente', ator 'SISTEMA'
+Given que um 'Operador' cancela demanda em 'EM_ANDAMENTO' com justificativa preenchida
+When a requisição é enviada
+Then status transita para 'CANCELADA'
+  And DemandaLog registra ator, timestamp e motivo
+  And operador fica disponível para próxima tarefa da fila
 ```
 
-**Pré-condição:** job scheduler ativado com clock mockado para 17:00
-**Validação:** `DemandaLog` contém `{ origem: 'estouro_sla_fim_expediente', ator: 'SISTEMA' }`
+**Endpoint:** `PATCH /api/v1/demandas/:id/estado` com `{ "acao": "cancelar", "justificativa": "..." }`
+**Validação:** `HTTP 200`; `statusNovo === 'CANCELADA'`; `DemandaLog` contém `{ ator, timestamp, motivo }`
 
-### ACE-006-3: Visão de revisão pós-facto `[INT]`
+### ACE-006-2: Bloqueio de cancelamento sem justificativa `[INT]`
 
 ```gherkin
-Given que demandas foram encerradas automaticamente no dia anterior
-When 'AdminOperacional' acessa GET /relatorios/cancelamentos?data=YYYY-MM-DD&origem=estouro_sla_fim_expediente
-Then sistema apresenta lista das demandas encerradas com trilha auditável completa
+Given que um 'Operador' tenta cancelar demanda em 'EM_ANDAMENTO' sem justificativa
+When a requisição é enviada
+Then sistema retorna HTTP 422 e demanda permanece em 'EM_ANDAMENTO'
 ```
 
-**Endpoint:** `GET /api/v1/relatorios/cancelamentos`
+**Endpoint:** `PATCH /api/v1/demandas/:id/estado` com `{ "acao": "cancelar" }` (sem justificativa)
+**Validação:** `HTTP 422`; `statusAtual === 'EM_ANDAMENTO'` inalterado
 **Validação:** resposta contém `DemandaLog` com campos `origem`, `ator`, `timestamp`
 
 ---

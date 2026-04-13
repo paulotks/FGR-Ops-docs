@@ -155,8 +155,8 @@ Checklist obrigatório para toda mudança documental antes de considerar estáve
 - **Cobertura de rastreabilidade:** 62 cobertos, 2 parciais, 0 não cobertos (auditoria de 2026-03-26)
 
 ### Decisions
-- **Última decisão registrada:** DEC-018 (Remoção da integração RH/Folha; denominador de REQ-MET-002 via sistema)
-- **Próxima disponível:** DEC-019
+- **Última decisão registrada:** DEC-020 (Atualização do escopo e permissões do perfil UsuarioInternoFGR — REQ-RBAC-004)
+- **Próxima disponível:** DEC-021
 
 ### Changes
 - **Pacotes OpsX ativos:** nenhum (diretório `docs/changes/` contém apenas `archive/` e `README.md`)

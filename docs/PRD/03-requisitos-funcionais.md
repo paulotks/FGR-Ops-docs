@@ -64,7 +64,7 @@ O frontend deve permitir agrupar sequências de serviços com lógica estrutural
 
 ### `REQ-FUNC-006` Alocação manual e agendamentos
 
-`AdminOperacional` e `UsuarioInternoFGR` podem criar demandas com atribuição explícita de operador via `operadorAlocadoId` ou definir uma `dataAgendada` futura. Demandas agendadas permanecem em `AGENDADA` e entram automaticamente na fila pendente 60 minutos antes do horário alvo. A alocação via `operadorAlocadoId` sobrepõe as regras automáticas de distribuição e elegibilidade (jurisdição, proximidade e balanceamento) como exceção de gestão auditável, mas não remove o motor de priorização da fila do operador. A ordem resultante na fila constitui organização recomendada de atendimento, não bloqueio rígido de execução (DEC-001).
+`AdminOperacional` e `SuperAdmin` podem criar demandas com atribuição explícita de operador via `operadorAlocadoId` ou definir uma `dataAgendada` futura. O `UsuarioInternoFGR` pode criar demandas simples (`PENDENTE`) sem pré-seleção de operador (DEC-020). Demandas agendadas permanecem em `AGENDADA` e entram automaticamente na fila pendente 60 minutos antes do horário alvo. A alocação via `operadorAlocadoId` sobrepõe as regras automáticas de distribuição e elegibilidade (jurisdição, proximidade e balanceamento) como exceção de gestão auditável, mas não remove o motor de priorização da fila do operador. A ordem resultante na fila constitui organização recomendada de atendimento, não bloqueio rígido de execução (DEC-001).
 
 -> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#regra-zero-hard-filter-destaque-e-score](../SPEC/03-fila-scoring-estados-sla.md#regra-zero-hard-filter-destaque-e-score)
 -> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#maquina-de-estados-da-demanda](../SPEC/03-fila-scoring-estados-sla.md#maquina-de-estados-da-demanda)
@@ -83,11 +83,11 @@ Demandas de prioridade máxima não devem bloquear a interface nem ocultar as re
 
 -> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#regra-zero-hard-filter-destaque-e-score](../SPEC/03-fila-scoring-estados-sla.md#regra-zero-hard-filter-destaque-e-score)
 
-### `REQ-FUNC-009` Workflow de cancelamentos iniciados pelo operador
+### `REQ-FUNC-009` Cancelamento de demanda em execução pelo operador
 
-O operador não cancela diretamente uma demanda em `EM_ANDAMENTO`. Em vez disso, cria uma `SolicitacaoCancelamento` justificada, movendo a demanda para `PENDENTE_APROVACAO`, onde aguarda decisão administrativa ou aprovação automática após o SLA definido.
+O operador pode cancelar diretamente uma demanda em `EM_ANDAMENTO`, registrando obrigatoriamente a justificativa. A demanda transita diretamente para `CANCELADA`, com registro em `DemandaLog` contendo ator, timestamp e motivo. Após o cancelamento, o operador fica disponível para receber a próxima tarefa do topo da fila. (DEC-019)
 
--> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#fluxo-detalhado-pendente_aprovacao](../SPEC/03-fila-scoring-estados-sla.md#fluxo-detalhado-pendente_aprovacao)
+-> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#maquina-de-estados-da-demanda](../SPEC/03-fila-scoring-estados-sla.md#maquina-de-estados-da-demanda)
 
 ### `REQ-FUNC-010` Adjacências e localização operacional
 

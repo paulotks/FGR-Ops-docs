@@ -381,6 +381,52 @@ Este registo centraliza as decisões de produto necessárias antes das correçõ
 
 ---
 
+## DEC-019 — Remoção de `SolicitacaoCancelamento` e do estado `PENDENTE_APROVACAO`
+
+- **Estado:** Decidido
+- **Data:** 2026-04-13
+- **Participantes:** Produto, Operações, Stakeholders de Negócio
+- **Contexto:** Reunião com os interessados do projeto determinou que o fluxo de solicitação de cancelamento com aprovação gerencial é complexidade desnecessária para o MVP. O Operador de campo precisa poder encerrar demandas de forma direta quando necessário, sem depender de uma janela de aprovação administrativa.
+- **Opções em análise:**
+  - A) Manter `SolicitacaoCancelamento` e `PENDENTE_APROVACAO` como especificado em DEC-002.
+  - B) Remover o estado intermediário; o Operador cancela a demanda em `EM_ANDAMENTO` diretamente, com justificativa obrigatória, transitando para `CANCELADA`.
+- **Decisão:** B) Remoção do estado `PENDENTE_APROVACAO` e da entidade `SolicitacaoCancelamento`. A ação `cancelar` em `EM_ANDAMENTO` passa a ser exclusiva do `Operador` vinculado, com justificativa obrigatória registrada em `DemandaLog`. A transição é direta para `CANCELADA`.
+- **Justificação:** O fluxo de aprovação gerencial de cancelamento criava latência operacional indesejada: o Operador ficava bloqueado aguardando decisão administrativa antes de retornar à fila. A simplificação mantém a rastreabilidade via `DemandaLog` (obrigatório: ator, timestamp, motivo) sem bloquear o fluxo de campo. Perfis administrativos (`AdminOperacional`, `SuperAdmin`) podem cancelar demandas em qualquer estado de fila via a ação `cancelar` já existente.
+- **Supersede:** DEC-002 (que estabelecia o estado `PENDENTE_APROVACAO` e o fluxo de aprovação automática por SLA de expediente).
+- **Achados resolvidos:** Simplificação de fluxo operacional.
+- **Aplicação (2026-04-13):**
+  - `SPEC/03-fila-scoring-estados-sla.md`: Diagrama de estados atualizado — removidas transições `EM_ANDAMENTO → PENDENTE_APROVACAO → CANCELADA/EM_ANDAMENTO`; adicionada transição `EM_ANDAMENTO → CANCELADA : cancelar` (Operador, justificativa obrigatória). Tabela de transições por perfil atualizada. Seção "Fluxo detalhado PENDENTE_APROVACAO" removida.
+  - `SPEC/04-rbac-permissoes.md`: Linhas `machinery:demanda:cancel-request` e `machinery:solicitacao-cancelamento:*` marcadas como `—` (entidade removida). Nota de rodapé `[5]` removida. Seção de permissões condicionadas ao estado da demanda atualizada.
+  - `SPEC/07-design-ui-logica.md`: Linha `PENDENTE_APROVACAO` removida do mapeamento state-to-UI.
+  - `SPEC/08-api-contratos.md`: Enum `status` atualizado — `PENDENTE_APROVACAO` removido.
+  - `SPEC/05-backlog-mvp-glossario.md`: `SolicitacaoCancelamento` movida para itens removidos do MVP.
+  - `PRD/03-requisitos-funcionais.md`: `REQ-FUNC-009` reescrito — cancelamento direto do Operador com justificativa.
+  - `PRD/05-criterios-aceite.md`: `REQ-ACE-006` reescrito — fluxo direto de cancelamento; remoção dos cenários de `PENDENTE_APROVACAO`.
+
+---
+
+## DEC-020 — Atualização do escopo e permissões do perfil `UsuarioInternoFGR` (`REQ-RBAC-004`)
+
+- **Estado:** Decidido
+- **Data:** 2026-04-13
+- **Participantes:** Produto, Operações, Stakeholders de Negócio
+- **Contexto:** O perfil `UsuarioInternoFGR` precisava de redefinição clara de personas e capacidades. Identificaram-se três problemas: (a) personas não estavam documentadas; (b) o perfil possuía poderes de cancelamento e redistribuição de demandas que são responsabilidade exclusiva do `AdminOperacional`; (c) o perfil não tinha acesso mobile para criação de demandas.
+- **Decisão:**
+  1. **Personas**: `UsuarioInternoFGR` abrange Gerentes, Engenheiros e Encarregados de Obra.
+  2. **Interface web**: acesso ao mesmo painel que `AdminOperacional` no módulo Machinery-Link, com visibilidade total (leitura), mas sem capacidade de cancelar ou redistribuir demandas, nem gerir cadastros operacionais (usuários, maquinários, tipos de serviços).
+  3. **Interface mobile**: acesso ao aplicativo com view equivalente ao `Empreiteiro` — pode criar demandas, mas sem pré-seleção de operador (`operadorAlocadoId` é exclusivo do `AdminOperacional` e `SuperAdmin`).
+  4. **Permissões removidas**: `cancel` e `allocate` em `demanda` e `demanda-grupo`; `criar_com_data` (agendamentos); `antecipar`; `cancelar` em `AGENDADA`; `devolver` em `EM_ANDAMENTO`; `allocate` em `PENDENTE`.
+  5. **Permissões mantidas**: `create` (cria demandas simples → PENDENTE), `read`/`export` em todos os recursos, `update` em `demanda` (correções de metadados), `update` em `AGENDADA` — **removido** (não pode gerir agendamentos alheios).
+- **Justificação:** A distinção entre `AdminOperacional` e `UsuarioInternoFGR` deve ser clara: o Admin tem poder de gestão operacional pleno; o Interno tem poder de visibilidade e criação de demandas, mas não de interferir no fluxo de execução alheio. Isso reduz risco de erro operacional por perfis com menos contexto de gestão.
+- **Supersede parcialmente:** DEC-001 (sobre a menção de `UsuarioInternoFGR` na criação com `operadorAlocadoId` — essa capacidade passa a ser exclusiva de `AdminOperacional` e `SuperAdmin`).
+- **Aplicação (2026-04-13):**
+  - `PRD/01-usuarios-rbac.md`: `REQ-RBAC-004` atualizado com personas, interface dual (web + mobile), restrições explícitas.
+  - `SPEC/04-rbac-permissoes.md`: Perfil #4 reescrito; matrix atualizada (`cancel`, `allocate` → ✗ para `UsuarioInternoFGR` em demanda e demanda-grupo); estado da demanda (Lacuna 2) atualizado.
+  - `SPEC/03-fila-scoring-estados-sla.md`: Tabela de transições por perfil atualizada — `UsuarioInternoFGR` removido de `criar_com_data`, `antecipar`, `cancelar` (AGENDADA e PENDENTE), `allocate` (PENDENTE), `devolver` (EM_ANDAMENTO).
+  - `PRD/03-requisitos-funcionais.md`: `REQ-FUNC-006` — `operadorAlocadoId` na criação restrito a `AdminOperacional` e `SuperAdmin`.
+
+---
+
 ## Fase 2 — Correcoes de achados importantes
 
 As correcoes abaixo nao exigiram decisao de produto nova; derivam directamente dos achados da auditoria e das decisoes ja tomadas na Fase 0.

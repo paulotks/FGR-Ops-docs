@@ -1,18 +1,20 @@
-# Cancelamento e encerramento por SLA
+# Cancelamento de demanda em campo e alertas de SLA
 
-Fluxo visual da solicitação de cancelamento em campo, timeout de SLA no fim do expediente e revisão pós-facto administrativa.
+Fluxo visual do cancelamento direto pelo Operador e dos alertas de SLA por nível de prioridade.
 
 **PRD fonte:** [../PRD/02-jornada-usuario.md](../PRD/02-jornada-usuario.md), [../PRD/05-criterios-aceite.md](../PRD/05-criterios-aceite.md)
 
 **Módulos SPEC relacionados:** [03-fila-scoring-estados-sla](../SPEC/03-fila-scoring-estados-sla.md)
 
-**REQ-* cobertos:** REQ-JOR-005, REQ-FUNC-008, REQ-FUNC-009, REQ-ACE-006
+**REQ-* cobertos:** REQ-JOR-005, REQ-FUNC-009, REQ-ACE-006
 
-**Decisões aplicadas:** DEC-002
+**Decisões aplicadas:** DEC-019
 
 ---
 
-## Fluxo principal — PENDENTE_APROVACAO e encerramento
+## Fluxo principal — cancelamento direto pelo Operador
+
+O estado intermediário `PENDENTE_APROVACAO` foi removido do MVP (DEC-019). O Operador pode cancelar diretamente uma demanda em `EM_ANDAMENTO`, registrando justificativa obrigatória.
 
 ```mermaid
 flowchart TD
@@ -20,37 +22,12 @@ flowchart TD
 
     EM --> OP{"Operador precisa\ncancelar?"}
 
-    OP -->|Sim| SC["solicitar_cancelamento\n(justificativa obrigatória)"]
     OP -->|Não| EXEC["Continua execução normal"]
+    OP -->|Sim| JUST["Operador preenche justificativa\n(obrigatória)"]
 
-    SC --> PA["Demanda → PENDENTE_APROVACAO\n(holding state gerencial)"]
-    PA --> LIB["Operador liberado para próxima\ntarefa da fila"]
-    PA --> GER["Notificação no Approval Inbox\ndo AdminOperacional / UsuarioInternoFGR"]
-
-    subgraph DECISAO["Janela de decisão gerencial"]
-        GER --> DEC{"Decisão antes do\nfim do expediente?"}
-        DEC -->|"Aprovar cancelamento"| APR["Demanda → CANCELADA\nDemandaLog: ator, timestamp, motivo"]
-        DEC -->|"Rejeitar cancelamento"| REJ["Demanda → EM_ANDAMENTO\nVinculada ao mesmo operador\nTopo da fila do operador"]
-        DEC -->|"Sem decisão até fim do expediente\n[DEC-002]"| TIMEOUT
-    end
-
-    subgraph TIMEOUT["Encerramento automático por SLA"]
-        T1["Sistema: estouro_sla_fim_expediente"]
-        T2["Demanda → CANCELADA (auto)"]
-        T3["DemandaLog:\norigem=estouro_sla_fim_expediente\nator=SISTEMA\ntimestamp\nmotivo"]
-        T1 --> T2 --> T3
-    end
-
-    T3 --> REVISAO
-    APR --> FIM["Fim do fluxo"]
-    REJ --> EXEC
-
-    subgraph REVISAO["Revisão pós-facto (dia útil seguinte)"]
-        R1["UsuarioInternoFGR / AdminOperacional\nacessa visão dedicada"]
-        R2["Listagem de cancelamentos automáticos do dia anterior"]
-        R3["Ação corretiva/operacional quando necessária"]
-        R1 --> R2 --> R3
-    end
+    JUST --> CANCELADA["Demanda → CANCELADA\n(transição direta)"]
+    CANCELADA --> LOG["DemandaLog:\nator=Operador\ntimestamp\nmotivo"]
+    LOG --> FILA["Operador disponível para\npróxima tarefa da fila"]
 ```
 
 ## Alertas de SLA por nível de prioridade
@@ -58,14 +35,14 @@ flowchart TD
 ```mermaid
 flowchart LR
     subgraph SLA_MAX["SLA MÁXIMA — 15 min"]
-        M1["UI push alta prioridade → Admin + Operador"]
-        M2["Escalação para SuperAdmin após +5 min"]
+        M1["WebSocket DEMAND_QUEUED + SLA_ALERT → Admin + Operador"]
+        M2["Escalação SLA_ESCALATION para SuperAdmin após +5 min"]
         M1 --> M2
     end
 
     subgraph SLA_ELV["SLA ELEVADA — 45 min"]
-        E1["UI push normal → AdminOperacional"]
-        E2["Escalação para SuperAdmin após +15 min"]
+        E1["WebSocket SLA_ALERT → AdminOperacional"]
+        E2["Escalação SLA_ESCALATION para SuperAdmin após +15 min"]
         E1 --> E2
     end
 
@@ -83,8 +60,8 @@ flowchart LR
 
 ## Critérios de aceite relacionados (PRD)
 
-- [REQ-ACE-006](../PRD/05-criterios-aceite.md#cancelamento-de-demandas-em-campo-e-encerramento-por-sla)
+- [REQ-ACE-006](../PRD/05-criterios-aceite.md#cancelamento-de-demanda-em-execucao-pelo-operador)
 
--> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#fluxo-detalhado-pendente_aprovacao](../SPEC/03-fila-scoring-estados-sla.md#fluxo-detalhado-pendente_aprovacao)
+-> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#maquina-de-estados-da-demanda](../SPEC/03-fila-scoring-estados-sla.md#maquina-de-estados-da-demanda)
 -> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#sla-de-atendimento-e-governanca](../SPEC/03-fila-scoring-estados-sla.md#sla-de-atendimento-e-governanca)
 -> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#auditoria-administrativa-e-justificativas](../SPEC/03-fila-scoring-estados-sla.md#auditoria-administrativa-e-justificativas)

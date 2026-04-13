@@ -211,7 +211,7 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
 **Request (TransicaoEstadoDto):**
 ```json
 {
-  "acao": "iniciar | concluir | cancelar | devolver | solicitar_cancelamento | aprovar_cancelamento | rejeitar_cancelamento | antecipar",
+  "acao": "iniciar | concluir | cancelar | pausar | retomar | devolver | antecipar",
   "justificativa": "string | null (obrigatório para acoes auditaveis)"
 }
 ```
@@ -832,7 +832,7 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
 
 | Param | Tipo | Descrição |
 |-------|------|-----------|
-| `status` | `string` | Filtrar por estado (`PENDENTE`, `EM_ANDAMENTO`, `PAUSADA`, `AGENDADA`, `PENDENTE_APROVACAO`) |
+| `status` | `string` | Filtrar por estado (`PENDENTE`, `EM_ANDAMENTO`, `PAUSADA`, `AGENDADA`, `RETORNADA`, `CONCLUIDA`, `CANCELADA`) |
 | `setorId` | `uuid` | Filtrar por setor operacional |
 | `operadorId` | `uuid` | Filtrar por operador alocado |
 | `prioridade` | `string` | Filtrar por nível SLA (`NORMAL`, `ELEVADA`, `MAXIMA`) |
@@ -847,7 +847,7 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
       "demandaId": "uuid",
       "posicao": "number",
       "score": "number",
-      "status": "PENDENTE | EM_ANDAMENTO | PAUSADA | AGENDADA | PENDENTE_APROVACAO",
+      "status": "PENDENTE | EM_ANDAMENTO | PAUSADA | AGENDADA | RETORNADA | CONCLUIDA | CANCELADA",
       "prioridade": "NORMAL | ELEVADA | MAXIMA",
       "slaVencimentoEm": "ISO8601 | null",
       "slaViolado": "boolean",

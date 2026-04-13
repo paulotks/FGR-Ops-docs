@@ -53,4 +53,4 @@ O motor de fila depende da coerência cadastral de `SetorOperacional`, `Quadra`,
 - **AuditLogCrossTenant**: log especializado para registrar acessos privilegiados de `SuperAdmin` e `Board` que transcendem o isolamento por obra.
 - **TurnoAjudante**: registro cronológico associado ao `RegistroExpediente` que mapeia a relação temporal entre ajudante e par operador-máquina.
 - **recalcular_fila**: ação administrativa que força a atualização imediata de scores pendentes numa obra com base nos pesos atuais.
-- **SolicitacaoCancelamento**: entidade transacional que formaliza o pedido de interrupção de um serviço em `EM_ANDAMENTO`, exigindo justificativa e aprovação gerencial.
+- ~~**SolicitacaoCancelamento**~~: entidade removida do MVP (DEC-019). O cancelamento de demandas em `EM_ANDAMENTO` pelo `Operador` passou a ser direto, com justificativa obrigatória registrada em `DemandaLog`, sem estado intermediário de aprovação gerencial.

@@ -88,36 +88,30 @@ When o Operador acessa a tela de 'Minhas Tarefas' no aplicativo mobile
 Then a demanda 'MAXIMA' deve ser exibida com borda pulsante vermelha no topo da lista, mantendo as outras 2 demandas visíveis e roláveis abaixo
 ```
 
-## Cancelamento de demandas em campo e encerramento por SLA
+## Cancelamento de demanda em execução pelo operador
 
-**REQ-ACE-006** O cancelamento iniciado em campo pelo operador deve transitar para `PENDENTE_APROVACAO`, ficando disponível para decisão gerencial. Se não houver decisão até o fim do expediente da obra, o sistema encerra automaticamente a demanda como `CANCELADA` por estouro de SLA operacional. O horário de expediente é parametrizável por obra. A trilha auditável é obrigatória em todos os desfechos, e `UsuarioInternoFGR`/`AdminOperacional` dispõem de visão dedicada no dia útil seguinte para revisão pós-fato e ação corretiva (DEC-002).
+**REQ-ACE-006** O cancelamento de uma demanda em `EM_ANDAMENTO` pelo operador deve transitar diretamente para `CANCELADA`, exigindo justificativa obrigatória. A trilha auditável é obrigatória, registrando ator, timestamp e motivo em `DemandaLog`. (DEC-019)
 
-→ SPEC: [../SPEC/03-fila-scoring-estados-sla.md#fluxo-detalhado-pendente_aprovacao](../SPEC/03-fila-scoring-estados-sla.md#fluxo-detalhado-pendente_aprovacao)
+→ SPEC: [../SPEC/03-fila-scoring-estados-sla.md#maquina-de-estados-da-demanda](../SPEC/03-fila-scoring-estados-sla.md#maquina-de-estados-da-demanda)
 
-**Cenário 1: Fluxo de cancelamento iniciado em campo — transição para PENDENTE_APROVACAO**
+**Cenário 1: Cancelamento direto pelo Operador com justificativa**
 
 ```gherkin
 Given que um usuário 'Operador' solicita o cancelamento de uma demanda em 'EM_ANDAMENTO'
-When a solicitação é enviada via aplicativo
-Then o status da demanda deve transitar para 'PENDENTE_APROVACAO' e aparecer no dashboard do AdminOperacional para revisão
+  And o operador preenche a justificativa obrigatória no formulário
+When a confirmação de cancelamento é enviada via aplicativo
+Then o status da demanda deve transitar imediatamente para 'CANCELADA'
+  And o sistema deve registrar em 'DemandaLog' o ator, timestamp e motivo fornecido
+  And o operador deve ser disponibilizado para receber a próxima tarefa da fila
 ```
 
-**Cenário 2: Encerramento automático por estouro de SLA no fim do expediente**
+**Cenário 2: Bloqueio de cancelamento sem justificativa**
 
 ```gherkin
-Given que uma demanda está em 'PENDENTE_APROVACAO' sem decisão gerencial
-  And o horário de expediente da obra está configurado como '06:00-17:00'
-When o relógio do sistema atinge o fim do expediente da obra (17:00)
-Then o sistema deve aprovar automaticamente o cancelamento, transitar a demanda para 'CANCELADA'
-  And registrar na trilha auditável a origem 'estouro_sla_fim_expediente', o ator 'SISTEMA' e o timestamp
-```
-
-**Cenário 3: Revisão pós-fato no dia útil seguinte**
-
-```gherkin
-Given que uma ou mais demandas foram encerradas automaticamente por estouro de SLA no dia anterior
-When um 'AdminOperacional' ou 'UsuarioInternoFGR' acessa o painel de revisão no dia útil seguinte
-Then o sistema deve apresentar uma visão dedicada com todas as demandas encerradas automaticamente, permitindo ação corretiva ou operacional
+Given que um usuário 'Operador' tenta cancelar uma demanda em 'EM_ANDAMENTO'
+When a requisição é enviada sem preenchimento do campo de justificativa
+Then o sistema deve rejeitar a operação com erro de validação
+  And a demanda deve permanecer em 'EM_ANDAMENTO'
 ```
 
 ## Isolamento Cross-Tenant Auditado

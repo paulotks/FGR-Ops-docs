@@ -78,9 +78,8 @@ Como cada transição formal da Máquina de Estados se reflete na tela (aplicand
 
 | Estado da Demanda | Alteração Visual na UI do Empreiteiro (Mobile) | Alteração Visual na UI do Operador (Mobile) | Alteração Visual Supervisor (Dashboard) |
 | --- | --- | --- | --- |
-| `PENDENTE_APROVACAO` | Invisível para o Empreiteiro. | Invisível para o Operador. | Aparece no Inbox de Aprovação / Fila global com ícone cinza "A Confirmar". |
 | `PENDENTE` | Card exibido na lista com botão **"Cancelar"** visível (apenas demandas da própria autoria). | Mostrado como próxima tarefa se a fila permitir. | Entra na fila ativa ranqueada por cor de SLA. |
-| `EM_ANDAMENTO` | Card exibe indicador *"Em andamento"*; botão "Cancelar" **não exibido**. | Card Expandido bloqueante. Ações visíveis: *"Pausar"*, *"Concluir"*. | Exibe crachá do operador responsável piscando / indicador ativo verde. |
+| `EM_ANDAMENTO` | Card exibe indicador *"Em andamento"*; botão "Cancelar" **não exibido**. | Card Expandido bloqueante. Ações visíveis: *"Pausar"*, *"Concluir"*, *"Cancelar"* (com justificativa obrigatória). | Exibe crachá do operador responsável piscando / indicador ativo verde. |
 | `PAUSADA` *(MVP — ver REQ-FUNC-011)* | Card exibe indicador *"Pausada"*; sem ação disponível para o empreiteiro. | Formulário para registrar o MOTIVO da pausa preenchido previamente. | Ícone Amarelo de Alerta. Fila recalcula as próximas tarefas para a máquina do operador. |
 | `CONCLUIDA` | Card move-se para histórico de solicitações encerradas. | Card sai da view atual e histórico atualiza numeração de meta diária. | Card ganha status verde sólido e move-se para aba "Auditoria" ou de histórico. |
 | `CANCELADA` | Card desaparece da lista ativa; Toast: *"Demanda #[ID] cancelada."* | Card desaparece; feedback discreto via Toast *("Demanda #123 cancelada")*. | Riscado/Arquivado em vermelho na visão de encerramentos do dia. |
