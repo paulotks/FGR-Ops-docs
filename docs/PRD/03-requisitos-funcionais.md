@@ -126,6 +126,23 @@ O `Maquinario` deve registrar o tipo de propriedade (`proprietarioTipo: FGR | EM
 -> SPEC: [../SPEC/02-modelo-dados.md#relacionamentos-e-regras-de-integridade](../SPEC/02-modelo-dados.md#relacionamentos-e-regras-de-integridade)
 -> SPEC: [../SPEC/08-api-contratos.md#6-empreiteiras-empreiteiras](../SPEC/08-api-contratos.md#6-empreiteiras-empreiteiras)
 
+### `REQ-FUNC-013` Notificação de nova demanda para operador com fila vazia
+
+Quando uma nova demanda é atribuída a um operador cuja fila está vazia — seja no início do expediente ou após a conclusão de todas as demandas anteriores — o sistema deve exibir um **pop-up de notificação** acompanhado de alerta sonoro e vibração do dispositivo, garantindo que o operador perceba a chegada da tarefa mesmo sem estar com a tela ativa.
+
+O pop-up deve conter:
+
+- Identificação da demanda: serviço solicitado e localização.
+- Botão **"Iniciar Agora"** — demanda transita para `EM_ANDAMENTO` imediatamente.
+- Botão **"Iniciar Depois (Perfilar)"** — demanda permanece em `PENDENTE`, o operador retorna à tela de fila; nenhuma transição de estado ocorre.
+- **Sem opção de recusa** — a rejeição da demanda não é permitida neste fluxo. O cancelamento, quando necessário, segue o fluxo padrão de cancelamento pelo operador (`REQ-FUNC-009`).
+
+Quando a fila já possui demandas, novas demandas entram diretamente na fila sem pop-up, reordenadas pelo motor de score. A próxima demanda da fila permanece em destaque expandido com ação de início disponível.
+
+O `AdminOperacional` monitora via dashboard os operadores que receberam demandas mas não as iniciaram, sem automação de escalação — o contato é feito manualmente (ex.: rádio).
+
+-> SPEC: [../SPEC/07-design-ui-logica.md#notificacao-de-nova-demanda-fila-vazia-vs-fila-ativa](../SPEC/07-design-ui-logica.md#notificacao-de-nova-demanda-fila-vazia-vs-fila-ativa)
+
 ## Critérios de aceite relacionados
 
 - [REQ-ACE-002](05-criterios-aceite.md#maquina-de-estados-bloqueio-de-bypass-pos-conclusao)

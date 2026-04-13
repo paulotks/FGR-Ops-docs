@@ -6,7 +6,7 @@ area: UI/UX e Frontend
 
 # Design de UI e Lógica de Interface
 
-**Rastreio PRD:** `REQ-JOR-001`, `REQ-JOR-002`, `REQ-JOR-003`, `REQ-JOR-004`, `REQ-JOR-005`, `REQ-RBAC-001`, `REQ-RBAC-002`, `REQ-RBAC-003`, `REQ-RBAC-004`, `REQ-RBAC-005`, `REQ-RBAC-006`, `REQ-FUNC-001`, `REQ-FUNC-008`, `REQ-FUNC-009`, `REQ-FUNC-011`, `REQ-NFR-002`, `REQ-ACE-006`
+**Rastreio PRD:** `REQ-JOR-001`, `REQ-JOR-002`, `REQ-JOR-003`, `REQ-JOR-004`, `REQ-JOR-005`, `REQ-RBAC-001`, `REQ-RBAC-002`, `REQ-RBAC-003`, `REQ-RBAC-004`, `REQ-RBAC-005`, `REQ-RBAC-006`, `REQ-FUNC-001`, `REQ-FUNC-008`, `REQ-FUNC-009`, `REQ-FUNC-011`, `REQ-FUNC-013`, `REQ-NFR-002`, `REQ-ACE-006`
 
 Este documento serve como a **ponte visual e técnica** entre as regras de negócio documentadas (RBAC, Fila, SLAs) e a implementação no Angular 20. Ele define as estruturas das telas que posteriormente serão prototipadas e desenvolvidas.
 
@@ -54,6 +54,33 @@ O empreiteiro pode cancelar demandas da sua autoria enquanto estas estiverem no 
     *   Botões de Ação Dinâmicos: "Cheguei ao Local", "Pausar", "Concluir" variando dependendo do estado atual da demanda.
     *   > **Fase 2:** Botão "Iniciar Deslocamento" removido do MVP — funcionalidade de rastreamento de deslocamento será endereçada em iteração futura.
 *   **Lista de Fila (Opcional/Secundária):** Permite ver "o que vem pela frente" apenas com caráter informativo, sem poder de escolha.
+
+#### Notificação de nova demanda: fila vazia vs. fila ativa
+
+**Rastreio PRD:** `REQ-JOR-004`, `REQ-FUNC-013`
+
+O comportamento ao receber uma nova demanda difere conforme o estado atual da fila do operador:
+
+**Cenário A — Fila vazia** (início do expediente ou conclusão de todas as demandas anteriores):
+
+- O sistema exibe um **pop-up de notificação** de tela cheia (sobreposto à view de fila).
+- O dispositivo dispara **alerta sonoro e vibração** para garantir percepção mesmo sem a tela ativa.
+- Conteúdo do pop-up:
+  - Serviço solicitado e localização da demanda.
+  - Botão primário **"Iniciar Agora"** — demanda transita para `EM_ANDAMENTO`; pop-up fecha e card ativo é exibido.
+  - Botão secundário **"Iniciar Depois (Perfilar)"** — demanda permanece em `PENDENTE`; pop-up fecha e operador retorna à tela de fila com o card da demanda no topo.
+  - **Sem botão de recusa** — o cancelamento, quando necessário, segue o fluxo padrão (`REQ-FUNC-009`).
+
+**Cenário B — Fila com demandas ativas:**
+
+- Nenhum pop-up é exibido.
+- A nova demanda entra diretamente na fila, reordenada pelo motor de score.
+- A próxima demanda da fila permanece em **card expandido** com ação de início visível e acessível.
+
+**Visibilidade no dashboard (`AdminOperacional`):**
+
+- Operadores com fila vazia que receberam demanda mas não iniciaram ficam sinalizados no dashboard (indicador visual de inatividade).
+- Não há automação de escalação — o contato é manual (ex.: rádio).
 
 ### 1.3 Dashboard Web Subordinado/Supervisor
 **Objetivo:** Sala de controle. Visão macro, monitoramento de SLAs e reordenação (Blindagem).
