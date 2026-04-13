@@ -132,6 +132,64 @@ When o Guard de segurança avalia a requisição
 Then o sistema deve retornar HTTP 403 independentemente do payload ou tenant
 ```
 
+## Notificação de nova demanda para operador com fila vazia
+
+**REQ-ACE-009** Quando uma nova demanda é atribuída a um operador com fila vazia, o sistema deve exibir pop-up com alerta sonoro e vibração; as opções "Iniciar Agora" e "Iniciar Depois (Perfilar)" devem produzir os efeitos corretos na máquina de estados e na fila. Quando a fila não está vazia, a nova demanda deve entrar silenciosamente na fila sem pop-up.
+
+→ SPEC: [../SPEC/07-design-ui-logica.md#notificacao-de-nova-demanda-fila-vazia-vs-fila-ativa](../SPEC/07-design-ui-logica.md#notificacao-de-nova-demanda-fila-vazia-vs-fila-ativa)
+→ SPEC: [../SPEC/06-definicoes-complementares.md#mecanismo-notificacao-realtime](../SPEC/06-definicoes-complementares.md#mecanismo-notificacao-realtime)
+
+**Cenário 1: Fila vazia — pop-up com alerta**
+
+```gherkin
+Given que o Operador possui fila vazia (sem demandas PENDENTE ou EM_ANDAMENTO)
+When uma nova demanda é enfileirada para este Operador
+Then o sistema deve emitir evento DEMAND_QUEUED com filaVazia = true
+  And o aplicativo deve exibir o pop-up de notificação com alerta sonoro e vibração
+  And os botões "Iniciar Agora" e "Iniciar Depois (Perfilar)" devem estar visíveis
+  And não deve haver botão de recusa
+```
+
+**Cenário 2: "Iniciar Agora" — transição imediata para EM_ANDAMENTO**
+
+```gherkin
+Given que o pop-up de notificação está visível para o Operador
+When o Operador toca "Iniciar Agora"
+Then o sistema deve executar PATCH /demandas/:id/estado com acao "iniciar"
+  And a demanda deve transitar de PENDENTE para EM_ANDAMENTO
+  And o pop-up deve ser fechado e o card ativo da demanda deve ser exibido
+```
+
+**Cenário 3: "Iniciar Depois (Perfilar)" — demanda permanece PENDENTE**
+
+```gherkin
+Given que o pop-up de notificação está visível para o Operador
+When o Operador toca "Iniciar Depois (Perfilar)"
+Then nenhuma transição de estado deve ocorrer na demanda
+  And o pop-up deve ser fechado
+  And o Operador deve retornar à tela de fila com a demanda no topo (card expandido)
+```
+
+**Cenário 4: Fila ativa — sem pop-up**
+
+```gherkin
+Given que o Operador possui pelo menos uma demanda na fila (PENDENTE ou EM_ANDAMENTO)
+When uma nova demanda é enfileirada para este Operador
+Then o sistema deve emitir evento DEMAND_QUEUED com filaVazia = false
+  And nenhum pop-up deve ser exibido
+  And a fila deve ser reordenada silenciosamente pelo motor de score
+```
+
+**Cenário 5: Reconexão após offline com fila que estava vazia**
+
+```gherkin
+Given que o Operador estava offline quando uma nova demanda foi enfileirada
+  And o último estado salvo da fila era vazio (filaVazia = true no IndexedDB)
+When o Operador reconecta e a fila é reidratada via GET /operadores/:id/fila
+Then o aplicativo deve exibir o pop-up de notificação com alerta sonoro e vibração
+  And o comportamento deve ser idêntico ao do Cenário 1
+```
+
 ## Segurança de token e gestão de sessão
 
 **REQ-ACE-007** O sistema deve garantir que tokens JWT seguem política de sessão curta, rotação de refresh token e capacidade de invalidação imediata, conforme a arquitetura de autenticação definida.

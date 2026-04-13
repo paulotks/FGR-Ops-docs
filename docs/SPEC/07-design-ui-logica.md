@@ -90,6 +90,7 @@ O comportamento ao receber uma nova demanda difere conforme o estado atual da fi
     *   Forte apelo a UI de SLA: Chips de prioridade (`Baixa`, `Alta`, `Crítica`), cores mudando para amarelo/vermelho quando o SLA está em violação.
 *   **Efeito Blindagem (Drag & Drop):** Interface de reordenação visual para sobrepor o algoritmo temporariamente em casos de prioridade no campo ou realocações dinâmicas.
 *   **Aprovação & Resolução de Cancelamentos:** Cards/Modais rápidos (Approval Inbox) para aprovar novas demandas do empreiteiro ou avaliar justificativas de quebra/pausas dos operadores.
+*   **Indicador de Operador Inativo** (`REQ-FUNC-013`): na visão de operadores (tabela ou Kanban), a linha de cada operador com fila não vazia e sem demanda em `EM_ANDAMENTO` exibe um **badge de alerta** âmbar (ex.: *"Parado"* ou ícone de relógio) enquanto a demanda `PENDENTE` mais antiga da fila ultrapassar um limiar configurável sem iniciada (sugestão MVP: 5 minutos). O badge desaparece assim que o operador inicia a primeira demanda. Não há automação de escalação — o `AdminOperacional` aciona contato manual (ex.: rádio) ao identificar o badge.
 
 ### 1.4 Portal Login FGR Interno (Web)
 **Objetivo:** Hub seguro de entrada para recursos gerenciais internos, acesso logado.
@@ -105,9 +106,11 @@ Como cada transição formal da Máquina de Estados se reflete na tela (aplicand
 
 | Estado da Demanda | Alteração Visual na UI do Empreiteiro (Mobile) | Alteração Visual na UI do Operador (Mobile) | Alteração Visual Supervisor (Dashboard) |
 | --- | --- | --- | --- |
+| `AGENDADA` | Card exibido na lista com indicador *"Agendada"* e data/hora prevista; botão **"Cancelar"** visível apenas para demandas da própria autoria. | Não visível — demandas `AGENDADA` não aparecem na fila do operador até a transição automática para `PENDENTE`. | Listada em aba separada de agendamentos com data/hora alvo; ações disponíveis para `AdminOperacional`: **"Antecipar"** e **"Cancelar"**. |
 | `PENDENTE` | Card exibido na lista com botão **"Cancelar"** visível (apenas demandas da própria autoria). | Mostrado como próxima tarefa se a fila permitir. | Entra na fila ativa ranqueada por cor de SLA. |
 | `EM_ANDAMENTO` | Card exibe indicador *"Em andamento"*; botão "Cancelar" **não exibido**. | Card Expandido bloqueante. Ações visíveis: *"Pausar"*, *"Concluir"*, *"Cancelar"* (com justificativa obrigatória). | Exibe crachá do operador responsável piscando / indicador ativo verde. |
 | `PAUSADA` *(MVP — ver REQ-FUNC-011)* | Card exibe indicador *"Pausada"*; sem ação disponível para o empreiteiro. | Formulário para registrar o MOTIVO da pausa preenchido previamente. | Ícone Amarelo de Alerta. Fila recalcula as próximas tarefas para a máquina do operador. |
+| `RETORNADA` | Card exibe indicador *"Retornando à fila"*; sem ação disponível para o empreiteiro. | Demanda não aparece na fila do operador — estado transitório automático aguardando retorno a `PENDENTE`. | Badge laranja *"RETORNADA"* na linha da demanda; sistema atualiza automaticamente para `PENDENTE` sem intervenção administrativa. |
 | `CONCLUIDA` | Card move-se para histórico de solicitações encerradas. | Card sai da view atual e histórico atualiza numeração de meta diária. | Card ganha status verde sólido e move-se para aba "Auditoria" ou de histórico. |
 | `CANCELADA` | Card desaparece da lista ativa; Toast: *"Demanda #[ID] cancelada."* | Card desaparece; feedback discreto via Toast *("Demanda #123 cancelada")*. | Riscado/Arquivado em vermelho na visão de encerramentos do dia. |
 

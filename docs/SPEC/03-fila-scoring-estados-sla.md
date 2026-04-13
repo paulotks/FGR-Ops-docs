@@ -55,6 +55,7 @@ Regras adicionais:
 
 - O alerta é disparado uma única vez no vencimento, mas o estado visual de SLA vencido permanece até a transição para `EM_ANDAMENTO`.
 - O canal secundário de todas as escalações é o `audit_log_sla`.
+- Para demandas criadas diretamente em `PENDENTE`, o marco zero do SLA é o `criadoEm` (timestamp de criação da demanda).
 - Para demandas originadas de agendamento, o marco zero do SLA é a `dataAgendada` original (`T-0`), e não a transição antecipada para `PENDENTE` (`T-60`).
 - Se o atendimento ocorrer antes da `dataAgendada`, o tempo de atendimento é considerado zero.
 

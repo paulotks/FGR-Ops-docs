@@ -149,6 +149,7 @@ erDiagram
         uuid destinoQuadraId
         uuid destinoLoteId
         boolean transporteInterno
+        string descricaoAdicional
         uuid demandaGrupoId
         timestamp dataAgendada
         timestamp iniciadoEm

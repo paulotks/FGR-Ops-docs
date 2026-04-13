@@ -141,7 +141,7 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
   "descricaoAdicional": "string | null (opcional, recomendado para movimentação)",
   "urgencia": "ASAP | AGENDADA",
   "dataAgendada": "ISO8601 | null (obrigatório se urgencia=AGENDADA)",
-  "operadorAlocadoId": "uuid | null (apenas AdminOperacional / UsuarioInternoFGR)"
+  "operadorAlocadoId": "uuid | null (apenas AdminOperacional / SuperAdmin)"
 }
 ```
 

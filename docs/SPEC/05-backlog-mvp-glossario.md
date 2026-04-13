@@ -53,4 +53,5 @@ O motor de fila depende da coerência cadastral de `SetorOperacional`, `Quadra`,
 - **AuditLogCrossTenant**: log especializado para registrar acessos privilegiados de `SuperAdmin` e `Board` que transcendem o isolamento por obra.
 - **TurnoAjudante**: registro cronológico associado ao `RegistroExpediente` que mapeia a relação temporal entre ajudante e par operador-máquina.
 - **recalcular_fila**: ação administrativa que força a atualização imediata de scores pendentes numa obra com base nos pesos atuais.
+- **Perfilar** (`Iniciar Depois / Perfilar`): ação disponível no pop-up de notificação de nova demanda (`REQ-FUNC-013`). Quando o operador escolhe "Iniciar Depois (Perfilar)", a demanda permanece em `PENDENTE`, o pop-up é fechado e o operador retorna à tela de fila sem iniciar execução. Não há transição de estado — a demanda aguarda na fila pela ordem de score até o operador decidir iniciá-la.
 - ~~**SolicitacaoCancelamento**~~: entidade removida do MVP (DEC-019). O cancelamento de demandas em `EM_ANDAMENTO` pelo `Operador` passou a ser direto, com justificativa obrigatória registrada em `DemandaLog`, sem estado intermediário de aprovação gerencial.

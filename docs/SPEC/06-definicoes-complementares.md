@@ -83,6 +83,7 @@ Todos os eventos do servidor seguem o formato:
   "localDescricao": "string",
   "score": 0.0,
   "posicaoFila": 1,
+  "filaVazia": "boolean — true se a fila do operador estava vazia antes desta demanda ser enfileirada",
   "criadaEm": "ISO8601"
 }
 ```
@@ -141,9 +142,24 @@ Todos os eventos do servidor seguem o formato:
 ### Regras de deduplicação e estado visual
 
 - O evento `SLA_ALERT` é disparado **uma única vez** por demanda no instante `slaVencimentoEm`. O estado visual de "SLA vencido" na UI persiste até a demanda transitar para `EM_ANDAMENTO`, `CONCLUIDA` ou `CANCELADA`.
-- `DEMAND_QUEUED` com `prioridade = MAXIMA` deve acionar vibração no dispositivo via API Vibration do PWA (padrão `[200, 100, 200]`), além do destaque visual obrigatório definido em [03-fila-scoring-estados-sla.md](03-fila-scoring-estados-sla.md#regra-zero-hard-filter-destaque-e-score).
+- `DEMAND_QUEUED` deve acionar **vibração e alerta sonoro** no dispositivo quando qualquer uma das condições abaixo for verdadeira (união — `REQ-FUNC-013`):
+  - `filaVazia = true` (demanda chega a operador sem tarefas — qualquer prioridade), **ou**
+  - `prioridade = MAXIMA` (demanda crítica — qualquer estado de fila).
+  - **Vibração:** padrão `[200, 100, 200]` via API Vibration do PWA.
+  - **Som:** tom de 440 Hz por 300 ms gerado via Web Audio API (`OscillatorNode`), disparo único (não em loop). Não requer arquivo de áudio externo.
+  - Quando nenhuma das condições é verdadeira (`filaVazia = false` e prioridade `ELEVADA` ou `NORMAL`), a fila é atualizada silenciosamente sem vibração nem som.
+- `DEMAND_QUEUED` também é emitido quando uma demanda `AGENDADA` transita automaticamente para `PENDENTE` (janela T-60 min). O campo `filaVazia` reflete o estado real da fila do operador no momento da transição; o comportamento de vibração/som segue as mesmas regras acima.
 - `SLA_ESCALATION` não é deduplicado — cada etapa de escalação gera um evento distinto.
 - `DEMAND_STATUS_CHANGED` é sempre emitido, independentemente de quem realizou a ação (operador, admin ou sistema).
+
+### Comportamento de pop-up na reconexão após offline
+
+Quando o operador estava offline durante o enfileiramento de uma demanda (`DEMAND_QUEUED` não recebido), o pop-up de notificação deve ser exibido retroativamente ao reconectar (`REQ-ACE-009`, Cenário 5):
+
+1. O cliente persiste em `IndexedDB` o estado da fila a cada atualização bem-sucedida (incluindo se estava vazia).
+2. Ao reconectar, o cliente reidrata a fila via `GET /operadores/:id/fila`.
+3. Se o último estado salvo indicava fila vazia **e** a fila reidratada contém pelo menos uma demanda em `PENDENTE`, o cliente exibe o pop-up como se o `DEMAND_QUEUED` tivesse sido recebido em tempo real (com `filaVazia = true`).
+4. O pop-up de reconexão não é exibido se a fila já estava ativa antes do período offline (estado salvo indicava fila não vazia).
 
 ### Degradação graceful
 
