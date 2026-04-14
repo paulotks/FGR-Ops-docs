@@ -1,0 +1,28 @@
+\usepackage{newunicodechar}
+\usepackage{pifont}
+\usepackage{amssymb}
+
+% Tabelas: quebra automática de linha em células longas
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+% Reduz padding horizontal das células (padrão 6pt é largo demais para tabelas densas)
+\setlength{\tabcolsep}{4pt}
+% Alinha tabelas longas à margem esquerda (sem indent automático)
+\setlength{\LTleft}{0pt}
+\setlength{\LTright}{0pt}
+
+% Setas e operadores matemáticos usados em texto
+\newunicodechar{↔}{\ensuremath{\leftrightarrow}}
+\newunicodechar{→}{\ensuremath{\rightarrow}}
+\newunicodechar{←}{\ensuremath{\leftarrow}}
+\newunicodechar{≥}{\ensuremath{\geq}}
+\newunicodechar{≤}{\ensuremath{\leq}}
+\newunicodechar{≠}{\ensuremath{\neq}}
+
+% Marcadores de checklist
+\newunicodechar{✓}{\ding{51}}
+\newunicodechar{✗}{\ding{55}}
+\newunicodechar{✔}{\ding{52}}
+\newunicodechar{✘}{\ding{56}}
