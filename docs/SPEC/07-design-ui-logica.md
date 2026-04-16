@@ -1,6 +1,6 @@
 ---
 id: 07-design-ui-logica
-title: Logica de Interface e UX (Angular 20)
+title: Logica de Interface e UX (React + Vite + Tailwind + shadcn/ui)
 area: UI/UX e Frontend
 ---
 
@@ -8,7 +8,7 @@ area: UI/UX e Frontend
 
 **Rastreio PRD:** `REQ-JOR-001`, `REQ-JOR-002`, `REQ-JOR-003`, `REQ-JOR-004`, `REQ-JOR-005`, `REQ-RBAC-001`, `REQ-RBAC-002`, `REQ-RBAC-003`, `REQ-RBAC-004`, `REQ-RBAC-005`, `REQ-RBAC-006`, `REQ-FUNC-001`, `REQ-FUNC-008`, `REQ-FUNC-009`, `REQ-FUNC-011`, `REQ-FUNC-013`, `REQ-NFR-002`, `REQ-ACE-006`
 
-Este documento serve como a **ponte visual e técnica** entre as regras de negócio documentadas (RBAC, Fila, SLAs) e a implementação no Angular 20. Ele define as estruturas das telas que posteriormente serão prototipadas e desenvolvidas.
+Este documento serve como a **ponte visual e técnica** entre as regras de negócio documentadas (RBAC, Fila, SLAs) e a implementação em **React 19 com Vite, Tailwind CSS e shadcn/ui** (DEC-021). Ele define as estruturas das telas que posteriormente serão prototipadas e desenvolvidas.
 
 ## 1. Hierarquia de Telas (Screen Flows)
 
@@ -42,7 +42,7 @@ O empreiteiro pode cancelar demandas da sua autoria enquanto estas estiverem no 
    - Card desaparece da lista ativa; Toast de confirmação exibido: *"Demanda #[ID] cancelada."*
 4. **Restrição de estado:** o botão "Cancelar" é renderizado **somente** para demandas em `PENDENTE`. Para demandas em `EM_ANDAMENTO`, `CONCLUIDA` ou `CANCELADA`, o empreiteiro não visualiza a opção de cancelamento.
 
-> **DEC-013:** Justificativa obrigatória (mínimo 10 caracteres), alinhada à exigência de trilha auditável de `REQ-ACE-006`. O componente `ActionButton` aplica a guard de permissão RBAC — demandas de autoria de terceiros não exibem o botão.
+> **DEC-013:** Justificativa obrigatória (mínimo 10 caracteres), alinhada à exigência de trilha auditável de `REQ-ACE-006`. O componente `<ActionButton>` aplica a guard de permissão RBAC via hook — demandas de autoria de terceiros não exibem o botão.
 
 ### 1.2 Mobile do Operador (Execução no Campo)
 **Objetivo:** Foco absoluto na demanda de maior prioridade. O operador não escolhe demandas, apenas segue a fila imposta pelo algoritmo de SLA.
@@ -102,7 +102,7 @@ O comportamento ao receber uma nova demanda difere conforme o estado atual da fi
 
 ## 2. Mapeamento Visual de Estados (State-to-UI Mapping)
 
-Como cada transição formal da Máquina de Estados se reflete na tela (aplicando as decisões do Angular 20):
+Como cada transição formal da Máquina de Estados se reflete na tela:
 
 | Estado da Demanda | Alteração Visual na UI do Empreiteiro (Mobile) | Alteração Visual na UI do Operador (Mobile) | Alteração Visual Supervisor (Dashboard) |
 | --- | --- | --- | --- |
@@ -116,21 +116,24 @@ Como cada transição formal da Máquina de Estados se reflete na tela (aplicand
 
 ---
 
-## 3. Componentes-Chave & Padrões Angular 20
+## 3. Componentes-Chave & Padrões React + Vite + Tailwind + shadcn/ui
 
 Para alcançar a experiência ideal e escalável solicitada para toda a suíte FGR Ops Web, aplicaremos:
 
-1.  **Componentes Reativos baseados em Signals:**
-    Implementação pesada do paradigma Zoneless (`providedIn: 'root'`) suportado no Angular 20.
-    As reordenações de fila de demandas devem ocorrer sem *flicker* usando Signals vinculados a coleções (`signal<Demand[]>`).
+1.  **Componentes reativos com React Hooks + Zustand + TanStack Query:**
+    Coleções de demandas são gerenciadas por **TanStack Query** (cache server-state, invalidação por evento WebSocket conforme `INVALIDATE_QUEUE` de `SPEC/06`) e stores **Zustand** para estado client-only (filtros ativos, seleções de kanban, flags de UI).
+    As reordenações de fila devem ocorrer sem *flicker* — o padrão é `useQuery` com `keepPreviousData: true` e atualização otimista ao receber eventos WebSocket, evitando remount de cards durante transições.
 
-2.  **Sistema de Formulários Validados:**
-    Utilizaremos Reactive Forms, integrando a tipagem estrita com Zod ou Valibot (alinhado a DTOs de Backend) para os pedidos no "Mobile Empreiteiro" e os formulários de "Justificativa de Pausa".
+2.  **Sistema de formulários validados com `react-hook-form` + `zod`:**
+    Schemas **zod** residem em `packages/schemas` e são compartilhados com `apps/api` (NestJS) e o futuro `apps/mobile` (React Native/Expo) — fonte única de validação. O integrador `@hookform/resolvers/zod` injeta os schemas nos formulários do "Mobile Empreiteiro" (criação de demanda), "Justificativa de Pausa" (operador), "Cancelamento com justificativa" (empreiteiro/operador) e telas de cadastro (admin). Mensagens de erro são localizadas em PT-BR.
 
 3.  **Alertas de SLA / Status Indicators (Badges):**
-    Componentes granulares puramente CSS com variância controlada via input de data binding. Evitaremos UI genéricas; as cores seguirão a importância do negócio (Ex: `status-danger` para SLA corrompido, `status-info` para aguardando).
+    Componentes construídos sobre **shadcn/ui Badge** (copiado para o repositório) com variantes tipadas via `class-variance-authority` e classes utilitárias **Tailwind**. As variantes seguem a importância do negócio — `status-danger` (SLA violado), `status-warning` (pausado/alerta), `status-success` (em execução), `status-info` (aguardando). Cores idênticas ao Design System em `docs/UI-DESIGN.md`.
 
-4.  **Botões de Ação Contextuais:**
-    Componente visual `ActionButton` que consome o guard de permissões (RBAC). Se a demanda não pode ser cancelada pelo perfil logado, ou se a State Machine não permitir, o CSS de `disabled` entra automaticamente.
+4.  **Botões de ação contextuais (`<ActionButton>`):**
+    Componente React que consome dois hooks: `usePermission(permissionKey)` (avalia RBAC do usuário autenticado contra a matriz de `SPEC/04`) e `useStateMachine(demanda, acao)` (consulta transições válidas de `SPEC/03`). Se qualquer um retornar `false`, o botão é renderizado desabilitado (`aria-disabled="true"`, estado visual Tailwind `opacity-50 cursor-not-allowed`) ou completamente ocultado conforme conveniência da tela (ex.: no card do empreiteiro, demandas alheias simplesmente não mostram "Cancelar").
+
+5.  **PWA / Service Worker:**
+    **`vite-plugin-pwa`** (Workbox) configura estratégias de cache aderentes a `SPEC/06#estrategia-pwa-offline`: Cache First para fila do operador, Network Only para expedientes de outros dias, Offline Queue via IndexedDB para payloads transacionais (iniciar/concluir/pausar demanda, check-in/out). Banner de status offline e sync widget implementados como componentes React com Zustand local.
 
 ---

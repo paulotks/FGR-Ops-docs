@@ -15,8 +15,8 @@ O foco inicial (MVP) é restrito ao módulo **Machinery Link**, responsável por
 
 **Rastreio PRD:** REQ-OBJ-002, REQ-OBJ-004, REQ-OBJ-005, REQ-SCO-001, REQ-SCO-004, REQ-SCO-005
 
-- **Estratégia Mobile-First**: PWA responsivo no MVP para operadores em campo utilizarem smartphones; na Fase 2, evoluir para experiência móvel nativa ou shell dedicado (decisão de canal a confirmar no roadmap de produto), sem prescrever framework de UI concreto neste documento.
-- **Ecossistema unificado**: Monorepo gerenciado via Turborepo compartilhando tipos (TypeScript) entre Frontend e Backend.
+- **Estratégia Mobile-First**: PWA responsivo no MVP (React 19 + Vite — DEC-021) para operadores em campo utilizarem smartphones; na Fase 2, aplicativo mobile em React Native (Expo) consumindo os mesmos packages compartilhados do web (DEC-023), sem retrabalho de schemas, tipos, lógica de domínio ou cliente de API.
+- **Ecossistema unificado**: Monorepo gerenciado via Turborepo compartilhando tipos (TypeScript), validações (zod), cliente de API e regras puras de domínio entre `apps/api` (NestJS), `apps/web` (React+Vite) e futuro `apps/mobile` (React Native/Expo).
 - **Isolamento e Escalabilidade**: Separação clara entre o core de regras de negócio lógicas (DDD puro) e frameworks/adapters técnicos.
 - **Multi-tenancy lógico**: Segregação de dados por obra no mesmo banco de dados (SQL Server), filtrado automaticamente via middleware.
 - **Segurança por design**: Autenticação JWT com access token de curta expiração e refresh token rotativo. Controle de acesso granular baseado em perfis (RBAC) cobrindo transições de estado, endpoints e verbos HTTP. Rate limiting nos endpoints de autenticação e criação de demanda. Bypass de multi-tenancy para perfis cross-tenant (SuperAdmin, Board) implementado via lógica condicional no middleware, com auditoria dedicada. Política de autenticação segmentada por perfil (Campo vs Administrativo) conforme D6, cobrindo palavra-passe forte, autenticação simplificada por PIN e controles compensatórios de segurança.
@@ -28,16 +28,20 @@ O foco inicial (MVP) é restrito ao módulo **Machinery Link**, responsável por
 **Rastreio PRD:** REQ-OBJ-001, REQ-SCO-001, REQ-NFR-002
 
 O sistema é estruturado num Monorepo (Turborepo):
-- `apps/web`: Frontend em **Angular** (major estável **20**; baseline canónica alinhada a `REQ-NFR-002`) para todos os perfis. Validar o patch mais recente da série **20.x** no momento da implementação antes de fixar dependências de build.
-- `apps/api`: Backend em NestJS 10+ fornecendo endpoints REST.
-- `packages/[dominio]/core`: Módulos de domínio puros sem dependência de framework.
-- `packages/types`, `config`, `utils`: Pacotes compartilhados.
+- `apps/web`: Frontend em **React 19** com build tool **Vite**, design system **Tailwind CSS + shadcn/ui**, roteamento **TanStack Router**, data fetching **TanStack Query**, formulários **react-hook-form + zod**, estado cliente **Zustand** e PWA via **vite-plugin-pwa** (Workbox). Entregue como export estático (SPA) — ver DEC-021.
+- `apps/api`: Backend em NestJS 10+ fornecendo endpoints REST e WebSocket Gateway.
+- `apps/mobile` *(prevista para fase posterior — DEC-023)*: aplicativo React Native (Expo) que consumirá os mesmos packages compartilhados.
+- `packages/types`: Tipos TypeScript (DTOs, enums de domínio) — fonte única de contratos entre frontend(s) e backend.
+- `packages/schemas`: Validações **zod** reutilizáveis em web e mobile.
+- `packages/api-client`: Funções tipadas de chamada HTTP (agnóstico a ambiente).
+- `packages/domain`: Regras puras de domínio (scoring, SLA, transições de estado), sem dependência de framework.
+- `packages/config`, `packages/utils`: Configurações (ESLint, TS, Tailwind preset) e utilitários comuns.
 
 ### Decisões Arquiteturais (ADRs) {#decisoes-arquiteturais-adrs}
 
 **Rastreio PRD:** REQ-SCO-001, REQ-OBJ-002, REQ-NFR-002
 
-1. **D1: Monorepo com Turborepo**: Facilita o compartilhamento de DTOs e tipagem ponta a ponta.
+1. **D1: Monorepo com Turborepo**: Facilita o compartilhamento de DTOs e tipagem ponta a ponta. Packages compartilhados (`packages/types`, `packages/schemas`, `packages/api-client`, `packages/domain`) preparam reutilização entre `apps/web` (React) e futuro `apps/mobile` (React Native/Expo) — ver DEC-023.
 2. **D2: SQL Server com Prisma ORM**: Aproveita a familiaridade da equipe com SQL Server e forte aderência typesafety do Prisma.
 3. **D3: Autenticação JWT com RBAC**: Uso de Guards no NestJS para validar sessões e permissões no contexto de operações, transições e obras.
    - **Access Token**: Expiração de 15 minutos (> Decisão: 15 minutos para reduzir janela de exposição em campo). Curto o suficiente para limitar janela de abuso em caso de furto físico de smartphone.
@@ -57,7 +61,7 @@ O sistema é estruturado num Monorepo (Turborepo):
 
 > Decisão: O modelo de bypass condicional no middleware foi preferido ao modelo de "supertenant" (tenant especial que contém todos os dados) por manter a lógica de isolamento centralizada em um único ponto da infraestrutura, reduzindo risco de vazamento por query mal construída.
 
-6. **D7: Frontend web em Angular (`apps/web`)**: Cliente PWA no monorepo com **Angular** major **20** (linha estável; validar patch **20.x** ao fixar dependências). Cobre retaguarda e campo no mesmo código base web; alinhado a `REQ-NFR-002`.
+6. **D7: Frontend web em React + Vite (`apps/web`)**: Cliente PWA no monorepo construído em **React 19** com build tool **Vite**, design system **Tailwind CSS + shadcn/ui** (componentes copiados para o repositório, sem dependência runtime), roteamento **TanStack Router**, data fetching e cache **TanStack Query**, formulários **react-hook-form + zod**, estado cliente **Zustand** e Service Worker via **vite-plugin-pwa** (Workbox) — cobrindo a estratégia offline de `SPEC/06`. A aplicação é entregue como **export estático (SPA)** servido diretamente pelo IIS em Windows Server; o NestJS é gerenciado por PM2 em loopback, com IIS atuando como reverse proxy de `/api/*` e `/ws` (WebSocket Gateway). Ver DEC-021 (stack) e DEC-022 (infraestrutura de deploy). Alinhado a `REQ-NFR-002`. *Supersede DEC-007 (Angular 20) e DEC-008 (Zoneless/Signals), que permanecem registrados no log por imutabilidade append-only.*
 
 ### D6: Política de Autenticação e Palavra-passe - segmentação por perfil {#politica-autenticacao-senha}
 

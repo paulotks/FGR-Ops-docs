@@ -1,2 +1,4 @@
 export/
 export
+.claude/settings.json
+.env

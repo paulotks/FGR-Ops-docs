@@ -11,7 +11,7 @@ Pacote modular de especificação técnica. Resumos abaixo; conteúdo migrado a 
 | [04-rbac-permissoes.md](04-rbac-permissoes.md) | RBAC e permissões | Perfis, regras de isolamento, bypass cross-tenant e matrizes completas de autorização. | REQ-RBAC-001…006, REQ-ACE-001, REQ-ACE-008 | *opcional TECH-RBAC-* |
 | [05-backlog-mvp-glossario.md](05-backlog-mvp-glossario.md) | Backlog MVP e glossário | Delimitação do MVP, itens adiados para Fase 2 e glossário técnico comum. | REQ-SCO-F2-001…006, REQ-RISK-001 | — |
 | [06-definicoes-complementares.md](06-definicoes-complementares.md) | Definições complementares | Offline PWA, comportamento de agendamentos, adiamento de `ServicoDinamico` e rastreabilidade de ajudantes. | REQ-NFR-002, REQ-FUNC-004, REQ-FUNC-006, REQ-FUNC-009, REQ-RISK-002, REQ-MET-003 | — |
-| [07-design-ui-logica.md](07-design-ui-logica.md) | Lógica e UX | Hierarquia de Telas (Empreiteiro, Operador, Supervisor), mapeamento visual e Angular 20. | REQ-JOR-001 | — |
+| [07-design-ui-logica.md](07-design-ui-logica.md) | Lógica e UX | Hierarquia de Telas (Empreiteiro, Operador, Supervisor), mapeamento visual e padrões React + Vite + Tailwind + shadcn/ui (DEC-021). | REQ-JOR-001 | — |
 | [08-api-contratos.md](08-api-contratos.md) | Contratos de API REST | Endpoints por recurso, HTTP verbs, schemas request/response, erros operacionais e rate limiting. | REQ-NFR-005, REQ-NFR-006, REQ-FUNC-001…010 | — |
 | [../UI-DESIGN.md](../UI-DESIGN.md) | Design System | Identidade visual, paleta, tipografia e especificações de telas. Derivado de 07-design-ui-logica.md. | REQ-NFR-002, REQ-JOR-001 | — |
 

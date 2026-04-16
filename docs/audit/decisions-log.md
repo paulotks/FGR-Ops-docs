@@ -165,7 +165,7 @@ Este registo centraliza as decisões de produto necessárias antes das correçõ
 
 ## DEC-007 — Stack de frontend web: Angular 20 (PWA)
 
-- **Estado:** Decidido
+- **Estado:** Superseded por DEC-021 (2026-04-16)
 - **Data:** 2026-03-25
 - **Participantes:** Produto, Engenharia, Arquitetura
 - **Contexto:** alinhar documentacao canonica de plataforma a uma stack de frontend moderna e estavel, substituindo referencias legadas a Next.js e evitando roadmap de Fase 2 prescriptivo em React Native quando a decisao de canal movel ainda e aberta.
@@ -184,7 +184,7 @@ Este registo centraliza as decisões de produto necessárias antes das correçõ
 
 ## DEC-008 — Paradigma Zoneless e Signals como padrão de reatividade (Angular 20)
 
-- **Estado:** Decidido
+- **Estado:** Superseded por DEC-021 (2026-04-16)
 - **Data:** 2026-03-26
 - **Participantes:** Produto, Engenharia, Arquitetura
 - **Contexto:** Após fixar Angular 20 como baseline (DEC-007), alinhar o padrão de reatividade do frontend para garantir performance adequada na fila de demandas em tempo real e nos indicadores de SLA.
@@ -424,6 +424,96 @@ Este registo centraliza as decisões de produto necessárias antes das correçõ
   - `SPEC/04-rbac-permissoes.md`: Perfil #4 reescrito; matrix atualizada (`cancel`, `allocate` → ✗ para `UsuarioInternoFGR` em demanda e demanda-grupo); estado da demanda (Lacuna 2) atualizado.
   - `SPEC/03-fila-scoring-estados-sla.md`: Tabela de transições por perfil atualizada — `UsuarioInternoFGR` removido de `criar_com_data`, `antecipar`, `cancelar` (AGENDADA e PENDENTE), `allocate` (PENDENTE), `devolver` (EM_ANDAMENTO).
   - `PRD/03-requisitos-funcionais.md`: `REQ-FUNC-006` — `operadorAlocadoId` na criação restrito a `AdminOperacional` e `SuperAdmin`.
+
+---
+
+## DEC-021 — Stack de frontend web: Vite + React 19 (PWA), Tailwind + shadcn/ui
+
+- **Estado:** Decidido
+- **Data:** 2026-04-16
+- **Participantes:** Produto, Engenharia, Arquitetura
+- **Contexto:** A stack de frontend definida em DEC-007 (Angular 20) e DEC-008 (Zoneless/Signals) foi revisitada à luz de três constraints reais que não tinham sido ponderados conjuntamente na decisão original: (a) compromisso de roadmap para aplicativo mobile em React Native (Expo), (b) equipe composta por desenvolvedor solo com experiência básica em React e sem experiência em Angular profundo nem em React Native, (c) infraestrutura de deploy fornecida pela FGR é Windows Server com IIS e PM2, sem opção de ambiente serverless/Edge. A combinação Angular web + React Native mobile obriga o dev solo a sustentar dois mental models de frontend incompatíveis. Next.js foi considerado como alternativa em React, mas descartado porque várias de suas features diferenciais (ISR, middleware Edge, otimização de imagens, Server Actions) assumem ambiente Vercel-like e funcionam parcialmente ou não funcionam em Windows/IIS — pagar a taxa de framework sem receber a contraparte.
+- **Opções em análise:**
+  - A) Manter Angular 20 + NestJS conforme DEC-007 e manter React Native como segunda stack separada na Fase 2.
+  - B) Migrar para Expo Router universal (React Native Web) com a mesma codebase web+mobile.
+  - C) Migrar para Next.js 15 (App Router) + NestJS com export estático.
+  - D) Migrar para **Vite + React 19** (SPA com export estático) + NestJS + ecossistema React moderno (TanStack Router, TanStack Query, react-hook-form, zod, Zustand) + **Tailwind CSS + shadcn/ui** como design system + **vite-plugin-pwa** (Workbox) para PWA.
+- **Decisão:** D) **Vite + React 19** como stack de frontend web do monorepo (`apps/web`). Ecossistema: **TanStack Router** (roteamento type-safe), **TanStack Query** (data fetching / cache / invalidation), **react-hook-form + zod** (formulários e validação), **Zustand** (estado cliente), **Tailwind CSS + shadcn/ui** (design system — componentes copiados para o repo, não dependência runtime), **vite-plugin-pwa** (Service Worker/Workbox — aderente a `REQ-NFR-002` e estratégia PWA offline de `SPEC/06`). Backend NestJS, banco SQL Server + Prisma, cache/auth Redis + JWT e monorepo Turborepo + pnpm permanecem inalterados (DEC-022 formaliza o deploy e DEC-023 formaliza a preparação para mobile React Native).
+- **Justificação:** A reutilização de mental model, bibliotecas (TanStack Query, zod, react-hook-form) e tipos entre web e futuro mobile RN é o maior multiplicador de produtividade disponível para dev solo. Angular não oferece essa reutilização. Vite entrega build estático que é servido nativamente pelo IIS sem Node em path de resposta — simpler e mais aderente à infra Windows do que Next.js. Tailwind + shadcn/ui (copy-paste ownership, sem dependência runtime) equilibra independência com produtividade, evitando o custo de escrever do zero primitivas de acessibilidade (focus trap, keyboard nav, ARIA) em pura Sass. Opção B (Expo universal) foi descartada por obrigar dev a aprender React Native antes de qualquer entrega web, com risco alto de não-entrega; pode ser revisitada no futuro se o mobile se tornar prioridade imediata. Opção C (Next.js) foi descartada pelo acoplamento a Vercel para features diferenciais e pela ausência de benefício (app interno autenticado, sem SEO, sem SSR obrigatório).
+- **Supersede:** DEC-007 (Angular 20 como baseline) e DEC-008 (Zoneless/Signals como paradigma de reatividade). Ambas passam ao estado *Superseded*; permanecem no log por imutabilidade append-only.
+- **Restrições MVP:**
+  - Export estático obrigatório (`vite build` gera pasta `dist/` servível pelo IIS sem runtime Node no frontend).
+  - PWA via `vite-plugin-pwa` — estratégias de cache e Service Worker aderentes ao `SPEC/06` (Cache First para fila, Offline Queue para transacionais, Network Only para expedientes de outros dias).
+  - Componentes shadcn/ui são **copiados para o repositório** (CLI add); não há dependência runtime do pacote "shadcn-ui".
+  - TanStack Router preferido a React Router pela tipagem estrita e pela geração de rotas type-safe (alinhado ao compartilhamento com backend via `packages/types`).
+- **Achados resolvidos:** *(n/a — decisão arquitectural documental que revê DEC-007/DEC-008 à luz de novos constraints não-contemplados na decisão original.)*
+- **Aplicação (2026-04-16):**
+  - `PRD/04-requisitos-nao-funcionais.md`: `REQ-NFR-002` atualizado — Angular 20 → React 19 + Vite; menção a Tailwind + shadcn/ui; remoção das notas de patch 20.x; referência a DEC-021.
+  - `SPEC/00-visao-arquitetura.md`: §2 Visão Macro atualizada (nova stack em `apps/web`, `apps/mobile` previsto para Fase 2, packages compartilhados); ADR **D7** revista com conteúdo Vite + React; nota em **D1** sobre reuso mobile.
+  - `SPEC/07-design-ui-logica.md`: frontmatter, intro e §3 reescritos para padrões React (Hooks, Zustand, react-hook-form+zod, Tailwind+shadcn/ui, `ActionButton` React com hook RBAC).
+  - `SPEC/_index.md`: resumo da linha 07 atualizado.
+  - `SPEC/08-api-contratos.md`: linha 11 atualizada (Angular 20 → React 19).
+  - `docs/traceability.md`: linha `REQ-NFR-002` atualizada com nova stack e referências DEC-021/022/023.
+  - `docs/tests/plano-testes.md`: linha 149 atualizada.
+  - `CLAUDE.md`: target stack e ADR D7 atualizados; próxima DEC disponível = DEC-024.
+
+---
+
+## DEC-022 — Infraestrutura de deploy: Windows Server + IIS + PM2
+
+- **Estado:** Decidido
+- **Data:** 2026-04-16
+- **Participantes:** Produto, Arquitetura, Infraestrutura (FGR)
+- **Contexto:** A FGR disponibiliza exclusivamente **Windows Server** com **IIS** e **PM2** como infraestrutura operacional; não há opção de hospedagem serverless, Edge, Linux ou containers gerenciados. A stack anterior (Angular + NestJS) não tinha a arquitetura de deploy formalizada em documentação SPEC/INFRA. Com a mudança de stack (DEC-021), foi necessário também formalizar como o novo stack web (Vite + React, export estático) e o backend (NestJS) coexistem na infraestrutura Windows, evitando anti-padrões (ex.: uso de `iisnode`, abandonado desde 2018).
+- **Opções em análise:**
+  - A) IIS servindo tanto estáticos quanto Node via `iisnode`.
+  - B) PM2 puro expondo NestJS diretamente à internet.
+  - C) **IIS como reverse proxy + servidor de estáticos; PM2 como process manager do NestJS em loopback.**
+- **Decisão:** C) Arquitetura em duas camadas sobre a mesma máquina Windows:
+  1. **IIS (porta 443, HTTPS, certificado Windows)** — serve os arquivos estáticos do `apps/web` (saída do `vite build`) diretamente do sistema de arquivos; aplica URL Rewrite com **Application Request Routing (ARR)** para reverse-proxy de `/api/*` e `/ws` → `http://localhost:3000` (NestJS). Terminação TLS, compressão, HTTP/2, caching e headers de segurança são responsabilidade do IIS. Fallback SPA: toda rota não-correspondida a arquivo serve `index.html`.
+  2. **PM2 (via `pm2-windows-service`)** — gerencia o processo NestJS (`apps/api/dist/main.js`) em `localhost:3000` (loopback only, nunca exposto diretamente). Responsável por auto-restart em crash, logs rotativos, zero-downtime reload, inicialização no boot do Windows via `pm2 startup` + `pm2 save`. Cluster mode opcional conforme carga.
+- **Justificação:** IIS é excelente a servir estáticos (HTTP/2, caching, compressão, Windows auth opcional) e a terminar TLS com certificados Windows. Node é ótimo a servir APIs dinâmicas mas mal gerenciador de TLS/estáticos em produção. Separar responsabilidades evita anti-padrões: `iisnode` está abandonado desde ~2018 com memory leaks em cargas reais; PM2 puro perderia os benefícios nativos do IIS. Loopback-only no NestJS reduz superfície de ataque — só a porta 443 é exposta. A arquitetura é independente de stack de frontend (vale para Vite+React ou qualquer futura SPA estática).
+- **Restrições MVP:**
+  - NestJS nunca exposto diretamente à internet; porta 3000 em loopback apenas.
+  - Deploy do frontend = `pnpm --filter web build` → copiar pasta `dist/` para diretório raiz do site IIS.
+  - Deploy do backend = `pnpm --filter api build` + `pm2 reload fgr-ops-api` (zero-downtime).
+  - Logs centralizados em `C:\logs\fgr-ops-api\` com rotação por PM2.
+  - Configuração do IIS (`web.config`, URL Rewrite rules, ARR) e do PM2 (`ecosystem.config.js`) documentados em `docs/INFRA.md`.
+  - WebSocket (`/ws`) proxy com upgrade preservado — requer IIS 8.5+ com WebSocket Protocol feature habilitada.
+- **Achados resolvidos:** *(n/a — decisão arquitectural documental sobre infra.)*
+- **Aplicação (2026-04-16):**
+  - `SPEC/00-visao-arquitetura.md`: referência à arquitetura de deploy adicionada à ADR D7 revista (DEC-021 e DEC-022).
+  - `docs/INFRA.md`: reescrita incluindo nova seção "Deploy em Windows Server + IIS + PM2" com passo a passo (habilitar ARR, criar rewrite rules, instalar `pm2-windows-service`, `ecosystem.config.js`, layout de pastas).
+  - `docs/traceability.md`: nota em `REQ-NFR-002` referenciando DEC-022.
+
+---
+
+## DEC-023 — Preparação do monorepo para aplicativo mobile React Native (Expo) via packages compartilhados
+
+- **Estado:** Decidido
+- **Data:** 2026-04-16
+- **Participantes:** Produto, Arquitetura
+- **Contexto:** O roadmap prevê um aplicativo mobile em **React Native (Expo)** após a estabilização do web MVP. Sem preparação estrutural no monorepo, haveria risco de duplicação de lógica (schemas zod, tipos, chamadas de API, regras de domínio) entre `apps/web` e `apps/mobile`, perdendo o principal ganho de produtividade possível para um desenvolvedor solo (reutilização cross-stack). A decisão de stack web em React (DEC-021) abre caminho natural para compartilhamento via packages.
+- **Opções em análise:**
+  - A) Não preparar monorepo agora; adicionar `apps/mobile` quando chegar o momento, sem compartilhamento.
+  - B) Expo Router universal (mesma codebase web+mobile via React Native Web) — ponderado e descartado em DEC-021.
+  - C) **Monorepo preparado com packages compartilhados `packages/types`, `packages/schemas`, `packages/api-client`, `packages/domain` que `apps/web` consome desde já e `apps/mobile` futuramente consumirá.**
+- **Decisão:** C) Packages compartilhados como ponte entre web e mobile:
+  1. **`packages/types`** — Tipos TypeScript derivados do NestJS (DTOs, enums de domínio, respostas de API). Fonte única de verdade para contratos.
+  2. **`packages/schemas`** — Validações **zod** (login, criação de demanda, transições de estado, payloads de check-in). Reutilizáveis em React web e React Native.
+  3. **`packages/api-client`** — Funções tipadas de chamada HTTP que consomem `types` e validam respostas via `schemas`. Agnóstico a ambiente (funciona em Node, browser, React Native).
+  4. **`packages/domain`** — Regras puras de domínio (cálculo de score, transições de estado, cálculo de SLA, validação de agrupamento de demandas). Sem dependências de framework.
+- **Justificação:** Preparar estrutura agora tem custo baixíssimo (criação de pastas + `pnpm-workspace.yaml` + configuração do Turborepo) e destrava ganho enorme quando o mobile entrar. `apps/mobile` (Expo) consumirá os mesmos 4 packages sem duplicação — 70% do valor de uma solução universal (Opção B) sem pagar o custo de aprender React Native antes de entregar o web. Estrutura também beneficia `apps/web` imediatamente: evita importação cross-app desorganizada e reforça separação de camadas DDD (domínio puro em `packages/domain`, infra em `apps/api`).
+- **Restrições MVP:**
+  - `apps/mobile` **não** é criado no MVP — apenas a estrutura de packages é preparada e consumida por `apps/web`.
+  - `packages/domain` **não** deve importar de `apps/api` nem conhecer infra (Prisma, HTTP, Redis). Contém apenas lógica pura.
+  - `packages/api-client` usa `fetch` nativo (padrão em Node 18+, browser e React Native) — sem dependência em axios, garantindo portabilidade.
+  - Tipos do Prisma (`apps/api/prisma/schema.prisma`) **não** são exportados diretamente para `packages/types` (acoplamento indesejado). Em vez disso, DTOs explícitos em `packages/types` são mantidos em paridade manual com schema via code review.
+- **Achados resolvidos:** *(n/a — decisão arquitectural documental.)*
+- **Aplicação (2026-04-16):**
+  - `SPEC/00-visao-arquitetura.md`: §2 Visão Macro atualizada listando packages compartilhados com propósito; nota em ADR **D1** referenciando DEC-023 e preparação para mobile RN.
+  - `docs/INFRA.md`: estrutura do monorepo ilustra os 4 packages e `apps/mobile` previsto como comentário.
+  - `docs/traceability.md`: nota em `REQ-NFR-002` referenciando DEC-023 (preparação mobile).
 
 ---
 

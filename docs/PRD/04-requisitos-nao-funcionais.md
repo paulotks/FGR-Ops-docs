@@ -12,10 +12,11 @@ O produto deve ser implementado num monorepo em `Turborepo`, separando frontends
 
 ### `REQ-NFR-002` Interface mobile-first em PWA
 
-O acesso operacional de campo deve privilegiar um `Progressive Web App` responsivo em `Angular` na linha major estável **20**, com usabilidade mobile-first e base para funcionamento resiliente em cenários de conectividade instável. **Baseline canónica:** major **20**; validar o patch mais recente da série **20.x** no momento da implementação antes de fixar dependências de build.
+O acesso operacional de campo deve privilegiar um `Progressive Web App` responsivo construído em `React 19` com build tool `Vite`, design system `Tailwind CSS` + `shadcn/ui` e Service Worker via `vite-plugin-pwa` (Workbox), com usabilidade mobile-first e base para funcionamento resiliente em cenários de conectividade instável (DEC-021). A aplicação é entregue como export estático (SPA) servido diretamente pelo IIS em Windows Server (DEC-022). Packages compartilhados (`packages/types`, `packages/schemas`, `packages/api-client`, `packages/domain`) preparam a reutilização de lógica e tipos para o futuro aplicativo mobile em `React Native` (Expo), cuja implementação fica prevista para fase posterior (DEC-023).
 
 -> SPEC: [../SPEC/00-visao-arquitetura.md#visao-geral](../SPEC/00-visao-arquitetura.md#visao-geral)
 -> SPEC: [../SPEC/06-definicoes-complementares.md#estrategia-pwa-offline](../SPEC/06-definicoes-complementares.md#estrategia-pwa-offline)
+-> SPEC: [../SPEC/07-design-ui-logica.md](../SPEC/07-design-ui-logica.md)
 
 ### `REQ-NFR-003` Backend orientado a domínio com autenticação JWT
 

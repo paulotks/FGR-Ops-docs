@@ -8,7 +8,7 @@ area: Backend / Integração
 
 **Rastreio PRD:** `REQ-NFR-005`, `REQ-NFR-006`, `REQ-NFR-007`, `REQ-FUNC-001`, `REQ-FUNC-002`, `REQ-FUNC-003`, `REQ-FUNC-004`, `REQ-FUNC-005`, `REQ-FUNC-006`, `REQ-FUNC-007`, `REQ-FUNC-008`, `REQ-FUNC-009`, `REQ-FUNC-010`, `REQ-FUNC-011`, `REQ-FUNC-012`, `REQ-RBAC-001…006`
 
-Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os schemas de request/response são validados via **Zod** ou **Valibot**, partilhados com o frontend Angular 20 através dos pacotes `packages/types` no monorepo (D1).
+Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os schemas de request/response são validados via **zod**, partilhados com o frontend `apps/web` (React 19 + Vite) e o futuro `apps/mobile` (React Native/Expo) através dos packages `packages/types` e `packages/schemas` no monorepo (D1, DEC-021, DEC-023).
 
 ---
 

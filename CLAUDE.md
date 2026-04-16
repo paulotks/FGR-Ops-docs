@@ -17,17 +17,17 @@
 | `MEMORY/` | Wake-up, journal, decisions, inbox |
 | Formato base | Markdown + front-matter YAML; ADRs D1–D7 em `SPEC/00` |
 
-**Target stack (referência de redação):** Angular 20 PWA · NestJS 10+ · Turborepo/pnpm · SQL Server + Prisma · JWT/Redis RBAC
+**Target stack (referência de redação):** Vite + React 19 PWA · Tailwind + shadcn/ui · TanStack Router/Query · react-hook-form + zod · Zustand · NestJS 10+ · Turborepo/pnpm · SQL Server + Prisma · JWT/Redis RBAC · Deploy Windows Server + IIS + PM2 · Mobile futuro: Expo + React Native
 
 | ADR | Decisão |
 |---|---|
-| D1 | Turborepo monorepo — DTOs compartilhados Angular/NestJS |
+| D1 | Turborepo monorepo — packages compartilhados (`types`, `schemas`, `api-client`, `domain`) entre web/mobile/backend |
 | D2 | SQL Server + Prisma ORM |
 | D3 | JWT + Redis blacklist + rate limiting |
 | D4 | Multi-tenancy lógico: `obraId` em todas as tabelas de negócio |
 | D5 | SuperAdmin/Board bypass tenant filter; acesso cross-tenant auditado |
 | D6 | Campo (Empreiteiro/Operador): PIN 6 dígitos; Admin: senha forte, rotação 180 dias |
-| D7 | Angular 20.x baseline; validar patch mais recente no lock |
+| D7 | Vite + React 19 + Tailwind + shadcn/ui (DEC-021, supersede DEC-007/DEC-008); deploy IIS estático + PM2/NestJS (DEC-022); mobile RN/Expo preparado (DEC-023) |
 
 ---
 
@@ -35,7 +35,7 @@
 
 - **PRD:** `REQ-<PREFIX>-<NNN>` — prefixes: `FUNC NFR ACE RBAC JOR CTX OBJ MET RISK`
 - **SPEC:** bloco `**Rastreio PRD:**` obrigatório em toda seção que referencie REQ-IDs
-- **Decisões táticas:** `DEC-NNN` em `decisions-log.md` — próxima: **DEC-021**
+- **Decisões táticas:** `DEC-NNN` em `decisions-log.md` — próxima: **DEC-024**
 - **ADRs:** `D1–D7` nas SPECs
 - **Cross-links:** PRD→SPEC `→ SPEC: path#anchor` · SPEC→PRD bloco `Rastreio PRD:`
 
@@ -109,14 +109,14 @@ Plataforma multi-tenant de operações de construção civil. MVP = **Machinery 
 
 ---
 
-## Current State (2026-04-09)
+## Current State (2026-04-16)
 
 | | Estado |
 |---|---|
 | PRD | 7 módulos estáveis (`00`–`06`); REQ-IDs: CTX-001…003, OBJ-001…005, SCO-001…005, SCO-F2-001…006, SCO-GAT-001…004, RBAC-001…006, JOR-001…005, FUNC-001…013, NFR-001…007, ACE-001…006+008, MET-001…003, RISK-001…002 |
 | SPEC | 9 módulos + UI-DESIGN.md; cobertura 62 cobertos / 2 parciais / 0 descobertos |
-| Decisions | Última: DEC-020 · Próxima: **DEC-021** |
-| OpsX ativos | Nenhum |
+| Decisions | Última: DEC-023 · Próxima: **DEC-024** |
+| OpsX ativos | `stack-frontend-vite-react` (em aplicação — DEC-021/022/023) |
 | Audit | 37 achados, todos resolvidos · `docs/audit/output/global/consolidated-global.json` |
 
 ---

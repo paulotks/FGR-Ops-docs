@@ -146,8 +146,8 @@ Then a demanda MAXIMA deve aparecer em posicao=1 com campo prioridade='MAXIMA'
 
 ### ACE-005-2: UI mostra borda pulsante e fila completa `[E2E]`
 
-**Componente:** `OperadorFilaView` (Angular 20)
-**Validação:** elemento com classe `.status-danger` visível no topo; componentes das demandas 2 e 3 renderizados abaixo e acessíveis via scroll (não ocultos)
+**Componente:** `<OperadorFilaView>` (React)
+**Validação:** elemento com classe `data-status="danger"` (variante shadcn/ui) visível no topo; componentes das demandas 2 e 3 renderizados abaixo e acessíveis via scroll (não ocultos)
 
 ---
 

@@ -1,3 +1,25 @@
+## 2026-04-16
+
+**Sessão encerrada em:** 2026-04-16 10:42
+
+### Arquivos Alterados
+
+- (nenhum arquivo alterado)
+
+### REQ-IDs Tocados
+
+(nenhum)
+
+### DEC-IDs Registrados
+
+DEC-016,DEC-017,DEC-018,DEC-019,DEC-020
+
+### Decisões Tomadas
+
+(Registrar manualmente se houve decisões táticas importantes)
+
+---
+
 ## 2026-04-14
 
 **Sessão encerrada em:** 2026-04-14 10:09
