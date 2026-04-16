@@ -2,12 +2,12 @@
 
 > Leia este arquivo no início de cada sessão para retomar contexto.
 
-**Atualizado em:** 2026-04-16 18:37
+**Atualizado em:** 2026-04-16 19:05
 
 ## Últimos REQ-IDs / DEC-IDs Tocados
 
 - **DEC-IDs recentes:** DEC-020,DEC-021,DEC-022,DEC-023,DEC-024
-- **REQ-IDs tocados:** (nenhum identificado nesta sessão)
+- **REQ-IDs tocados:** REQ-ACE-007,REQ-FUNC-011
 
 ## Pacotes OpsX Ativos (docs/changes/)
 

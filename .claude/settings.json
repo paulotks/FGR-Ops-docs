@@ -31,6 +31,20 @@
           }
         ]
       }
+    ],
+    "FileChanged": [
+      {
+        "matcher": "docs/PRD/**/*.md|docs/SPEC/**/*.md",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx claude /doc-review $(jq -r '.file_path' <<< \"$STDIN\") auto",
+            "debounce": 3000,
+            "statusMessage": "Validando documentação...",
+            "async": true
+          }
+        ]
+      }
     ]
   },
   "mcpServers": {
