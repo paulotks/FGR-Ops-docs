@@ -2,7 +2,7 @@
 
 > Leia este arquivo no início de cada sessão para retomar contexto.
 
-**Atualizado em:** 2026-04-16 18:28
+**Atualizado em:** 2026-04-16 18:37
 
 ## Últimos REQ-IDs / DEC-IDs Tocados
 
