@@ -1,3 +1,26 @@
+## 2026-04-17
+
+**Sessão encerrada em:** 2026-04-17 08:25
+
+### Arquivos Alterados
+
+- MEMORY/inbox.md
+- MEMORY/wake-up.md
+
+### REQ-IDs Tocados
+
+REQ-ACE-007,REQ-FUNC-005,REQ-FUNC-011,REQ-FUNC-013,REQ-JOR-001,REQ-OBJ-005
+
+### DEC-IDs Registrados
+
+DEC-020,DEC-021,DEC-022,DEC-023,DEC-024
+
+### Decisões Tomadas
+
+(Registrar manualmente se houve decisões táticas importantes)
+
+---
+
 ## 2026-04-16
 
 **Sessão encerrada em:** 2026-04-16 10:42
@@ -88,12 +111,6 @@ DEC-012,DEC-013,DEC-014,DEC-015,DEC-016
 ### Decisões Tomadas
 
 (Registrar manualmente se houve decisões táticas importantes)
-
----
-
-# MEMORY/journal.md — Log Cronológico de Sessões
-
-Formato: entrada por sessão de trabalho, cronologia reversa (mais recente primeiro).
 
 ---
 

@@ -31,7 +31,7 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
 | `200 OK` | Leitura ou atualização com sucesso |
 | `201 Created` | Recurso criado |
 | `204 No Content` | Ação executada sem corpo de resposta |
-| `400 Bad Request` | Payload inválido (falha de validação Zod/Valibot) |
+| `400 Bad Request` | Payload inválido (falha de validação Zod) |
 | `401 Unauthorized` | Token ausente, expirado ou inválido |
 | `403 Forbidden` | Perfil sem permissão para a ação solicitada |
 | `404 Not Found` | Recurso não encontrado no tenant |
@@ -880,13 +880,13 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
 {
   "expedienteInicio": "HH:MM | null",
   "expedienteFim": "HH:MM | null",
-  "pesoAdjacencia": "number (0.0–1.0) | null",
-  "pesoServico": "number (0.0–1.0) | null",
-  "pesoMaterial": "number (0.0–1.0) | null"
+  "pesoAdjacencia": "number (0–100) | null",
+  "pesoServico": "number (0–100) | null",
+  "pesoMaterial": "number (0–100) | null"
 }
 ```
 
-> Campos omitidos mantêm o valor atual. Quando informados, os três pesos (`pesoAdjacencia + pesoServico + pesoMaterial`) devem somar exatamente `1.0`. Padrão do sistema: `W_adj = 0.5`, `W_srv = 0.3`, `W_mat = 0.2` (conforme [03-fila-scoring-estados-sla.md](03-fila-scoring-estados-sla.md)).
+> Campos omitidos mantêm o valor atual. Cada peso aceita valores no intervalo `[0, 100]`, sem obrigação de soma total. Padrão do sistema: `W_adj = 50`, `W_srv = 30`, `W_mat = 20` (conforme [03-fila-scoring-estados-sla.md](03-fila-scoring-estados-sla.md)). (DEC-024)
 
 **Response 200:**
 ```json
@@ -900,7 +900,7 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
 }
 ```
 
-**Erros:** `400` pesos não somam 1.0 · `404` obra não encontrada · `422` `expedienteInicio` igual ou posterior a `expedienteFim`
+**Erros:** `400` peso fora do intervalo [0, 100] · `404` obra não encontrada · `422` `expedienteInicio` igual ou posterior a `expedienteFim`
 
 ---
 
@@ -1248,4 +1248,4 @@ Violações retornam `HTTP 429` com header `Retry-After` (segundos até desbloqu
 -> SPEC: [03-fila-scoring-estados-sla.md#tabela-de-transicoes-por-perfil](03-fila-scoring-estados-sla.md#tabela-de-transicoes-por-perfil)
 -> SPEC: [04-rbac-permissoes.md#matriz-completa-de-permissoes-por-recurso](04-rbac-permissoes.md#matriz-completa-de-permissoes-por-recurso)
 -> SPEC: [06-definicoes-complementares.md#contrato-analitico-req-met-002](06-definicoes-complementares.md#contrato-analitico-req-met-002)
--> SPEC: [07-design-ui-logica.md#3-componentes-chave-padroes-angular-20](07-design-ui-logica.md#3-componentes-chave-padroes-angular-20)
+-> SPEC: [07-design-ui-logica.md#3-componentes-chave-padroes-react](07-design-ui-logica.md#3-componentes-chave-padroes-react)

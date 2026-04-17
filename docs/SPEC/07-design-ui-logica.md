@@ -55,7 +55,7 @@ O empreiteiro pode cancelar demandas da sua autoria enquanto estas estiverem no 
     *   > **Fase 2:** Botão "Iniciar Deslocamento" removido do MVP — funcionalidade de rastreamento de deslocamento será endereçada em iteração futura.
 *   **Lista de Fila (Opcional/Secundária):** Permite ver "o que vem pela frente" apenas com caráter informativo, sem poder de escolha.
 
-#### Notificação de nova demanda: fila vazia vs. fila ativa
+#### Notificação de nova demanda: fila vazia vs. fila ativa {#notificacao-de-nova-demanda-fila-vazia-vs-fila-ativa}
 
 **Rastreio PRD:** `REQ-JOR-004`, `REQ-FUNC-013`
 
@@ -116,7 +116,7 @@ Como cada transição formal da Máquina de Estados se reflete na tela:
 
 ---
 
-## 3. Componentes-Chave & Padrões React + Vite + Tailwind + shadcn/ui
+## 3. Componentes-Chave & Padrões React + Vite + Tailwind + shadcn/ui {#3-componentes-chave-padroes-react}
 
 Para alcançar a experiência ideal e escalável solicitada para toda a suíte FGR Ops Web, aplicaremos:
 

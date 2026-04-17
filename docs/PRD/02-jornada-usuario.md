@@ -73,16 +73,12 @@ O `Operador` acessa o aplicativo dentro do seu `Expediente`, visualizando a sua 
 
 #### Comportamento de notificação por estado da fila
 
-O comportamento ao chegar uma nova demanda difere conforme o estado atual da fila do operador:
-
-- **Fila vazia** (início do expediente ou após concluir todas as demandas): o sistema dispara um **pop-up de notificação** com alerta sonoro e vibração, para garantir que o operador perceba a chegada da demanda mesmo sem estar com a tela ativa. O pop-up oferece as opções **"Iniciar Agora"** ou **"Iniciar Depois (Perfilar)"**. Não há opção de recusa — o cancelamento segue o fluxo padrão já especificado (`REQ-FUNC-009`).
-- **Fila não vazia**: a nova demanda entra diretamente na fila, reordenada pelo motor de score, sem pop-up. A próxima demanda na fila permanece em destaque expandido na tela, com ação direta de início.
-
-O `AdminOperacional` monitora via dashboard quando um operador com fila vazia não inicia uma demanda recebida, podendo acionar contato via rádio.
+Quando uma nova demanda chega a um operador com fila vazia, o sistema dispara notificação multi-sensorial (pop-up + alerta sonoro + vibração) para garantir percepção mesmo sem tela ativa. Quando a fila já possui demandas, a entrada é silenciosa e reordenada pelo motor de score.
 
 -> SPEC: [../SPEC/01-modulos-plataforma.md#capacidades-operacionais-do-machinery-link](../SPEC/01-modulos-plataforma.md#capacidades-operacionais-do-machinery-link)
 -> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#regra-de-conflito-alocacao-manual-sobre-demanda-em_andamento](../SPEC/03-fila-scoring-estados-sla.md#regra-de-conflito-alocacao-manual-sobre-demanda-em_andamento)
--> SPEC: [../SPEC/07-design-ui-logica.md#notificacao-de-nova-demanda-fila-vazia-vs-fila-ativa](../SPEC/07-design-ui-logica.md#notificacao-de-nova-demanda-fila-vazia-vs-fila-ativa)
+-> SPEC: [../SPEC/07-design-ui-logica.md#notificacao-de-nova-demanda-fila-vazia-vs-fila-ativa](../SPEC/07-design-ui-logica.md#notificacao-de-nova-demanda-fila-vazia-vs-fila-ativa) (UX completa)
+-> SPEC: [../SPEC/06-definicoes-complementares.md#regras-de-deduplicacao-e-estado-visual](../SPEC/06-definicoes-complementares.md#regras-de-deduplicacao-e-estado-visual) (mecânica técnica)
 
 ### `REQ-JOR-005` Auditoria administrativa obrigatória
 

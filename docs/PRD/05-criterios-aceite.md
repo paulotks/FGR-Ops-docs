@@ -114,6 +114,39 @@ Then o sistema deve rejeitar a operação com erro de validação
   And a demanda deve permanecer em 'EM_ANDAMENTO'
 ```
 
+## Segurança de token e gestão de sessão
+
+**REQ-ACE-007** O sistema deve garantir que tokens JWT seguem política de sessão curta, rotação de refresh token e capacidade de invalidação imediata, conforme a arquitetura de autenticação definida.
+
+→ SPEC: [../SPEC/00-visao-arquitetura.md#decisoes-arquiteturais-adrs](../SPEC/00-visao-arquitetura.md#decisoes-arquiteturais-adrs)
+
+**Cenário 1: Expiração e renovação de token**
+
+```gherkin
+Given que um usuário autenticado possui um access token válido
+When o access token expira após 15 minutos
+Then o sistema deve rejeitar requisições com HTTP 401
+  And permitir renovação silenciosa via refresh token rotativo (TTL de 7 dias)
+  And invalidar o refresh token anterior após uso
+```
+
+**Cenário 2: Invalidação imediata por logout**
+
+```gherkin
+Given que um usuário autenticado realiza logout explícito
+When o pedido de logout é processado pelo backend
+Then o sistema deve adicionar o jti do access token e do refresh token a blacklist em Redis
+  And rejeitar qualquer requisição subsequente com os tokens invalidados
+```
+
+**Cenário 3: Detecção de reuso de refresh token**
+
+```gherkin
+Given que um refresh token já foi utilizado para obter um novo par de tokens
+When um atacante tenta reutilizar o mesmo refresh token
+Then o sistema deve rejeitar a requisição, invalidar toda a cadeia de tokens do usuário e registrar o evento em AuthAuditLog
+```
+
 ## Isolamento Cross-Tenant Auditado
 
 **REQ-ACE-008** O bypass `cross-tenant` deve ser auditado e o perfil `Board` deve permanecer estritamente limitado a leitura.
@@ -184,41 +217,8 @@ Then o sistema deve emitir evento DEMAND_QUEUED com filaVazia = false
 
 ```gherkin
 Given que o Operador estava offline quando uma nova demanda foi enfileirada
-  And o último estado salvo da fila era vazio (filaVazia = true no IndexedDB)
+  And o último estado salvo da fila era vazio (ver SPEC/06 — estratégia de persistência offline)
 When o Operador reconecta e a fila é reidratada via GET /operadores/:id/fila
 Then o aplicativo deve exibir o pop-up de notificação com alerta sonoro e vibração
   And o comportamento deve ser idêntico ao do Cenário 1
-```
-
-## Segurança de token e gestão de sessão
-
-**REQ-ACE-007** O sistema deve garantir que tokens JWT seguem política de sessão curta, rotação de refresh token e capacidade de invalidação imediata, conforme a arquitetura de autenticação definida.
-
-→ SPEC: [../SPEC/00-visao-arquitetura.md#decisoes-arquiteturais-adrs](../SPEC/00-visao-arquitetura.md#decisoes-arquiteturais-adrs)
-
-**Cenário 1: Expiração e renovação de token**
-
-```gherkin
-Given que um usuário autenticado possui um access token válido
-When o access token expira após 15 minutos
-Then o sistema deve rejeitar requisições com HTTP 401
-  And permitir renovação silenciosa via refresh token rotativo (TTL de 7 dias)
-  And invalidar o refresh token anterior após uso
-```
-
-**Cenário 2: Invalidação imediata por logout**
-
-```gherkin
-Given que um usuário autenticado realiza logout explícito
-When o pedido de logout é processado pelo backend
-Then o sistema deve adicionar o jti do access token e do refresh token a blacklist em Redis
-  And rejeitar qualquer requisição subsequente com os tokens invalidados
-```
-
-**Cenário 3: Detecção de reuso de refresh token**
-
-```gherkin
-Given que um refresh token já foi utilizado para obter um novo par de tokens
-When um atacante tenta reutilizar o mesmo refresh token
-Then o sistema deve rejeitar a requisição, invalidar toda a cadeia de tokens do usuário e registrar o evento em AuthAuditLog
 ```

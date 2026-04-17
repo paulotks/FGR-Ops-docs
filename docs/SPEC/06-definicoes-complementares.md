@@ -139,7 +139,7 @@ Todos os eventos do servidor seguem o formato:
 }
 ```
 
-### Regras de deduplicação e estado visual
+### Regras de deduplicação e estado visual {#regras-de-deduplicacao-e-estado-visual}
 
 - O evento `SLA_ALERT` é disparado **uma única vez** por demanda no instante `slaVencimentoEm`. O estado visual de "SLA vencido" na UI persiste até a demanda transitar para `EM_ANDAMENTO`, `CONCLUIDA` ou `CANCELADA`.
 - `DEMAND_QUEUED` deve acionar **vibração e alerta sonoro** no dispositivo quando qualquer uma das condições abaixo for verdadeira (união — `REQ-FUNC-013`):
@@ -170,7 +170,7 @@ Se a conexão WebSocket for perdida:
 - A fila local permanece visível via cache, marcada como "pode estar desatualizada".
 - Ao reconectar, o cliente re-autentica e solicita `GET /operadores/:id/fila` para reidratar o estado antes de processar novos eventos.
 
-> **Rastreio PRD:** `REQ-NFR-002`, `REQ-FUNC-007`, `REQ-FUNC-008`, `REQ-ACE-005`. Decisão: DEC-017.
+> **Rastreio PRD:** `REQ-NFR-002`, `REQ-FUNC-007`, `REQ-FUNC-008`, `REQ-FUNC-013`, `REQ-ACE-005`. Decisão: DEC-017.
 
 ---
 

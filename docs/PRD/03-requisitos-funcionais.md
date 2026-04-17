@@ -29,7 +29,7 @@ O cadastro de `TipoMaquinario` deve exigir os seguintes campos:
 O cadastro de `Maquinario` deve exigir os seguintes campos para o MVP:
 
 - **Nome** da máquina (obrigatório).
-- **Empresa proprietária** (`empresaProprietaria`, texto livre — obrigatório).
+- **Proprietário** (`proprietarioTipo`: `FGR` ou `EMPREITEIRA`, obrigatório) + `empreiteiraId` (UUID, obrigatório quando `proprietarioTipo = EMPREITEIRA`, nulo quando `FGR`). (DEC-016)
 - **Placa** (opcional, para máquinas com registro veicular).
 - Vínculo obrigatório ao **TipoMaquinario** correspondente.
 
@@ -128,20 +128,10 @@ O `Maquinario` deve registrar o tipo de propriedade (`proprietarioTipo: FGR | EM
 
 ### `REQ-FUNC-013` Notificação de nova demanda para operador com fila vazia
 
-Quando uma nova demanda é atribuída a um operador cuja fila está vazia — seja no início do expediente ou após a conclusão de todas as demandas anteriores — o sistema deve exibir um **pop-up de notificação** acompanhado de alerta sonoro e vibração do dispositivo, garantindo que o operador perceba a chegada da tarefa mesmo sem estar com a tela ativa.
+Quando uma nova demanda é atribuída a um operador cuja fila está vazia, o sistema dispara notificação multi-sensorial (pop-up + alerta sonoro + vibração) para garantir percepção mesmo sem tela ativa. O operador pode iniciar imediatamente ou diferir sem recusar; o cancelamento, quando necessário, segue `REQ-FUNC-009`. Novas demandas com fila ativa entram silenciosamente, reordenadas pelo motor de score. O `AdminOperacional` monitora operadores inativos via dashboard — escalação é manual.
 
-O pop-up deve conter:
-
-- Identificação da demanda: serviço solicitado e localização.
-- Botão **"Iniciar Agora"** — demanda transita para `EM_ANDAMENTO` imediatamente.
-- Botão **"Iniciar Depois (Perfilar)"** — demanda permanece em `PENDENTE`, o operador retorna à tela de fila; nenhuma transição de estado ocorre.
-- **Sem opção de recusa** — a rejeição da demanda não é permitida neste fluxo. O cancelamento, quando necessário, segue o fluxo padrão de cancelamento pelo operador (`REQ-FUNC-009`).
-
-Quando a fila já possui demandas, novas demandas entram diretamente na fila sem pop-up, reordenadas pelo motor de score. A próxima demanda da fila permanece em destaque expandido com ação de início disponível.
-
-O `AdminOperacional` monitora via dashboard os operadores que receberam demandas mas não as iniciaram, sem automação de escalação — o contato é feito manualmente (ex.: rádio).
-
--> SPEC: [../SPEC/07-design-ui-logica.md#notificacao-de-nova-demanda-fila-vazia-vs-fila-ativa](../SPEC/07-design-ui-logica.md#notificacao-de-nova-demanda-fila-vazia-vs-fila-ativa)
+-> SPEC: [../SPEC/07-design-ui-logica.md#notificacao-de-nova-demanda-fila-vazia-vs-fila-ativa](../SPEC/07-design-ui-logica.md#notificacao-de-nova-demanda-fila-vazia-vs-fila-ativa) (UX completa)
+-> SPEC: [../SPEC/06-definicoes-complementares.md#regras-de-deduplicacao-e-estado-visual](../SPEC/06-definicoes-complementares.md#regras-de-deduplicacao-e-estado-visual) (mecânica técnica: vibração, som, reconexão offline)
 
 ## Critérios de aceite relacionados
 

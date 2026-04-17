@@ -35,7 +35,7 @@ Este registo centraliza as decisões de produto necessárias antes das correçõ
 
 ## DEC-002 — Cancelamento automático vs revisão administrativa
 
-- **Estado:** Decidido
+- **Estado:** Decidido *(Superseded por DEC-019 — 2026-04-13; o fluxo de `PENDENTE_APROVACAO` e `SolicitacaoCancelamento` foi removido do MVP)*
 - **Data:** 2026-03-20
 - **Participantes:** Produto, Operações, Logística, Stakeholders de Negócio
 - **Contexto:** alinhar política para cancelamento/revisão (auto-aprovação em 24h vs revisão humana).
@@ -149,7 +149,7 @@ Este registo centraliza as decisões de produto necessárias antes das correçõ
 
 ## DEC-010 — Modelo de cadastro de TipoMaquinario e Maquinario
 
-- **Estado:** Decidido
+- **Estado:** Decidido *(campo `empresaProprietaria` parcialmente supersedido por DEC-016 — 2026-04-10; substituído por `proprietarioTipo` + `empreiteiraId`)*
 - **Data:** 2026-03-26
 - **Participantes:** Produto, Operações
 - **Contexto:** Revisão dos requisitos de maquinário definiu dois fluxos de cadastro explícitos: (1) tela de tipos de maquinário e (2) tela de maquinários individuais vinculados ao tipo. O modelo existente apresentava lacunas: `TipoMaquinario` sem `descricao`; `Maquinario` sem campo `nome` e com `propriedade` como enum `FGR/Terceiro` insuficiente para identificar a empresa proprietária; campo `porte` no tipo sem uso funcional no MVP.
@@ -514,6 +514,24 @@ Este registo centraliza as decisões de produto necessárias antes das correçõ
   - `SPEC/00-visao-arquitetura.md`: §2 Visão Macro atualizada listando packages compartilhados com propósito; nota em ADR **D1** referenciando DEC-023 e preparação para mobile RN.
   - `docs/INFRA.md`: estrutura do monorepo ilustra os 4 packages e `apps/mobile` previsto como comentário.
   - `docs/traceability.md`: nota em `REQ-NFR-002` referenciando DEC-023 (preparação mobile).
+
+---
+
+## DEC-024 — Escala canônica dos pesos de score da fila (0–100, sem soma obrigatória)
+
+- **Estado:** Decidido
+- **Data:** 2026-04-17
+- **Participantes:** Produto, Arquitetura
+- **Contexto:** A auditoria de 2026-04-16 identificou conflito entre a escala de pesos adotada em `SPEC/03`, `PRD/02` e `CLAUDE.md` (inteiros `50/30/20`, intervalo `[0, 100]`, sem obrigação de soma) e a escala adotada em `SPEC/08` (decimais `0.5/0.3/0.2`, intervalo `[0.0, 1.0]`, soma exatamente `1.0`). As duas representações são matematicamente equivalentes mas criam ambiguidade nos contratos de API e na validação backend.
+- **Opções em análise:**
+  - A) Escala decimal `[0.0, 1.0]` com `soma = 1.0` obrigatória — facilita normalização automática, mas conflita com a maioria dos documentos existentes e exige conversão para o intervalo intuitivo de percentuais.
+  - B) **Escala inteira `[0, 100]` sem obrigação de soma total** — alinhada com `SPEC/03` (fonte autoritativa do motor de fila), `PRD/02`, `CLAUDE.md` e representação intuitiva de "percentual de influência". Soma não obrigatória permite obra operar com pesos desbalanceados (ex.: `W_adj=100, W_srv=0, W_mat=0`) sem penalização.
+- **Decisão:** B) Escala canônica `[0, 100]` (inteiros), sem obrigação de soma. Padrões: `W_adj = 50`, `W_srv = 30`, `W_mat = 20`. Validação de API recusa valores fora do intervalo `[0, 100]`; não valida soma.
+- **Justificação:** `SPEC/03` é a fonte de verdade do motor de priorização (3 documentos vs 1 em conflito). A escala `[0, 100]` é imediatamente legível como "percentual de influência" para `AdminOperacional` sem tradução mental. A ausência de obrigação de soma total dá flexibilidade operacional — obras com maquinário todo local podem zerar `W_mat` sem redistribuir manualmente. A validação de intervalo `[0, 100]` é suficiente para prevenir configurações inválidas.
+- **Achados resolvidos:** `cross-traceability-decisions-review.md` CRITICAL-001 · `spec-08-api-contratos-review.md` CRITICAL-002.
+- **Aplicação (2026-04-17):**
+  - `SPEC/08-api-contratos.md`: campos `pesoAdjacencia/pesoServico/pesoMaterial` alterados para `number (0–100)`; nota de validação atualizada (sem soma obrigatória); erro `400` renomeado para "peso fora do intervalo [0, 100]"; defaults atualizados para `50/30/20`.
+  - `CLAUDE.md`: "Última: DEC-023 · Próxima: **DEC-024**" → atualizar para "Última: DEC-024 · Próxima: **DEC-025**" (feito inline).
 
 ---
 

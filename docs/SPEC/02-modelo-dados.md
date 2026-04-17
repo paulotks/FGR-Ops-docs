@@ -234,7 +234,7 @@ erDiagram
 - **Escopo global de `Empreiteira`** (DEC-016): `Empreiteira` não possui `obraId` — é entidade de catálogo global reutilizável entre obras e futuros módulos. O CNPJ, quando informado, é chave única global (índice único). A associação implícita a uma obra é derivada pelos `User` com `perfil = Empreiteiro` e `obraId` correspondente. A relação explícita N:M `Empreiteira ↔ Obra` fica para Fase 2.
 - **Soft-delete**: `Demanda`, `Maquinario` e `Empreiteira` nunca são purgados fisicamente; o sistema utiliza `deletadoEm` para preservar histórico.
 - **Auditabilidade transacional**: qualquer manipulação, avanço, cancelamento ou alteração da `Demanda` gera escrita não destrutiva em `DemandaLog`.
-- **Atributos temporais da demanda** (`REQ-FUNC-007`): a `Demanda` persiste obrigatoriamente `iniciadoEm` (timestamp de transição para `EM_ANDAMENTO`), `finalizadoEm` (timestamp de transição para `CONCLUIDA`) e `tempoExecucaoMs` (campo calculado como `finalizadoEm - iniciadoEm` em milissegundos, persistido no momento da conclusão). Em cenários offline, os timestamps de origem do dispositivo prevalecem sobre os de sincronização (conforme estratégia PWA em [06-definicoes-complementares.md](06-definicoes-complementares.md#estrategia-pwa-offline)).
+- **Atributos temporais da demanda** (`REQ-FUNC-007`): a `Demanda` persiste obrigatoriamente `iniciadoEm` (timestamp de transição para `EM_ANDAMENTO`), `finalizadoEm` (timestamp de transição para `CONCLUIDA` **ou** para qualquer estado terminal) e `tempoExecucaoMs` (campo calculado como `finalizadoEm - iniciadoEm` em milissegundos, persistido no momento da transição). Em transições `EM_ANDAMENTO → CANCELADA` ou `EM_ANDAMENTO → RETORNADA`, `finalizadoEm` recebe o timestamp da transição e `tempoExecucaoMs` é calculado; entretanto, apenas demandas em estado terminal `CONCLUIDA` contribuem para `REQ-MET-001` (Horas em Operação). Demandas retornadas que subsequentemente retomam `EM_ANDAMENTO` criam nova entrada temporal em `DemandaLog` — `iniciadoEm` **não** é sobrescrito. Em cenários offline, os timestamps de origem do dispositivo prevalecem sobre os de sincronização (conforme estratégia PWA em [06-definicoes-complementares.md](06-definicoes-complementares.md#estrategia-pwa-offline)).
 
 ### Medição canônica de tempo operacional (`REQ-MET-001`)
 
@@ -247,7 +247,7 @@ Para suportar o indicador de tempo ocioso definido no PRD, o modelo de dados exp
 ## Lacunas resolvidas no modelo
 
 - **Ajudantes**: a rastreabilidade é resolvida no nível de `TurnoAjudante` e derivada por interseção temporal com a execução da demanda.
-- **Agendamentos**: `Demanda.dataAgendada` passa a existir como atributo próprio, com transição controlada via shadow-queue para `PENDENTE` 60 minutos antes do horário-alvo.
+- **Agendamentos**: `Demanda.dataAgendada` passa a existir como atributo próprio, com transição controlada via *shadow-queue* — fila lógica de demandas `AGENDADA` monitorada por worker agendado (`NestJS @Cron('* * * * *')`) que dispara a transição `AGENDADA → PENDENTE` quando `dataAgendada - 60min ≤ now` — conforme detalhado em [06-definicoes-complementares.md](06-definicoes-complementares.md).
 - **Serviços dinâmicos**: ficam formalmente adiados para a Fase 2 por ausência de especificação relacional madura para exclusão mútua e dependências simultâneas.
 
 ## Relação com outros módulos

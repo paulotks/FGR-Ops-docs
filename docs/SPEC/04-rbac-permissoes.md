@@ -24,7 +24,9 @@ A herança está suprimida em prol de garantias granulares imutavelmente pré-fo
 5. **Empreiteiro**: enclausurado nas demandas da sua autoria.
 6. **Operador** (sinônimo: Operador de Maquinário): PWA em campo via expediente focado, ordenação fluida e sem travas de interface cega ("blindagem"). Vê apenas a fila do motor preordenada dinamicamente.
 
-## Matriz completa de permissões por recurso (Lacuna 1)
+## Matriz completa de permissões por recurso
+
+> *Esta seção resolveu a Lacuna 1 identificada em audit 2026-03-26.*
 
 O sistema verifica acessos via Guards NestJS avaliando a chave da permissão. O formato adotado é `<módulo>:<recurso>:<ação>`.
 Os perfis assinalados com `cross` têm autorização de atuar ignorando restrições de tenant (`obraId`). Onde não há natureza da ação para o recurso, usa-se `—`.
@@ -105,7 +107,7 @@ Os perfis assinalados com `cross` têm autorização de atuar ignorando restriç
 | `machinery:demanda:read` | cross | cross | ✓ | ✓ | ✓*[2] | ✓*[3] |
 | `machinery:demanda:update` | ✓ | ✗ | ✓ | ✓ | ✓*[4] | ✗ |
 | `machinery:demanda:delete` | ✓ | ✗ | ✗ | ✗ | ✗ | ✗ |
-| `machinery:demanda:cancel` | ✓ | ✗ | ✓ | ✗ | ✓*[4] | ✓*[7] |
+| `machinery:demanda:cancel` | ✓ | ✗ | ✓ | ✗ | ✓*[4] | ✓*[6] |
 | `machinery:demanda:cancel-request` | — | — | — | — | — | — |
 | `machinery:demanda:approve` | — | — | — | — | — | — |
 | `machinery:demanda:reject` | — | — | — | — | — | — |
@@ -162,7 +164,7 @@ Os perfis assinalados com `cross` têm autorização de atuar ignorando restriç
 | `machinery:ajudante:allocate` | — | — | — | — | — | — |
 | `machinery:ajudante:export` | cross | cross | ✓ | ✓ | ✗ | ✗ |
 | `machinery:operador:create` | ✓ | ✗ | ✓ | ✗ | ✗ | ✗ |
-| `machinery:operador:read` | cross | cross | ✓ | ✓ | ✗ | ✓*[6] |
+| `machinery:operador:read` | cross | cross | ✓ | ✓ | ✗ | ✓*[5] |
 | `machinery:operador:update` | ✓ | ✗ | ✓ | ✗ | ✗ | ✗ |
 | `machinery:operador:delete` | ✓ | ✗ | ✓ | ✗ | ✗ | ✗ |
 | `machinery:operador:cancel` | — | — | — | — | — | — |
@@ -211,25 +213,18 @@ Os perfis assinalados com `cross` têm autorização de atuar ignorando restriç
 | `machinery:relatorio:reject` | — | — | — | — | — | — |
 | `machinery:relatorio:allocate` | — | — | — | — | — | — |
 | `machinery:relatorio:export` | cross | cross | ✓ | ✓ | ✗ | ✗ |
-| `machinery:solicitacao-cancelamento:create` | — | — | — | — | — | — |
-| `machinery:solicitacao-cancelamento:read` | — | — | — | — | — | — |
-| `machinery:solicitacao-cancelamento:update` | — | — | — | — | — | — |
-| `machinery:solicitacao-cancelamento:delete` | — | — | — | — | — | — |
-| `machinery:solicitacao-cancelamento:cancel` | — | — | — | — | — | — |
-| `machinery:solicitacao-cancelamento:cancel-request` | — | — | — | — | — | — |
-| `machinery:solicitacao-cancelamento:approve` | — | — | — | — | — | — |
-| `machinery:solicitacao-cancelamento:reject` | — | — | — | — | — | — |
-| `machinery:solicitacao-cancelamento:allocate` | — | — | — | — | — | — |
-| `machinery:solicitacao-cancelamento:export` | — | — | — | — | — | — |
+<!-- machinery:solicitacao-cancelamento:* — recurso removido do MVP por DEC-019 (2026-04-13); reintrodução requer nova DEC-NNN. -->
 
 [1] Apenas sobre usuários pertencentes à mesma obra e com perfil hierárquico inferior ou igual.
 [2] Permitido estritamente para leitura de registros da sua autoria ou inerentes ao seu cadastro/entidade.
 [3] Permitido apenas se o operador autenticado estiver a agir sobre o seu próprio expediente ou sobre demandas visíveis ativamente alocadas na fila.
 [4] Permitido ao `Empreiteiro` apenas se a demanda for da sua autoria e estritamente enquanto estiver no estado inicial `PENDENTE`.
-[6] Permitido apenas para consultar relatórios formatados ou metadados do seu próprio vínculo.
-[7] Permitido ao `Operador` apenas sobre a demanda que está atualmente em `EM_ANDAMENTO` sob sua responsabilidade; justificativa obrigatória (DEC-019).
+[5] Permitido apenas para consultar relatórios formatados ou metadados do seu próprio vínculo.
+[6] Permitido ao `Operador` apenas sobre a demanda que está atualmente em `EM_ANDAMENTO` sob sua responsabilidade; justificativa obrigatória (DEC-019).
 
-## Matriz de permissões condicionadas ao estado da demanda (Lacuna 2)
+## Matriz de permissões condicionadas ao estado da demanda
+
+> *Esta seção resolveu a Lacuna 2 identificada em audit 2026-03-26.*
 
 A tabela abaixo exibe exaustivamente o cruzamento do recurso `demanda` por `EstadoAtual`, `Ação` requerida e perfis autorizados. Qualquer tentativa de transição ou ação restrita não abordada aqui denota rejeição pelo Guard na infraestrutura NestJS.
 
@@ -257,7 +252,7 @@ A tabela abaixo exibe exaustivamente o cruzamento do recurso `demanda` por `Esta
 >
 > Decisão: A ação `export` foi liberada para gestores de obra e diretoria, mas proibida para `Empreiteiro` e `Operador` por escopo concorrencial e finalidade puramente operacional.
 >
-> Decisão: O recurso `solicitacao-cancelamento` foi blindado para manter design coeso de REST API de cancel-requests independentes por ID, exposto sob os verbos `approve` e `reject`, afetando inerentemente o aggregate root `Demanda`.
+> ~~Decisão: O recurso `solicitacao-cancelamento` foi blindado para manter design coeso de REST API de cancel-requests independentes por ID.~~ *(Removido do MVP por DEC-019 — 2026-04-13. O cancelamento é feito diretamente no aggregate root `Demanda` com justificativa obrigatória.)*
 >
 > Decisão: A matriz explicita ações inativas/inexistentes com `—` para anular inferências indevidas no momento de instanciar metadados de Guards e decorators.
 >

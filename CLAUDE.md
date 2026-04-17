@@ -115,7 +115,7 @@ Plataforma multi-tenant de operações de construção civil. MVP = **Machinery 
 |---|---|
 | PRD | 7 módulos estáveis (`00`–`06`); REQ-IDs: CTX-001…003, OBJ-001…005, SCO-001…005, SCO-F2-001…006, SCO-GAT-001…004, RBAC-001…006, JOR-001…005, FUNC-001…013, NFR-001…007, ACE-001…006+008, MET-001…003, RISK-001…002 |
 | SPEC | 9 módulos + UI-DESIGN.md; cobertura 62 cobertos / 2 parciais / 0 descobertos |
-| Decisions | Última: DEC-023 · Próxima: **DEC-024** |
+| Decisions | Última: DEC-024 · Próxima: **DEC-025** |
 | OpsX ativos | `stack-frontend-vite-react` (em aplicação — DEC-021/022/023) |
 | Audit | 37 achados, todos resolvidos · `docs/audit/output/global/consolidated-global.json` |
 
