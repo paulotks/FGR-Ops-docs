@@ -13,7 +13,7 @@ Pacote modular de especificação técnica. Resumos abaixo; conteúdo migrado a 
 | [06-definicoes-complementares.md](06-definicoes-complementares.md) | Definições complementares | Offline PWA, comportamento de agendamentos, adiamento de `ServicoDinamico` e rastreabilidade de ajudantes. | REQ-NFR-002, REQ-FUNC-004, REQ-FUNC-006, REQ-FUNC-009, REQ-RISK-002, REQ-MET-003 | — |
 | [07-design-ui-logica.md](07-design-ui-logica.md) | Lógica e UX | Hierarquia de Telas (Empreiteiro, Operador, Supervisor), mapeamento visual e padrões React + Vite + Tailwind + shadcn/ui (DEC-021). | REQ-JOR-001 | — |
 | [08-api-contratos.md](08-api-contratos.md) | Contratos de API REST | Endpoints por recurso, HTTP verbs, schemas request/response, erros operacionais e rate limiting. | REQ-NFR-005, REQ-NFR-006, REQ-FUNC-001…010 | — |
-| [../UI-DESIGN.md](../UI-DESIGN.md) | Design System | Identidade visual, paleta, tipografia e especificações de telas. Derivado de 07-design-ui-logica.md. | REQ-NFR-002, REQ-JOR-001 | — |
+| [../UI/UI-DESIGN.md](../UI/UI-DESIGN.md) | Design System | Identidade visual, paleta de cores (brand `#ad0f0a`, `#999999`, `#ffffff`), tipografia, tokens de componentes e índice de telas por aplicação. Derivado de 07-design-ui-logica.md. | REQ-NFR-002, REQ-JOR-001 | — |
 
 - [Matriz de rastreabilidade](../traceability.md)
 
