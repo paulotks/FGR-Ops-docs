@@ -1,6 +1,6 @@
 # Modelo de dados
 
-**Rastreio PRD:** `REQ-JOR-001`, `REQ-FUNC-003`, `REQ-FUNC-004`, `REQ-FUNC-006`, `REQ-FUNC-007`, `REQ-FUNC-010`, `REQ-FUNC-012`, `REQ-NFR-004`, `REQ-MET-001`
+**Rastreio PRD:** `REQ-JOR-001`, `REQ-FUNC-003`, `REQ-FUNC-004`, `REQ-FUNC-006`, `REQ-FUNC-007`, `REQ-FUNC-010`, `REQ-FUNC-012`, `REQ-FUNC-014`, `REQ-NFR-004`, `REQ-MET-001`
 
 Este módulo consolida as entidades principais do domínio, as relações entre recursos operacionais e as regras de integridade que sustentam o isolamento por obra e a rastreabilidade do Machinery Link.
 
@@ -27,6 +27,10 @@ Este módulo consolida as entidades principais do domínio, as relações entre 
   - `destinoQuadraId`, `destinoLoteId`: **obrigatórios** quando o serviço selecionado possui `exigeTransporte = true` e `transporteInterno = false`; opcionais nos demais casos.
   - `transporteInterno` (boolean, padrão `false`): quando `true`, indica que o deslocamento ocorre no mesmo `Quadra`/`Lote` de origem. O backend valida que `destinoQuadraId = quadraId` e `destinoLoteId = loteId`. Disponível apenas quando `exigeTransporte = true`.
   - `descricaoAdicional` (texto livre, opcional): recomendado para serviços de movimentação, onde o empreiteiro detalha a operação (ex.: "subir grunt para laje da casa").
+  - `rolloverDe` (`date | null`): data de origem quando a demanda foi rolada para o dia seguinte. `null` para demandas do dia corrente. Preenchido pelo worker `expedienteFim` na operação atômica de rollover. Permite filtrar e identificar demandas redistribuídas no painel admin. Quando preenchido, `operadorId` é limpo (null) simultaneamente na mesma operação atômica (DEC-025, `REQ-FUNC-014`).
+  - `aceiteOperadorId` (`string | null`): ID do operador que aceitou explicitamente a demanda agendada. `null` para demandas não-agendadas ou cujo fluxo de aceite explícito não se aplica (DEC-026, `REQ-FUNC-006`).
+  - `aceiteEm` (`datetime | null`): timestamp do aceite explícito da demanda agendada. `null` quando não houver aceite (DEC-026, `REQ-FUNC-006`).
+  - `aprovadaPorAdminId` (`string | null`): ID do `AdminOperacional` ou `SuperAdmin` que aprovou o agendamento criado por `UsuarioInternoFGR`. `null` para demandas criadas diretamente como `AGENDADA` por Admin/SuperAdmin (DEC-027, `REQ-FUNC-006`).
 - **Expediente**: `RegistroExpediente`, que formaliza a relação temporal entre `Operador`, `Maquina` e, opcionalmente, `Ajudante`.
 
 No check-in do início de expediente, o operador deve:
@@ -150,6 +154,10 @@ erDiagram
         uuid destinoLoteId
         boolean transporteInterno
         string descricaoAdicional
+        date rolloverDe
+        uuid aceiteOperadorId
+        timestamp aceiteEm
+        uuid aprovadaPorAdminId
         uuid demandaGrupoId
         timestamp dataAgendada
         timestamp iniciadoEm
@@ -187,6 +195,17 @@ erDiagram
         timestamp inicioEm
         timestamp fimEm
     }
+    SolicitacaoCancelamentoAgendada {
+        uuid id
+        uuid demandaId
+        uuid operadorId
+        string motivo
+        string estado
+        uuid adminDecisaoId
+        timestamp adminDecisaoEm
+        timestamp criadaEm
+        uuid obraId
+    }
 
     Obra ||--o{ User : "tenant"
     Obra ||--o{ SetorOperacional : "contém"
@@ -222,6 +241,10 @@ erDiagram
     RegistroExpediente }o--|| Maquinario : "máquina"
     RegistroExpediente ||--o{ TurnoAjudante : "turnos de ajudante"
     TurnoAjudante }o--|| Ajudante : "ajudante"
+    SolicitacaoCancelamentoAgendada }o--|| Demanda : "demanda alvo"
+    SolicitacaoCancelamentoAgendada }o--|| Operador : "solicitante"
+    SolicitacaoCancelamentoAgendada }o--o| User : "admin decisor"
+    Obra ||--o{ SolicitacaoCancelamentoAgendada : "tenant"
 ```
 
 ## Relacionamentos e regras de integridade
@@ -232,7 +255,7 @@ erDiagram
 - **Propriedade de `Maquinario`** (DEC-016): `proprietarioTipo` é obrigatório com valores `FGR` ou `EMPREITEIRA`. Quando `proprietarioTipo = EMPREITEIRA`, `empreiteiraId` é obrigatório e deve referenciar uma `Empreiteira` existente. Quando `proprietarioTipo = FGR`, `empreiteiraId` deve ser nulo. O campo `empresaProprietaria` (texto livre, DEC-010) foi removido e supersedido por este modelo estruturado.
 - **Vínculo `Empreiteiro` ↔ `Empreiteira`** (DEC-016): `User.empreiteiraId` é obrigatório quando `perfil = Empreiteiro` e deve referenciar uma `Empreiteira` global existente. Para todos os demais perfis, o campo é nulo. O vínculo é estabelecido pelo `AdminOperacional` na criação do usuário.
 - **Escopo global de `Empreiteira`** (DEC-016): `Empreiteira` não possui `obraId` — é entidade de catálogo global reutilizável entre obras e futuros módulos. O CNPJ, quando informado, é chave única global (índice único). A associação implícita a uma obra é derivada pelos `User` com `perfil = Empreiteiro` e `obraId` correspondente. A relação explícita N:M `Empreiteira ↔ Obra` fica para Fase 2.
-- **Soft-delete**: `Demanda`, `Maquinario` e `Empreiteira` nunca são purgados fisicamente; o sistema utiliza `deletadoEm` para preservar histórico.
+- **Soft-delete**: `Demanda`, `Maquinario` e `Empreiteira` nunca são purgados fisicamente; o sistema utiliza `deletadoEm` para preservar histórico. `SolicitacaoCancelamentoAgendada` é imutável após decisão e não utiliza soft-delete — a rastreabilidade é garantida pelo próprio campo `estado` e timestamps de decisão.
 - **Auditabilidade transacional**: qualquer manipulação, avanço, cancelamento ou alteração da `Demanda` gera escrita não destrutiva em `DemandaLog`.
 - **Atributos temporais da demanda** (`REQ-FUNC-007`): a `Demanda` persiste obrigatoriamente `iniciadoEm` (timestamp de transição para `EM_ANDAMENTO`), `finalizadoEm` (timestamp de transição para `CONCLUIDA` **ou** para qualquer estado terminal) e `tempoExecucaoMs` (campo calculado como `finalizadoEm - iniciadoEm` em milissegundos, persistido no momento da transição). Em transições `EM_ANDAMENTO → CANCELADA` ou `EM_ANDAMENTO → RETORNADA`, `finalizadoEm` recebe o timestamp da transição e `tempoExecucaoMs` é calculado; entretanto, apenas demandas em estado terminal `CONCLUIDA` contribuem para `REQ-MET-001` (Horas em Operação). Demandas retornadas que subsequentemente retomam `EM_ANDAMENTO` criam nova entrada temporal em `DemandaLog` — `iniciadoEm` **não** é sobrescrito. Em cenários offline, os timestamps de origem do dispositivo prevalecem sobre os de sincronização (conforme estratégia PWA em [06-definicoes-complementares.md](06-definicoes-complementares.md#estrategia-pwa-offline)).
 
@@ -244,10 +267,45 @@ Para suportar o indicador de tempo ocioso definido no PRD, o modelo de dados exp
 - **Horas em Operação**: soma de `tempoExecucaoMs` de todas as `Demandas` com estado terminal `CONCLUIDA` vinculadas ao mesmo operador/máquina no período, convertida para horas.
 - **Consulta de referência**: `(Horas Disponíveis - Horas em Operação) / Horas Disponíveis` por `obraId`, operador e período. O resultado alimenta o painel de métricas acessível a `AdminOperacional` e `SuperAdmin`.
 
+## Entidade: SolicitacaoCancelamentoAgendada
+
+**Rastreio PRD:** `REQ-FUNC-006`
+
+Registra solicitações de cancelamento de demandas agendadas feitas pelo operador. O `AdminOperacional` ou `SuperAdmin` decide a aprovação ou rejeição. Aplica-se exclusivamente a demandas em estado `AGENDADA` — demandas normais mantêm o cancelamento direto definido em DEC-019 (DEC-029).
+
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| `id` | `string (uuid)` | Identificador único da solicitação |
+| `demandaId` | `string` | FK para a demanda agendada alvo |
+| `operadorId` | `string` | FK para o operador solicitante |
+| `motivo` | `string` | Motivo da solicitação (obrigatório) |
+| `estado` | `enum` | `PENDENTE` / `APROVADA` / `REJEITADA` |
+| `adminDecisaoId` | `string \| null` | FK para o `User` (`AdminOperacional` ou `SuperAdmin`) que decidiu. `null` enquanto pendente |
+| `adminDecisaoEm` | `datetime \| null` | Timestamp da decisão do admin. `null` enquanto pendente |
+| `criadaEm` | `datetime` | Timestamp da criação da solicitação |
+| `obraId` | `string` | Multi-tenant: FK para a obra (isolamento por tenant) |
+
+Regras de integridade:
+- Uma demanda agendada pode ter no máximo uma solicitação em estado `PENDENTE` por vez.
+- A aprovação pelo admin transita a demanda para `CANCELADA` e fecha a solicitação com `APROVADA`.
+- A rejeição pelo admin mantém a demanda em `AGENDADA` e fecha a solicitação com `REJEITADA`.
+- O registro é imutável após decisão — a rastreabilidade é garantida por `adminDecisaoId` e `adminDecisaoEm`.
+
+## Ações registradas em DemandaLog
+
+**Rastreio PRD:** `REQ-FUNC-014`
+
+Além das ações documentadas na máquina de estados em [03-fila-scoring-estados-sla.md](03-fila-scoring-estados-sla.md), o modelo de dados suporta as seguintes ações de rollover e devolução automática geradas pelo worker `expedienteFim` (DEC-025):
+
+| Ação | Ator | Campos relevantes | Quando |
+|------|------|-------------------|--------|
+| `devolver_fim_expediente` | `SISTEMA` | `estadoAnterior`, `estadoNovo`, `justificativa="Devolução automática por fim de expediente"` | Checkout do operador ou worker `expedienteFim` com demanda em `EM_ANDAMENTO` ou `PAUSADA` |
+| `rollover` | `SISTEMA` | `estadoAnterior=PENDENTE`, `estadoNovo=PENDENTE`, `justificativa="Rollover para dia seguinte"`, `dados={rolloverDe, operadorAnteriorId}` | Worker `expedienteFim` ao final do expediente — registra a data original e limpa `operadorId` atomicamente |
+
 ## Lacunas resolvidas no modelo
 
 - **Ajudantes**: a rastreabilidade é resolvida no nível de `TurnoAjudante` e derivada por interseção temporal com a execução da demanda.
-- **Agendamentos**: `Demanda.dataAgendada` passa a existir como atributo próprio, com transição controlada via *shadow-queue* — fila lógica de demandas `AGENDADA` monitorada por worker agendado (`NestJS @Cron('* * * * *')`) que dispara a transição `AGENDADA → PENDENTE` quando `dataAgendada - 60min ≤ now` — conforme detalhado em [06-definicoes-complementares.md](06-definicoes-complementares.md).
+- **Agendamentos**: `Demanda.dataAgendada` é atributo próprio da demanda. O ciclo de vida de demandas agendadas inclui: (a) aceite explícito pelo operador (`AGENDADA → PENDENTE` via `aceitar_agendada`), (b) expiração sem aceite (`AGENDADA → NAO_EXECUTADA` em T-1h antes da `dataAgendada`), e (c) fluxo de aprovação prévia para agendamentos criados por `UsuarioInternoFGR` (`AGUARDANDO_APROVACAO → AGENDADA`). Os campos `aceiteOperadorId`, `aceiteEm` e `aprovadaPorAdminId` suportam rastreabilidade desses fluxos. A máquina de estados completa e as transições por perfil estão definidas em [03-fila-scoring-estados-sla.md](03-fila-scoring-estados-sla.md) (DEC-026, DEC-027, DEC-028). Detalhes do comportamento de aceite, broadcast e bloqueio T-30 estão em [06-definicoes-complementares.md](06-definicoes-complementares.md).
 - **Serviços dinâmicos**: ficam formalmente adiados para a Fase 2 por ausência de especificação relacional madura para exclusão mútua e dependências simultâneas.
 
 ## Relação com outros módulos

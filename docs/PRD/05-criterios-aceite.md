@@ -222,3 +222,62 @@ When o Operador reconecta e a fila é reidratada via GET /operadores/:id/fila
 Then o aplicativo deve exibir o pop-up de notificação com alerta sonoro e vibração
   And o comportamento deve ser idêntico ao do Cenário 1
 ```
+
+## Rollover e redistribuição de demandas entre dias {#rollover-e-redistribuicao-de-demandas-entre-dias}
+
+**REQ-ACE-010** O sistema deve realizar rollover de demandas não concluídas ao fim do expediente, redistribuindo-as no dia seguinte via pipeline padrão de distribuição (hard filter + scoring), sem criar novos estados e sem auto-encerramento por SLA. (DEC-025)
+
+→ SPEC: [../SPEC/03-fila-scoring-estados-sla.md](../SPEC/03-fila-scoring-estados-sla.md) (máquina de estados, transição devolver_fim_expediente, worker expedienteFim)
+→ SPEC: [../SPEC/06-definicoes-complementares.md](../SPEC/06-definicoes-complementares.md) (campo rolloverDe, reset de SLA inter-dias, indicador visual painel admin)
+
+**Cenário 1: Rollover de demanda PENDENTE**
+
+```gherkin
+Dado que uma demanda está em estado PENDENTE no fim do expediente
+E nenhum operador a executou no dia
+Quando o worker expedienteFim executa
+Então a demanda permanece em PENDENTE com campo rolloverDe preenchido com a data do dia
+E o campo operadorId é limpo (sem operador atribuído)
+E o SLA reseta no início do expediente do dia seguinte
+```
+
+**Cenário 2: Devolução forçada de demanda EM_ANDAMENTO**
+
+```gherkin
+Dado que um operador tem uma demanda em estado EM_ANDAMENTO
+Quando o operador faz checkout ou o worker expedienteFim executa
+Então a demanda transita automaticamente para RETORNADA (ator: SISTEMA)
+E um log DemandaLog com ação devolver_fim_expediente é registrado
+E a justificativa registrada é "Devolução automática por fim de expediente"
+E em seguida a demanda transita para PENDENTE automaticamente
+```
+
+**Cenário 3: Redistribuição no check-in do dia seguinte**
+
+```gherkin
+Dado que existem demandas PENDENTE com rolloverDe preenchido
+Quando um operador faz check-in no dia seguinte
+Então o pipeline de distribuição padrão oferece demandas compatíveis ao operador
+E demandas com rolloverDe são tratadas como demandas normais na fila (hard filter + scoring)
+```
+
+**Cenário 4: Múltiplos check-ins progressivos**
+
+```gherkin
+Dado que existem 3 demandas roladas e 2 operadores fazem check-in em horários diferentes
+Quando o primeiro operador faz check-in
+Então recebe demandas compatíveis disponíveis naquele momento
+Quando o segundo operador faz check-in mais tarde
+Então recebe demandas remanescentes compatíveis
+E nenhuma demanda é atribuída a dois operadores simultaneamente
+```
+
+**Cenário 5: Demanda sem operador compatível disponível**
+
+```gherkin
+Dado que uma demanda rolada requer TipoMaquinario X
+E nenhum operador com TipoMaquinario X faz check-in no dia seguinte
+Quando o expediente termina
+Então a demanda rola novamente com rolloverDe atualizado
+E o indicador visual no painel admin exibe a demanda como redistribuída (badge "Dia anterior")
+```

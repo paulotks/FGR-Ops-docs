@@ -108,9 +108,9 @@ Os perfis assinalados com `cross` têm autorização de atuar ignorando restriç
 | `machinery:demanda:update` | ✓ | ✗ | ✓ | ✓ | ✓*[4] | ✗ |
 | `machinery:demanda:delete` | ✓ | ✗ | ✗ | ✗ | ✗ | ✗ |
 | `machinery:demanda:cancel` | ✓ | ✗ | ✓ | ✗ | ✓*[4] | ✓*[6] |
-| `machinery:demanda:cancel-request` | — | — | — | — | — | — |
-| `machinery:demanda:approve` | — | — | — | — | — | — |
-| `machinery:demanda:reject` | — | — | — | — | — | — |
+| `machinery:demanda:cancel-request` | — | — | — | — | — | ✓*[7] |
+| `machinery:demanda:approve` | ✓ | ✗ | ✓ | ✗ | ✗ | ✗ |
+| `machinery:demanda:reject` | ✓ | ✗ | ✓ | ✗ | ✗ | ✗ |
 | `machinery:demanda:allocate` | ✓ | ✗ | ✓ | ✗ | ✗ | ✗ |
 | `machinery:demanda:export` | cross | cross | ✓ | ✓ | ✗ | ✗ |
 | `machinery:demanda-grupo:create` | ✓ | ✗ | ✓ | ✓ | ✓ | ✗ |
@@ -213,7 +213,8 @@ Os perfis assinalados com `cross` têm autorização de atuar ignorando restriç
 | `machinery:relatorio:reject` | — | — | — | — | — | — |
 | `machinery:relatorio:allocate` | — | — | — | — | — | — |
 | `machinery:relatorio:export` | cross | cross | ✓ | ✓ | ✗ | ✗ |
-<!-- machinery:solicitacao-cancelamento:* — recurso removido do MVP por DEC-019 (2026-04-13); reintrodução requer nova DEC-NNN. -->
+<!-- machinery:solicitacao-cancelamento:* — recurso (entidade separada) removido do MVP por DEC-019 (2026-04-13). DEC-029 (2026-04-20) reintroduz o fluxo de solicitação de cancelamento diretamente via machinery:demanda:cancel-request, restrito a demandas agendadas. -->
+
 
 [1] Apenas sobre usuários pertencentes à mesma obra e com perfil hierárquico inferior ou igual.
 [2] Permitido estritamente para leitura de registros da sua autoria ou inerentes ao seu cadastro/entidade.
@@ -221,6 +222,7 @@ Os perfis assinalados com `cross` têm autorização de atuar ignorando restriç
 [4] Permitido ao `Empreiteiro` apenas se a demanda for da sua autoria e estritamente enquanto estiver no estado inicial `PENDENTE`.
 [5] Permitido apenas para consultar relatórios formatados ou metadados do seu próprio vínculo.
 [6] Permitido ao `Operador` apenas sobre a demanda que está atualmente em `EM_ANDAMENTO` sob sua responsabilidade; justificativa obrigatória (DEC-019).
+[7] Permitido ao `Operador` apenas sobre demanda agendada que ele já aceitou (vinculada ao seu expediente); a solicitação fica pendente de aprovação do `AdminOperacional` ou `SuperAdmin` (DEC-029).
 
 ## Matriz de permissões condicionadas ao estado da demanda
 
@@ -231,9 +233,17 @@ A tabela abaixo exibe exaustivamente o cruzamento do recurso `demanda` por `Esta
 | Estado | Ação | Perfis autorizados | Condição adicional |
 | :--- | :--- | :--- | :--- |
 | `[*]` (nulo) | `create` | `SuperAdmin`, `AdminOperacional`, `UsuarioInternoFGR`, `Empreiteiro` | Cria e transita o fluxo em `PENDENTE`. Apenas `AdminOperacional` e `SuperAdmin` podem incluir `dataAgendada` para cair em `AGENDADA` (DEC-020). |
+| `AGUARDANDO_APROVACAO` | `approve` | `SuperAdmin`, `AdminOperacional` | Aprova agendamento criado por `UsuarioInternoFGR`; demanda transita para `AGENDADA`. (DEC-027) |
+| `AGUARDANDO_APROVACAO` | `reject` | `SuperAdmin`, `AdminOperacional` | Rejeita agendamento; demanda transita para `CANCELADA` com justificativa obrigatória. (DEC-027) |
+| `AGENDADA` | `aceitar` | `Operador` | Operador compatível por `TipoMaquinario` aceita a demanda agendada; fica vinculado ao slot. Bloqueado se operador já tiver demanda aceita no mesmo slot (janela de conflito configurável por obra — DEC-026 Q9). Se `operadorAlocadoId` presente, ação ignorada (bypass — DEC-026 Q3). (DEC-026) |
+| `AGENDADA` | `recusar` | `Operador` | Operador recusa demanda agendada; demanda permanece na aba "Demandas Agendadas". Log: `RECUSADA` por operador. Recusa não remove a demanda nem bloqueia outros operadores. (DEC-026 Q2) |
 | `AGENDADA` | `update` | `SuperAdmin`, `AdminOperacional` | Permite correções do agendamento, do horário cravado ou realocações manuais. |
 | `AGENDADA` | `cancel` | `SuperAdmin`, `AdminOperacional` | Cancela diretamente a demanda ainda dormente e futura da esteira. Justificativa obrigatória no log. |
 | `AGENDADA` | `allocate` / `antecipar` | `SuperAdmin`, `AdminOperacional` | Bypass manual coercivo injetando preemptivamente o agendamento em `PENDENTE` em tempo real. |
+| `AGENDADA` (aceita) | `cancel-request` | `Operador` | Operador solicita cancelamento de demanda agendada que já aceitou; solicitação fica pendente de aprovação. (DEC-029 Q6/Q8) |
+| `AGENDADA` (aceita) | `approve` (cancel) | `SuperAdmin`, `AdminOperacional` | Aprova solicitação de cancelamento do operador; demanda transita para `CANCELADA`. (DEC-029) |
+| `AGENDADA` (aceita) | `reject` (cancel) | `SuperAdmin`, `AdminOperacional` | Rejeita solicitação de cancelamento; demanda permanece `AGENDADA` e vinculada ao operador. (DEC-029) |
+| `NAO_EXECUTADA` | mutação | nenhum | Estado terminal para demandas agendadas sem aceite até T-1h. Log por operador: `RECUSADA` ou `NAO_RESPONDIDA`. Impede quaisquer modificações subsequentes. (DEC-028) |
 | `[*]` | `read` / `export` | `SuperAdmin`, `Board`, `AdminOperacional`, `UsuarioInternoFGR`, `Empreiteiro`, `Operador` | Visualização geral ou condicional ao perfil; `Operador` e `Empreiteiro` restritos à própria posse. |
 | `PENDENTE` | `update` | `SuperAdmin`, `AdminOperacional`, `UsuarioInternoFGR`, `Empreiteiro` | Administradores podem corrigir alocações etc.; `Empreiteiro` pode alterar ordens exclusivamente criadas por si. |
 | `PENDENTE` | `cancel` | `SuperAdmin`, `AdminOperacional`, `Empreiteiro` | Transita para `CANCELADA`. Justificativa sempre guardada no log. |
@@ -257,3 +267,7 @@ A tabela abaixo exibe exaustivamente o cruzamento do recurso `demanda` por `Esta
 > Decisão: A matriz explicita ações inativas/inexistentes com `—` para anular inferências indevidas no momento de instanciar metadados de Guards e decorators.
 >
 > Decisão (leitura de contexto para perfis de campo): `Empreiteiro` e `Operador` possuem permissão de leitura (`read`) em recursos de contexto como `core:obra`, `core:setor-operacional`, `core:quadra`, `core:lote`, `core:rua`, `machinery:maquinario`, `machinery:servico` e `machinery:material`. Essa abertura é estritamente funcional e aderente ao escopo restrito definido no PRD (`REQ-RBAC-005` e `REQ-RBAC-006`): o `Empreiteiro` necessita consultar obra, hierarquia territorial e catálogos para preencher o formulário de abertura de demanda; o `Operador` necessita consultar obra, setor operacional, quadra, lote, maquinário e serviços para visualizar a fila operacional e executar demandas. Todas estas leituras são limitadas ao tenant da obra atribuída — não há bypass cross-tenant — e servem exclusivamente como contexto auxiliar de preenchimento ou visualização, sem conceder capacidade de mutação, exportação ou acesso a dados de outros perfis.
+>
+> Decisão (demandas agendadas — DEC-026, DEC-027, DEC-029): As ações `aceitar`, `recusar` e `cancel-request` sobre demandas `AGENDADA` são modeladas na matriz de estado condicional (não como colunas adicionais na matriz de recursos) porque dependem fundamentalmente do estado da demanda e do vínculo do operador. O broadcast de aceite opera por `TipoMaquinario` sem filtro de setor. Fechar o pop-up de aceite é equivalente a adiar a decisão — não registra recusa. O estado `AGUARDANDO_APROVACAO` introduzido pela DEC-027 intercede entre a criação pelo `UsuarioInternoFGR` e a efetivação do agendamento, garantindo aprovação explícita do `AdminOperacional` ou `SuperAdmin`. O estado terminal `NAO_EXECUTADA` (DEC-028) cobre demandas agendadas sem aceite até T-1h, com log de `NAO_RESPONDIDA` por operador. O fluxo de `cancel-request` sobre demandas agendadas (DEC-029) aplica-se apenas ao `Operador` que já aceitou a demanda e é distinto e complementar ao cancelamento direto do `AdminOperacional`/`SuperAdmin` (DEC-019).
+
+**Rastreio PRD:** `REQ-RBAC-004`, `REQ-RBAC-006`

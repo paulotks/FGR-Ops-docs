@@ -1,6 +1,6 @@
 # Definições complementares
 
-**Rastreio PRD:** `REQ-NFR-002`, `REQ-NFR-004`, `REQ-FUNC-004`, `REQ-FUNC-006`, `REQ-FUNC-007`, `REQ-FUNC-008`, `REQ-FUNC-009`, `REQ-ACE-005`, `REQ-RISK-002`, `REQ-MET-002`, `REQ-MET-003`
+**Rastreio PRD:** `REQ-NFR-002`, `REQ-NFR-004`, `REQ-FUNC-004`, `REQ-FUNC-006`, `REQ-FUNC-007`, `REQ-FUNC-008`, `REQ-FUNC-009`, `REQ-FUNC-014`, `REQ-ACE-005`, `REQ-ACE-010`, `REQ-RISK-002`, `REQ-MET-002`, `REQ-MET-003`
 
 Este módulo fecha lacunas operacionais do MVP com decisões técnicas complementares sobre offline, agendamento, exclusão mútua adiada e rastreabilidade de ajudantes.
 
@@ -72,6 +72,7 @@ Todos os eventos do servidor seguem o formato:
 | `DEMAND_QUEUED` | Nova demanda entra na fila do operador (score calculado, posição definida) | Operador destinatário |
 | `INVALIDATE_QUEUE` | Qualquer alteração que invalide o cache local da fila (nova demanda, recálculo, conclusão por outro) | Todos os operadores ativos da obra |
 | `SLA_ALERT` | Vencimento do SLA de uma demanda pendente — disparado **uma única vez** no instante `slaVencimentoEm` | Operador vinculado à demanda |
+| `AGENDADA_DISPONIVEL` | Demanda `AGENDADA` ativada e disponível para aceite — broadcast por `TipoMaquinario` (DEC-026) | Todos os operadores conectados com `TipoMaquinario` compatível |
 
 **Payload `DEMAND_QUEUED`:**
 
@@ -106,6 +107,25 @@ Todos os eventos do servidor seguem o formato:
   "motivo": "NOVA_DEMANDA | SCORE_RECALCULADO | DEMANDA_CONCLUIDA | REATRIBUICAO"
 }
 ```
+
+**Payload `AGENDADA_DISPONIVEL`:**
+
+```json
+{
+  "tipo": "AGENDADA_DISPONIVEL",
+  "demandaId": "uuid",
+  "dataAgendada": "2026-04-25T10:00:00-03:00",
+  "tipoMaquinarioId": "uuid",
+  "tipoMaquinarioNome": "Retroescavadeira",
+  "servicoNome": "Escavação",
+  "localOrigem": { "setorId": "uuid", "setorNome": "Setor A" },
+  "expiracaoAceiteEm": "2026-04-25T09:00:00-03:00"
+}
+```
+
+**Uso:** Frontend exibe pop-up de aceite para operadores compatíveis conectados. O campo `expiracaoAceiteEm` corresponde a T-1h antes de `dataAgendada` — após esse instante, demandas sem aceite transitam para `NAO_EXECUTADA`.
+
+**Rastreio PRD:** `REQ-FUNC-006`
 
 ### Eventos para perfis `AdminOperacional`, `UsuarioInternoFGR`, `SuperAdmin`
 
@@ -148,7 +168,7 @@ Todos os eventos do servidor seguem o formato:
   - **Vibração:** padrão `[200, 100, 200]` via API Vibration do PWA.
   - **Som:** tom de 440 Hz por 300 ms gerado via Web Audio API (`OscillatorNode`), disparo único (não em loop). Não requer arquivo de áudio externo.
   - Quando nenhuma das condições é verdadeira (`filaVazia = false` e prioridade `ELEVADA` ou `NORMAL`), a fila é atualizada silenciosamente sem vibração nem som.
-- `DEMAND_QUEUED` também é emitido quando uma demanda `AGENDADA` transita automaticamente para `PENDENTE` (janela T-60 min). O campo `filaVazia` reflete o estado real da fila do operador no momento da transição; o comportamento de vibração/som segue as mesmas regras acima.
+- `DEMAND_QUEUED` também é emitido quando um operador aceita explicitamente uma demanda `AGENDADA` (modelo de aceite explícito — DEC-026), transitando-a para `PENDENTE` na fila do operador. O campo `filaVazia` reflete o estado real da fila do operador no momento do aceite; o comportamento de vibração/som segue as mesmas regras acima.
 - `SLA_ESCALATION` não é deduplicado — cada etapa de escalação gera um evento distinto.
 - `DEMAND_STATUS_CHANGED` é sempre emitido, independentemente de quem realizou a ação (operador, admin ou sistema).
 
@@ -174,16 +194,86 @@ Se a conexão WebSocket for perdida:
 
 ---
 
-## Comportamento de `dataAgendada` {#comportamento-de-dataagendada}
+## Comportamento de rollover de fim de expediente (DEC-025) {#rollover-fim-expediente}
 
-A `Demanda.dataAgendada` deve permanecer isolada do pipeline de score em tempo real para não interferir na ordenação das demandas imediatas.
+### Mecânica do worker
 
-- Demandas com `dataAgendada` nascem em `AGENDADA` e não aparecem na UI do operador até a janela de ativação.
-- O motor de score ignora demandas `AGENDADA`.
-- A transição automática para `PENDENTE` ocorre exatamente 60 minutos antes do horário-alvo.
-- Apenas `AdminOperacional`, `UsuarioInternoFGR` e `SuperAdmin` podem criar demandas agendadas.
-- O SLA passa a considerar o horário original de `dataAgendada` como marco zero, mesmo que a demanda tenha sido antecipada para preparação logística.
-- A ação administrativa `antecipar` pode converter manualmente `AGENDADA` em `PENDENTE` antes da janela automática.
+O worker `expedienteFim` é disparado ao fim do expediente de cada obra. Executa em duas fases:
+
+**Fase 1 — Devolução forçada:**
+Para cada demanda `EM_ANDAMENTO` ou `PAUSADA` da obra:
+1. Executa `devolver_fim_expediente` (ator: SISTEMA)
+2. Grava `DemandaLog { ação: devolver_fim_expediente, justificativa: "Devolução automática por fim de expediente" }`
+3. Transição automática `RETORNADA → PENDENTE` via `transicao_automatica`
+
+**Fase 2 — Rollover de PENDENTE:**
+Para cada demanda `PENDENTE` sem conclusão:
+1. Preenche `rolloverDe = hoje`
+2. Limpa `operadorId = null`
+3. Agenda reset de SLA para `expedienteInicio` do dia seguinte
+4. Grava `DemandaLog { ação: rollover, ator: SISTEMA, dados: { rolloverDe, operadorAnteriorId } }`
+
+### Interação com operador offline
+
+O gatilho é **duplo**:
+- **Checkout do operador:** Se o operador faz checkout com demanda ativa, a devolução forçada executa imediatamente para aquele operador
+- **Worker `expedienteFim`:** Captura demandas de operadores que não fizeram checkout (offline, sem internet, etc.)
+
+Isso garante que **nenhuma demanda ativa** sobreviva ao fim do expediente sem ser devolvida.
+
+### Redistribuição no dia seguinte
+
+No dia seguinte, ao fazer check-in, operadores participam do pipeline padrão:
+- Hard filter: `TipoMaquinario` compatível, disponibilidade
+- Scoring: `score = (W_adj×adjacency) + (W_srv×service_priority) + (W_mat×material_risk)`
+- Demandas com `rolloverDe` competem como PENDENTE normais
+
+O campo `rolloverDe` é **somente rastreio** — não afeta scoring nem prioridade.
+
+**Rastreio PRD:** `REQ-FUNC-014` (→ `docs/PRD/03-requisitos-funcionais.md`)
+
+---
+
+## Campo `dataAgendada` e modelo de aceite explícito (DEC-026) {#comportamento-de-dataagendada}
+
+O campo `dataAgendada` em `Demanda` registra a data/hora alvo para execução de uma demanda agendada. O modelo anterior de transição automática T-60 (shadow-queue) foi **substituído** pelo modelo de aceite explícito.
+
+### Ciclo de vida completo
+
+```
+Criação → AGENDADA (ou AGUARDANDO_APROVACAO para UsuarioInternoFGR)
+    ↓ (broadcast por TipoMaquinario via AGENDADA_DISPONIVEL)
+Operador vê demanda na aba "Demandas Agendadas" e no pop-up de check-in
+    ↓
+Aceite explícito → AGENDADA → PENDENTE (entra na fila do operador)
+    OU
+Expiração sem aceite (T-1h antes de dataAgendada) → NAO_EXECUTADA
+```
+
+### Janela de aceite e conflito
+
+- A janela de conflito de aceite (slot horário) é **configurável por obra**
+- Operador não pode aceitar duas demandas no mesmo slot horário (DEC-026, Q5)
+- Fechar o pop-up = adiar decisão (sem registro de recusa)
+- Recusar = log `RECUSADA` para aquele operador; demanda permanece na aba
+
+### Broadcast por `TipoMaquinario`
+
+A demanda agendada é visível para todos os operadores com `TipoMaquinario` compatível, **sem filtro de setor** (DEC-026, Q1). Justificativa: operador pode estar em qualquer parte da obra no momento do aceite.
+
+### Bypass por `operadorAlocadoId`
+
+Se `operadorAlocadoId` está preenchido na criação, o fluxo de aceite é ignorado: a demanda entra diretamente na fila do operador alocado ao atingir `PENDENTE` (DEC-001, DEC-026 Q3).
+
+### Aprovação prévia (`UsuarioInternoFGR`)
+
+Agendamentos criados por `UsuarioInternoFGR` nascem em `AGUARDANDO_APROVACAO`. Só após aprovação do AdminOp/SuperAdmin transitam para `AGENDADA` e ficam visíveis para operadores (DEC-027).
+
+### Marco zero de SLA
+
+O SLA considera o horário original de `dataAgendada` como marco zero (T-0). Se o atendimento ocorrer antes de `dataAgendada`, o tempo de atendimento é considerado zero.
+
+**Rastreio PRD:** `REQ-FUNC-006` (→ `docs/PRD/03-requisitos-funcionais.md`)
 
 ## Definição de `ServicoDinamico`
 

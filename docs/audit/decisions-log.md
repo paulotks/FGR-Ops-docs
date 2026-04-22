@@ -533,6 +533,81 @@ Este registo centraliza as decisões de produto necessárias antes das correçõ
   - `SPEC/08-api-contratos.md`: campos `pesoAdjacencia/pesoServico/pesoMaterial` alterados para `number (0–100)`; nota de validação atualizada (sem soma obrigatória); erro `400` renomeado para "peso fora do intervalo [0, 100]"; defaults atualizados para `50/30/20`.
   - `CLAUDE.md`: "Última: DEC-023 · Próxima: **DEC-024**" → atualizar para "Última: DEC-024 · Próxima: **DEC-025**" (feito inline).
 
+## DEC-025 — Rollover e redistribuição de demandas entre dias
+
+- **Estado:** Decidido
+- **Data:** 2026-04-20
+- **Participantes:** Produto, Operações
+- **Contexto:** Demandas não finalizadas até o fim do expediente precisam persistir para o dia seguinte e ser redistribuídas conforme operadores fazem check-in, respeitando compatibilidade de maquinário. DEC-002 previa auto-encerramento por estouro de SLA, comportamento que conflita com este requisito.
+- **Supersede parcialmente:** DEC-002 — parte de auto-encerramento por SLA estourado é removida; alertas e escalação de SLA permanecem.
+- **Decisões:**
+  - Q1) DEC-002 supersedido na parte de auto-encerramento; alertas/escalação SLA mantidos.
+  - Q2) Estado no rollover: `PENDENTE` com campo `rolloverDe: date` para rastreio — sem novo estado.
+  - Q3) SLA mantido integralmente (alertas, escalação, timers, badges), **sem auto-encerramento**. SLA **reseta** no dia seguinte (marco zero = início do expediente).
+  - Q4) Escopo redistribuição: hard filter completo + scoring normal — pipeline padrão de distribuição.
+  - Q5) `EM_ANDAMENTO`/`PAUSADA` no fim do expediente: devolução forçada via `RETORNADA` existente (ator=SISTEMA); gatilho duplo: checkout do operador + worker `expedienteFim`.
+  - Q6) `AGENDADA` vencida segue mecanismo T-60min vigente; se já transitou para `PENDENTE`, rola normalmente. *(Nota: supersedida pelo Plano 2/DEC-026, que substitui T-60 por aceite explícito com expiração T-1h → `NAO_EXECUTADA`.)*
+  - Q7) Sem notificação especial; indicador visual no painel admin para demandas redistribuídas.
+- **Justificação:** O rollover preserva a continuidade operacional sem criar estados artificiais. O reset de SLA no dia seguinte garante que o operador que assumir a demanda tenha o tempo completo para executá-la, evitando demandas já "vencidas" na fila logo no início do expediente.
+- **Novos identificadores:** REQ-FUNC-014 (rollover + redistribuição + devolução forçada), REQ-ACE-010 (critérios de aceite do rollover).
+- **Aplicação:** Plano 1 — ver `novos-requisitos/plano-1-rollover.md`.
+
+## DEC-026 — Modelo de aceite explícito para demandas agendadas
+
+- **Estado:** Decidido
+- **Data:** 2026-04-20
+- **Participantes:** Produto, Operações
+- **Contexto:** O modelo atual de shadow-queue com transição automática `AGENDADA → PENDENTE` T-60min antes do horário-alvo é invisível ao operador e não permite gestão explícita. A área solicita modelo de aceite com pop-up, aba dedicada e expiração automática.
+- **Supersede mecanismo T-60 de DEC-002.**
+- **Decisões:**
+  - Q1) Broadcast por **TipoMaquinario** — sem filtro de setor; operador pode estar em qualquer lugar da obra.
+  - Q2) Recusa não remove — demanda permanece na aba "Demandas Agendadas". Log registra `RECUSADA` / `ACEITA_POR_OUTRO` por operador.
+  - Q3) `operadorAlocadoId` **bypassa** o fluxo de aceite (alinhado com DEC-001).
+  - Q4) Fechar pop-up = **adiar decisão** (sem registro de recusa).
+  - Q5) Operador **não pode aceitar** mais de uma demanda no mesmo slot horário.
+  - Q9) Janela de conflito de aceite **configurável por obra**.
+  - Q10) Requisitos de UI para tela de gestão no painel admin incluídos como REQ-IDs nesta iteração.
+- **Justificação:** Aceite explícito dá ao operador ciência e responsabilidade sobre demandas agendadas. A aba dedicada substitui o posicionamento progressivo na fila (desnecessário com aceite explícito). A expiração T-1h → `NAO_EXECUTADA` cria estado terminal auditável para demandas sem aceite.
+- **Aplicação:** Plano 2 — ver `novos-requisitos/plano-2-agendadas.md`.
+
+## DEC-027 — UsuarioInternoFGR cria agendamentos com aprovação prévia
+
+- **Estado:** Decidido
+- **Data:** 2026-04-20
+- **Participantes:** Produto, Operações
+- **Contexto:** DEC-020 definiu o escopo do `UsuarioInternoFGR`. O fluxo de criação de demandas agendadas por esse perfil requer aprovação do admin antes de ativar a demanda, criando um estado intermediário.
+- **Supersede parcialmente:** DEC-020 — estende o modelo de aprovação para agendamentos desse perfil.
+- **Decisões:**
+  - Q7) **Novo estado `AGUARDANDO_APROVACAO`** — agendamentos do `UsuarioInternoFGR` nascem nesse estado até aprovação do AdminOp/SuperAdmin. Rejeição leva a `CANCELADA`.
+- **Justificação:** O fluxo de aprovação prévia mantém controle administrativo sobre agendamentos de perfis não-operacionais, evitando demandas agendadas não revisadas entrando no sistema.
+- **Aplicação:** Plano 2 — ver `novos-requisitos/plano-2-agendadas.md`.
+
+## DEC-028 — Novo estado terminal `NAO_EXECUTADA`
+
+- **Estado:** Decidido
+- **Data:** 2026-04-20
+- **Participantes:** Produto, Operações
+- **Contexto:** Demandas agendadas que expiram sem aceite de nenhum operador não têm destino auditável no modelo atual (acabavam somente em `CANCELADA`, perdendo rastreio de causa).
+- **Decisões:**
+  - Demandas agendadas sem aceite até **T-1h** antes da `dataAgendada` transitam para `NAO_EXECUTADA` (estado terminal).
+  - Log registra status por operador: `RECUSADA` (recusou explicitamente) ou `NAO_RESPONDIDA` (adiou/ignorou).
+- **Justificação:** `NAO_EXECUTADA` distingue claramente demandas canceladas por decisão administrativa de demandas expiradas sem resposta operacional, permitindo relatórios de taxa de cobertura de agendamentos.
+- **Aplicação:** Plano 2 — ver `novos-requisitos/plano-2-agendadas.md`.
+
+## DEC-029 — Solicitação de cancelamento pelo operador para demandas agendadas
+
+- **Estado:** Decidido
+- **Data:** 2026-04-20
+- **Participantes:** Produto, Operações
+- **Contexto:** DEC-019 definiu que o operador não pode cancelar demandas diretamente. Para demandas agendadas, onde o operador fez aceite explícito, é necessário um fluxo de solicitação de cancelamento com aprovação administrativa.
+- **Complementa:** DEC-019 (sem contradição — dualidade intencional).
+- **Decisões:**
+  - Q6) Operador **solicita** cancelamento → AdminOp recebe no painel e decide (aprova ou rejeita). Admin cancela diretamente com motivo obrigatório.
+  - Q8) Fluxo de solicitação de cancelamento aplica-se **apenas a demandas agendadas** (demandas normais mantêm DEC-019).
+  - Q11) Dualidade de cancelamento (direto para normais, solicitação para agendadas) é **intencional** — nova DEC complementa DEC-019.
+- **Justificação:** O fluxo de solicitação preserva a integridade operacional (operador não cancela unilateralmente) mas reconhece que, em demandas agendadas, o operador fez comprometimento explícito e pode ter motivos legítimos para solicitar descomprometimento.
+- **Aplicação:** Plano 2 — ver `novos-requisitos/plano-2-agendadas.md`.
+
 ---
 
 ## Fase 2 — Correcoes de achados importantes

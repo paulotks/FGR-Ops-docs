@@ -35,7 +35,7 @@
 
 - **PRD:** `REQ-<PREFIX>-<NNN>` — prefixes: `FUNC NFR ACE RBAC JOR CTX OBJ MET RISK`
 - **SPEC:** bloco `**Rastreio PRD:**` obrigatório em toda seção que referencie REQ-IDs
-- **Decisões táticas:** `DEC-NNN` em `decisions-log.md` — próxima: **DEC-024**
+- **Decisões táticas:** `DEC-NNN` em `decisions-log.md` — próxima: **DEC-030**
 - **ADRs:** `D1–D7` nas SPECs
 - **Cross-links:** PRD→SPEC `→ SPEC: path#anchor` · SPEC→PRD bloco `Rastreio PRD:`
 
@@ -102,22 +102,22 @@
 
 Plataforma multi-tenant de operações de construção civil. MVP = **Machinery Link** — requisição, despacho, execução e rastreamento de maquinário pesado.
 
-- **Demanda** — aggregate root; estados: `PENDENTE → EM_ANDAMENTO → CONCLUIDA / CANCELADA / RETORNADA`; também `AGENDADA → PENDENTE_APROVACAO`
+- **Demanda** — aggregate root; estados: `PENDENTE → EM_ANDAMENTO → CONCLUIDA / CANCELADA / RETORNADA`; também `AGUARDANDO_APROVACAO → AGENDADA → PENDENTE` (aceite explícito) ou `AGENDADA → NAO_EXECUTADA` (expiração T-1h); rollover: `EM_ANDAMENTO/PAUSADA → RETORNADA → PENDENTE` (fim de expediente)
 - **Queue engine** — filtro setor/equipamento + scoring: `score = (W_adj×adjacency) + (W_srv×service_priority) + (W_mat×material_risk)`; pesos 50/30/20; empates por FIFO
-- **SLA:** MAXIMA 15 min · ELEVADA 45 min · NORMAL 120 min; timeout → `PENDENTE_APROVACAO` → auto-encerramento no fim do expediente
+- **SLA:** MAXIMA 15 min · ELEVADA 45 min · NORMAL 120 min; sem auto-encerramento (DEC-025 supersede DEC-002); SLA reseta no rollover inter-dias
 - **`exigeTransporte`** em `Servico` — torna origem→destino obrigatório na criação da Demanda
 
 ---
 
-## Current State (2026-04-16)
+## Current State (2026-04-20)
 
 | | Estado |
 |---|---|
-| PRD | 7 módulos estáveis (`00`–`06`); REQ-IDs: CTX-001…003, OBJ-001…005, SCO-001…005, SCO-F2-001…006, SCO-GAT-001…004, RBAC-001…006, JOR-001…005, FUNC-001…013, NFR-001…007, ACE-001…006+008, MET-001…003, RISK-001…002 |
-| SPEC | 9 módulos + `docs/UI/` (Design System + 5 telas); cobertura 62 cobertos / 2 parciais / 0 descobertos |
-| Decisions | Última: DEC-024 · Próxima: **DEC-025** |
+| PRD | 7 módulos estáveis (`00`–`06`); REQ-IDs: CTX-001…003, OBJ-001…005, SCO-001…005, SCO-F2-001…006, SCO-GAT-001…004, RBAC-001…006, JOR-001…005, FUNC-001…014, NFR-001…007, ACE-001…006+008…010, MET-001…003, RISK-001…002 |
+| SPEC | 9 módulos + `docs/UI/` (Design System + 5 telas) + `docs/flows/06-rollover-redistribuicao.md`; cobertura 64 cobertos / 2 parciais / 0 descobertos |
+| Decisions | Última: DEC-029 · Próxima: **DEC-030** |
 | OpsX ativos | `stack-frontend-vite-react` (em aplicação — DEC-021/022/023) |
-| Audit | 37 achados, todos resolvidos · `docs/audit/output/global/consolidated-global.json` |
+| Audit | 37 achados, todos resolvidos · `docs/audit/output/global/consolidated-global.json` · DEC-025…029 adicionados pós-auditoria |
 
 ---
 

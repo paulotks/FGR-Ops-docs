@@ -75,6 +75,20 @@ O `Operador` acessa o aplicativo dentro do seu `Expediente`, visualizando a sua 
 
 Quando uma nova demanda chega a um operador com fila vazia, o sistema dispara notificação multi-sensorial (pop-up + alerta sonoro + vibração) para garantir percepção mesmo sem tela ativa. Quando a fila já possui demandas, a entrada é silenciosa e reordenada pelo motor de score.
 
+#### Ciclo inter-dias: rollover e retomada no check-in
+
+Demandas não concluídas até o fim do expediente não são encerradas automaticamente. Em vez disso:
+
+- Demandas em `PENDENTE` rolam para o dia seguinte com o campo `rolloverDe` preenchido com a data do dia, operadorId limpo e SLA agendado para reset no `expedienteInicio` do dia seguinte.
+- Demandas em `EM_ANDAMENTO` ou `PAUSADA` são devolvidas automaticamente pelo Sistema via transição `devolver_fim_expediente → RETORNADA → PENDENTE` (gatilho duplo: checkout do operador ou worker `expedienteFim`). O log registra ator `SISTEMA` e justificativa "Devolução automática por fim de expediente".
+- No dia seguinte, operadores que fazem check-in recebem as demandas redistribuídas conforme compatibilidade de maquinário (hard filter + scoring normal). A experiência do operador é transparente: demandas com `rolloverDe` aparecem na fila como demandas normais, sem estado especial.
+- O painel admin exibe indicador visual (badge "Dia anterior") para demandas redistribuídas, sem notificação especial.
+
+> **Decisão aplicada:** DEC-025 (2026-04-20) — Rollover e redistribuição de demandas entre dias. Supersede parcialmente DEC-002 (auto-encerramento por SLA removido; alertas e escalação mantidos). Ver [`docs/audit/decisions-log.md#dec-025`](../audit/decisions-log.md#dec-025).
+
+→ SPEC: [../SPEC/03-fila-scoring-estados-sla.md](../SPEC/03-fila-scoring-estados-sla.md) (máquina de estados, worker expedienteFim, rollover PENDENTE)
+→ SPEC: [../SPEC/06-definicoes-complementares.md](../SPEC/06-definicoes-complementares.md) (campo rolloverDe, reset de SLA inter-dias)
+
 -> SPEC: [../SPEC/01-modulos-plataforma.md#capacidades-operacionais-do-machinery-link](../SPEC/01-modulos-plataforma.md#capacidades-operacionais-do-machinery-link)
 -> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#regra-de-conflito-alocacao-manual-sobre-demanda-em_andamento](../SPEC/03-fila-scoring-estados-sla.md#regra-de-conflito-alocacao-manual-sobre-demanda-em_andamento)
 -> SPEC: [../SPEC/07-design-ui-logica.md#notificacao-de-nova-demanda-fila-vazia-vs-fila-ativa](../SPEC/07-design-ui-logica.md#notificacao-de-nova-demanda-fila-vazia-vs-fila-ativa) (UX completa)
@@ -92,4 +106,5 @@ Demandas sujeitas a alteração forçada, cancelamento ou devolução à fila de
 - [REQ-ACE-004](05-criterios-aceite.md#audit-log-com-justificativa-em-modificacoes-gerenciais)
 - [REQ-ACE-005](05-criterios-aceite.md#destaque-visual-de-prioridade-maxima-na-ui-mobile)
 - [REQ-ACE-006](05-criterios-aceite.md#cancelamento-de-demandas-em-campo-e-encerramento-por-sla)
+- [REQ-ACE-010](05-criterios-aceite.md#rollover-e-redistribuicao-de-demandas-entre-dias)
 

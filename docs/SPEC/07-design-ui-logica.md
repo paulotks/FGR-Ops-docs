@@ -6,7 +6,7 @@ area: UI/UX e Frontend
 
 # Design de UI e Lógica de Interface
 
-**Rastreio PRD:** `REQ-JOR-001`, `REQ-JOR-002`, `REQ-JOR-003`, `REQ-JOR-004`, `REQ-JOR-005`, `REQ-RBAC-001`, `REQ-RBAC-002`, `REQ-RBAC-003`, `REQ-RBAC-004`, `REQ-RBAC-005`, `REQ-RBAC-006`, `REQ-FUNC-001`, `REQ-FUNC-008`, `REQ-FUNC-009`, `REQ-FUNC-011`, `REQ-FUNC-013`, `REQ-NFR-002`, `REQ-ACE-006`
+**Rastreio PRD:** `REQ-JOR-001`, `REQ-JOR-002`, `REQ-JOR-003`, `REQ-JOR-004`, `REQ-JOR-005`, `REQ-RBAC-001`, `REQ-RBAC-002`, `REQ-RBAC-003`, `REQ-RBAC-004`, `REQ-RBAC-005`, `REQ-RBAC-006`, `REQ-FUNC-001`, `REQ-FUNC-006`, `REQ-FUNC-008`, `REQ-FUNC-009`, `REQ-FUNC-011`, `REQ-FUNC-013`, `REQ-FUNC-014`, `REQ-NFR-002`, `REQ-ACE-006`
 
 Este documento serve como a **ponte visual e técnica** entre as regras de negócio documentadas (RBAC, Fila, SLAs) e a implementação em **React 19 com Vite, Tailwind CSS e shadcn/ui** (DEC-021). Ele define as estruturas das telas que posteriormente serão prototipadas e desenvolvidas.
 
@@ -82,6 +82,63 @@ O comportamento ao receber uma nova demanda difere conforme o estado atual da fi
 - Operadores com fila vazia que receberam demanda mas não iniciaram ficam sinalizados no dashboard (indicador visual de inatividade).
 - Não há automação de escalação — o contato é manual (ex.: rádio).
 
+#### Distribuição inter-dias (DEC-025) {#distribuicao-inter-dias}
+
+**Rastreio PRD:** `REQ-FUNC-014`
+
+Demandas redistribuídas do dia anterior aparecem na fila do operador como demandas normais, sem indicação especial para o operador. A redistribuição é transparente — o operador recebe as demandas conforme compatibilidade de maquinário no momento do check-in.
+
+#### Pop-up de Demandas Agendadas no check-in (DEC-026) {#popup-demandas-agendadas-checkin}
+
+**Rastreio PRD:** `REQ-FUNC-006`
+
+Exibido ao operador no momento do check-in (ou login) se houver demandas agendadas pendentes de aceite compatíveis com o seu `TipoMaquinario`.
+
+Componentes do pop-up:
+- Lista de demandas agendadas pendentes (`dataAgendada`, serviço, local, horário de expiração do aceite).
+- Ações por demanda:
+  - **[Aceitar]** — transita demanda para `PENDENTE` e adiciona à fila do operador.
+  - **[Recusar]** — registra log `RECUSADA`; demanda permanece na aba para outros operadores.
+  - **[Fechar]** — adia decisão (sem registro de recusa); demanda ainda aparece na aba.
+
+Regras de UX:
+- O operador não pode aceitar mais de uma demanda no mesmo slot horário (janela configurável por obra).
+- O pop-up não é bloqueante — o operador pode fechá-lo e agir pela aba posteriormente.
+
+#### Aba "Demandas Agendadas" (DEC-026) {#aba-demandas-agendadas-operador}
+
+**Rastreio PRD:** `REQ-FUNC-006`
+
+Aba dedicada na interface do operador para visualizar e gerenciar demandas agendadas.
+
+Conteúdo da aba:
+- Lista de demandas agendadas com `TipoMaquinario` compatível, em estados:
+  - `AGENDADA` (pendentes de aceite): exibidas com countdown para expiração.
+  - `AGENDADA` (aceita pelo próprio operador): com indicação de bloqueio T-30 visível.
+  - `ACEITA_POR_OUTRO` (aceita por outro operador): exibidas como informativas, somente leitura.
+
+Ações disponíveis por estado:
+- `AGENDADA` pendente de aceite: **[Aceitar]**, **[Recusar]**.
+- `AGENDADA` aceita pelo operador: **[Solicitar Cancelamento]**.
+- `ACEITA_POR_OUTRO`: somente leitura, sem ações.
+
+Bloqueio T-30:
+- 30 minutos antes da `dataAgendada`, a aba exibe aviso proeminente: *"Demanda agendada em [horário] — não é possível iniciar novas demandas."*
+- O botão **"Iniciar"** de outras demandas fica desabilitado durante o bloqueio.
+
+#### Botão "Solicitar Cancelamento" para demandas agendadas aceitas (DEC-029) {#botao-solicitar-cancelamento-agendada}
+
+**Rastreio PRD:** `REQ-FUNC-006`
+
+Exibido para demandas agendadas que o operador aceitou (em qualquer estado ativo).
+
+Fluxo:
+1. Operador clica **"Solicitar Cancelamento"**.
+2. Modal de confirmação com campo obrigatório **"Motivo da solicitação"**.
+3. Solicitação enviada ao `AdminOperacional`.
+4. Demanda continua no estado atual até decisão do admin.
+5. Operador visualiza o status da solicitação: `PENDENTE` / `APROVADA` / `REJEITADA`.
+
 ### 1.3 Dashboard Web Subordinado/Supervisor
 **Objetivo:** Sala de controle. Visão macro, monitoramento de SLAs e reordenação (Blindagem).
 
@@ -91,6 +148,36 @@ O comportamento ao receber uma nova demanda difere conforme o estado atual da fi
 *   **Efeito Blindagem (Drag & Drop):** Interface de reordenação visual para sobrepor o algoritmo temporariamente em casos de prioridade no campo ou realocações dinâmicas.
 *   **Aprovação & Resolução de Cancelamentos:** Cards/Modais rápidos (Approval Inbox) para aprovar novas demandas do empreiteiro ou avaliar justificativas de quebra/pausas dos operadores.
 *   **Indicador de Operador Inativo** (`REQ-FUNC-013`): na visão de operadores (tabela ou Kanban), a linha de cada operador com fila não vazia e sem demanda em `EM_ANDAMENTO` exibe um **badge de alerta** âmbar (ex.: *"Parado"* ou ícone de relógio) enquanto a demanda `PENDENTE` mais antiga da fila ultrapassar um limiar configurável sem iniciada (sugestão MVP: 5 minutos). O badge desaparece assim que o operador inicia a primeira demanda. Não há automação de escalação — o `AdminOperacional` aciona contato manual (ex.: rádio) ao identificar o badge.
+
+#### Indicador visual de demandas redistribuídas (DEC-025) {#indicador-demandas-redistribuidas}
+
+**Rastreio PRD:** `REQ-FUNC-014`
+
+Demandas com campo `rolloverDe` preenchido exibem badge **"Dia anterior"** na listagem de demandas do painel admin.
+
+- O badge é informativo — não altera prioridade ou fluxo da demanda.
+- Filtro opcional: o admin pode filtrar a listagem por "demandas redistribuídas" para acompanhamento e análise de cobertura inter-dias.
+
+#### Tela de gestão de agendamentos (DEC-026, DEC-027, DEC-029) {#tela-gestao-agendamentos}
+
+**Rastreio PRD:** `REQ-FUNC-006`, `REQ-RBAC-004`
+
+Tela dedicada no painel admin para gestão do ciclo de vida de demandas agendadas.
+
+1. **Fila de aprovação (`UsuarioInternoFGR`):**
+   - Lista demandas em `AGUARDANDO_APROVACAO`.
+   - Ações: **[Aprovar → AGENDADA]** / **[Rejeitar → CANCELADA]** (motivo obrigatório na rejeição).
+
+2. **Visão de agendamentos ativos:**
+   - Lista demandas em `AGENDADA` com status de aceite (operadores que recusaram / aceitaram / não responderam).
+   - Indicação de expiração iminente (T-1h) em destaque visual.
+
+3. **Solicitações de cancelamento pendentes:**
+   - Lista `SolicitacaoCancelamentoAgendada` em estado `PENDENTE`.
+   - Ações: **[Aprovar cancelamento]** / **[Rejeitar solicitação]**.
+
+4. **Histórico:**
+   - Demandas em `NAO_EXECUTADA` (expiradas sem aceite) para análise de cobertura operacional.
 
 ### 1.4 Portal Login FGR Interno (Web)
 **Objetivo:** Hub seguro de entrada para recursos gerenciais internos, acesso logado.
@@ -113,6 +200,19 @@ Como cada transição formal da Máquina de Estados se reflete na tela:
 | `RETORNADA` | Card exibe indicador *"Retornando à fila"*; sem ação disponível para o empreiteiro. | Demanda não aparece na fila do operador — estado transitório automático aguardando retorno a `PENDENTE`. | Badge laranja *"RETORNADA"* na linha da demanda; sistema atualiza automaticamente para `PENDENTE` sem intervenção administrativa. |
 | `CONCLUIDA` | Card move-se para histórico de solicitações encerradas. | Card sai da view atual e histórico atualiza numeração de meta diária. | Card ganha status verde sólido e move-se para aba "Auditoria" ou de histórico. |
 | `CANCELADA` | Card desaparece da lista ativa; Toast: *"Demanda #[ID] cancelada."* | Card desaparece; feedback discreto via Toast *("Demanda #123 cancelada")*. | Riscado/Arquivado em vermelho na visão de encerramentos do dia. |
+
+### 2.1 Estados de agendamento — ações e badges (DEC-026, DEC-027, DEC-029) {#estados-agendamento-acoes-badges}
+
+**Rastreio PRD:** `REQ-FUNC-006`
+
+Complementa a tabela acima com o mapeamento de cor, texto e ações para os estados introduzidos pelo fluxo de demandas agendadas. Para a perspectiva por persona do estado `AGENDADA`, consulte a tabela em [§ 2](#2-mapeamento-visual-de-estados-state-to-ui-mapping).
+
+| Estado | Cor / Badge | Texto exibido | Ações disponíveis |
+|--------|-------------|---------------|-------------------|
+| `AGUARDANDO_APROVACAO` | Amarelo / Pendente | "Aguardando aprovação" | Admin: **[Aprovar]** / **[Rejeitar]** |
+| `NAO_EXECUTADA` | Cinza / Terminal | "Não executada" | Somente leitura |
+| `AGENDADA` — aceite pendente | Azul / Agendado | "Agendada — aguardando aceite" | Operador: **[Aceitar]** / **[Recusar]** |
+| `AGENDADA` — aceita pelo operador | Azul escuro / Aceita | "Agendada — aceita" | Operador: **[Solicitar Cancelamento]** |
 
 ---
 

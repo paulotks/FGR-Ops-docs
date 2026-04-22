@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+   #!/usr/bin/env bash
 # export-exec.sh — Exporta visão executiva do FGR-OPS (gestores, board, stakeholders não técnicos)
 # Conteúdo: objetivos, perfis de usuário, jornadas, regras de negócio, métricas e riscos
 # Excluído: arquitetura técnica, modelo de dados, contratos de API, NFRs, critérios de aceite QA

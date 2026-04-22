@@ -6,7 +6,7 @@ area: Backend / Integração
 
 # Contratos de API REST
 
-**Rastreio PRD:** `REQ-NFR-005`, `REQ-NFR-006`, `REQ-NFR-007`, `REQ-FUNC-001`, `REQ-FUNC-002`, `REQ-FUNC-003`, `REQ-FUNC-004`, `REQ-FUNC-005`, `REQ-FUNC-006`, `REQ-FUNC-007`, `REQ-FUNC-008`, `REQ-FUNC-009`, `REQ-FUNC-010`, `REQ-FUNC-011`, `REQ-FUNC-012`, `REQ-RBAC-001…006`
+**Rastreio PRD:** `REQ-NFR-005`, `REQ-NFR-006`, `REQ-NFR-007`, `REQ-FUNC-001`, `REQ-FUNC-002`, `REQ-FUNC-003`, `REQ-FUNC-004`, `REQ-FUNC-005`, `REQ-FUNC-006`, `REQ-FUNC-007`, `REQ-FUNC-008`, `REQ-FUNC-009`, `REQ-FUNC-010`, `REQ-FUNC-011`, `REQ-FUNC-012`, `REQ-FUNC-014`, `REQ-RBAC-001…006`
 
 Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os schemas de request/response são validados via **zod**, partilhados com o frontend `apps/web` (React 19 + Vite) e o futuro `apps/mobile` (React Native/Expo) através dos packages `packages/types` e `packages/schemas` no monorepo (D1, DEC-021, DEC-023).
 
@@ -151,12 +151,14 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
 ```json
 {
   "id": "uuid",
-  "status": "PENDENTE | AGENDADA",
+  "status": "PENDENTE | AGENDADA | AGUARDANDO_APROVACAO",
   "score": "number",
   "setorOperacionalId": "uuid",
   "criadoEm": "ISO8601"
 }
 ```
+
+> `status = AGUARDANDO_APROVACAO` quando criador é `UsuarioInternoFGR` com `urgencia = AGENDADA` (DEC-027). `status = AGENDADA` quando criador é `AdminOperacional` ou `SuperAdmin` com `urgencia = AGENDADA`.
 
 **Erros:** `400` validação DTO · `422` operador fora de setor (com alerta, não bloqueio — DEC-001) · `422` incompatibilidade serviço/maquinário · `422` destino ausente para serviço com `exigeTransporte=true` (`DEM-005`)
 
@@ -192,13 +194,15 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
 
 **Query params:** `?status=&operadorId=&servicoId=&setorId=&page=&limit=`
 
-**Response 200:** lista paginada de demandas com campos principais (id, status, score, localTipo, criadoEm, empreiteiro, operador)
+**Response 200:** lista paginada de demandas com campos principais (id, status, score, localTipo, criadoEm, empreiteiro, operador, `rolloverDe`)
+
+> O campo `rolloverDe: date | null` (DEC-025) é incluído em todas as respostas que retornam demandas (listagem, detalhe e kanban). Indica a data de origem do rollover — `null` para demandas do dia corrente; data ISO 8601 (dia) para demandas redistribuídas de dia anterior.
 
 ---
 
 ### GET /demandas/:id — Detalhe de demanda
 
-**Response 200:** demanda completa incluindo `DemandaLog[]`
+**Response 200:** demanda completa incluindo `DemandaLog[]` e campo `rolloverDe: date | null` (DEC-025)
 
 **Erros:** `404` não encontrada no tenant
 
@@ -227,6 +231,232 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
 ```
 
 **Erros:** `409` transição inválida na máquina de estados · `403` perfil sem permissão para esta transição
+
+---
+
+## 3b. Ciclo de aceite de demandas agendadas (`/demandas/:id/...`)
+
+**Rastreio PRD:** `REQ-FUNC-006`, `REQ-FUNC-014`
+
+Endpoints do ciclo de vida de demandas com `urgencia = AGENDADA`, cobrindo aceite/recusa pelo operador, aprovação/rejeição pelo admin e solicitação de cancelamento (DEC-026, DEC-027, DEC-028, DEC-029).
+
+### Enum `EstadoDemanda` — valores relevantes a esta seção
+
+| Estado | Descrição |
+|--------|-----------|
+| `AGENDADA` | Demanda agendada visível para operadores com TipoMaquinario compatível; aguarda aceite |
+| `AGUARDANDO_APROVACAO` | Criada por `UsuarioInternoFGR`; aguarda aprovação de AdminOp/SuperAdmin antes de ir a `AGENDADA` (DEC-027) |
+| `NAO_EXECUTADA` | Estado terminal — demanda agendada expirou sem aceite (T-1h antes da `dataAgendada`) (DEC-028) |
+| `PENDENTE` | Estado após aceite do operador; entra na fila normal |
+| `CANCELADA` | Terminal — rejeição pelo admin ou cancelamento aprovado |
+
+---
+
+### POST /demandas/:id/aceitar-agendamento
+
+Operador aceita demanda agendada. Requer TipoMaquinario compatível e slot livre (janela configurável por obra — DEC-026).
+
+**Rastreio PRD:** `REQ-FUNC-006`
+
+**Perfil:** `Operador`
+
+**Request:**
+```json
+{
+  "operadorId": "uuid"
+}
+```
+
+**Validações:**
+- Demanda deve estar em estado `AGENDADA`
+- Operador deve ter TipoMaquinario compatível com o serviço da demanda
+- Operador não pode ter outra demanda aceita no mesmo slot horário (janela de conflito configurável por obra)
+
+**Response 200:**
+```json
+{
+  "demandaId": "uuid",
+  "novoEstado": "PENDENTE",
+  "aceiteEm": "ISO8601"
+}
+```
+
+**Erros:** `400` slot em conflito (`{ code: "SLOT_CONFLITO" }`) · `409` demanda já aceita por outro operador · `422` demanda não está em `AGENDADA` · `422` TipoMaquinario incompatível
+
+---
+
+### POST /demandas/:id/recusar-agendamento
+
+Operador recusa demanda agendada. Demanda permanece em `AGENDADA` para outros operadores com TipoMaquinario compatível.
+
+**Rastreio PRD:** `REQ-FUNC-006`
+
+**Perfil:** `Operador`
+
+**Request:**
+```json
+{
+  "operadorId": "uuid",
+  "motivo": "string | null (opcional)"
+}
+```
+
+**Validações:** Demanda deve estar em `AGENDADA`
+
+**Response 200:**
+```json
+{
+  "demandaId": "uuid",
+  "logStatus": "RECUSADA"
+}
+```
+
+**Erros:** `422` demanda não está em `AGENDADA`
+
+---
+
+### POST /demandas/:id/solicitar-cancelamento
+
+Operador solicita cancelamento de demanda agendada que aceitou previamente. Motivo obrigatório. AdminOp/SuperAdmin decide no painel (DEC-029).
+
+**Rastreio PRD:** `REQ-FUNC-006`
+
+**Perfil:** `Operador`
+
+**Request:**
+```json
+{
+  "operadorId": "uuid",
+  "motivo": "string (obrigatório)"
+}
+```
+
+**Validações:** Demanda deve ter sido aceita pelo operador solicitante (operadorId deve coincidir com `aceiteOperadorId` da demanda)
+
+**Response 201:**
+```json
+{
+  "solicitacaoId": "uuid",
+  "estado": "PENDENTE"
+}
+```
+
+**Erros:** `400` motivo ausente · `403` operador não é o aceitante da demanda · `409` solicitação de cancelamento já existe para esta demanda
+
+---
+
+### POST /demandas/:id/aprovar-agendamento
+
+Admin aprova agendamento criado por `UsuarioInternoFGR`. Demanda transita de `AGUARDANDO_APROVACAO` para `AGENDADA` e fica visível para aceite de operadores (DEC-027).
+
+**Rastreio PRD:** `REQ-FUNC-006`
+
+**Perfil:** `AdminOperacional`, `SuperAdmin`
+
+**Request:**
+```json
+{
+  "adminId": "uuid"
+}
+```
+
+**Validações:** Demanda deve estar em `AGUARDANDO_APROVACAO`
+
+**Response 200:**
+```json
+{
+  "demandaId": "uuid",
+  "novoEstado": "AGENDADA"
+}
+```
+
+**Erros:** `422` demanda não está em `AGUARDANDO_APROVACAO` · `403` perfil sem autorização
+
+---
+
+### POST /demandas/:id/rejeitar-agendamento
+
+Admin rejeita agendamento de `UsuarioInternoFGR`. Demanda transita de `AGUARDANDO_APROVACAO` para `CANCELADA`. Motivo obrigatório (DEC-027).
+
+**Rastreio PRD:** `REQ-FUNC-006`
+
+**Perfil:** `AdminOperacional`, `SuperAdmin`
+
+**Request:**
+```json
+{
+  "adminId": "uuid",
+  "motivo": "string (obrigatório)"
+}
+```
+
+**Validações:** Demanda deve estar em `AGUARDANDO_APROVACAO`
+
+**Response 200:**
+```json
+{
+  "demandaId": "uuid",
+  "novoEstado": "CANCELADA"
+}
+```
+
+**Erros:** `400` motivo ausente · `422` demanda não está em `AGUARDANDO_APROVACAO` · `403` perfil sem autorização
+
+---
+
+### POST /demandas/:id/cancelamento/:solicitacaoId/aprovar
+
+Admin aprova solicitação de cancelamento do operador. Demanda transita para `CANCELADA` (DEC-029).
+
+**Rastreio PRD:** `REQ-FUNC-006`
+
+**Perfil:** `AdminOperacional`, `SuperAdmin`
+
+**Request:**
+```json
+{
+  "adminId": "uuid"
+}
+```
+
+**Response 200:**
+```json
+{
+  "demandaId": "uuid",
+  "novoEstado": "CANCELADA",
+  "solicitacaoEstado": "APROVADA"
+}
+```
+
+**Erros:** `404` solicitação não encontrada · `409` solicitação já decidida · `403` perfil sem autorização
+
+---
+
+### POST /demandas/:id/cancelamento/:solicitacaoId/rejeitar
+
+Admin rejeita solicitação de cancelamento do operador. Demanda permanece no estado vigente (DEC-029).
+
+**Rastreio PRD:** `REQ-FUNC-006`
+
+**Perfil:** `AdminOperacional`, `SuperAdmin`
+
+**Request:**
+```json
+{
+  "adminId": "uuid",
+  "motivo": "string (obrigatório)"
+}
+```
+
+**Response 200:**
+```json
+{
+  "solicitacaoId": "uuid",
+  "solicitacaoEstado": "REJEITADA"
+}
+```
+
+**Erros:** `400` motivo ausente · `404` solicitação não encontrada · `409` solicitação já decidida · `403` perfil sem autorização
 
 ---
 
@@ -284,7 +514,7 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
 
 ### POST /operadores/:id/checkout — Checkout de expediente
 
-**Rastreio PRD:** `REQ-FUNC-004`
+**Rastreio PRD:** `REQ-FUNC-004`, `REQ-FUNC-014`
 
 **Perfil:** `Operador`
 
@@ -297,16 +527,24 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
 
 > Campo `ajudanteId` opcional — usado apenas para registrar o ajudante ativo no encerramento, se diferente do informado no check-in.
 
+**Comportamento atualizado (DEC-025):** O checkout não é bloqueado por demandas em `EM_ANDAMENTO` ou `PAUSADA`. Em vez disso, todas as demandas ativas do operador são automaticamente devolvidas ao sistema:
+- Ação: `devolver_fim_expediente` (ator: SISTEMA)
+- Transição: `EM_ANDAMENTO / PAUSADA → RETORNADA → PENDENTE`
+- Log: `DemandaLog` registrado com justificativa automática para cada demanda devolvida
+
 **Response 200:**
 ```json
 {
   "expedienteId": "uuid",
   "fimEm": "ISO8601",
-  "totalDemandas": "number"
+  "totalDemandas": "number",
+  "devolvidasIds": ["uuid"]
 }
 ```
 
-**Erros:** `404 OPR-004` sem expediente ativo · `409 OPR-005` demanda em `EM_ANDAMENTO` ou `PAUSADA` pendente de conclusão — encerrar ou retornar a demanda antes do checkout
+> `devolvidasIds` lista as demandas devolvidas automaticamente no checkout. Array vazio quando o operador não possuía demandas ativas.
+
+**Erros:** `404 OPR-004` sem expediente ativo
 
 ---
 
@@ -832,7 +1070,7 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
 
 | Param | Tipo | Descrição |
 |-------|------|-----------|
-| `status` | `string` | Filtrar por estado (`PENDENTE`, `EM_ANDAMENTO`, `PAUSADA`, `AGENDADA`, `RETORNADA`, `CONCLUIDA`, `CANCELADA`) |
+| `status` | `string` | Filtrar por estado (`PENDENTE`, `EM_ANDAMENTO`, `PAUSADA`, `AGENDADA`, `AGUARDANDO_APROVACAO`, `RETORNADA`, `CONCLUIDA`, `CANCELADA`, `NAO_EXECUTADA`) |
 | `setorId` | `uuid` | Filtrar por setor operacional |
 | `operadorId` | `uuid` | Filtrar por operador alocado |
 | `prioridade` | `string` | Filtrar por nível SLA (`NORMAL`, `ELEVADA`, `MAXIMA`) |
@@ -847,7 +1085,8 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
       "demandaId": "uuid",
       "posicao": "number",
       "score": "number",
-      "status": "PENDENTE | EM_ANDAMENTO | PAUSADA | AGENDADA | RETORNADA | CONCLUIDA | CANCELADA",
+      "status": "PENDENTE | EM_ANDAMENTO | PAUSADA | AGENDADA | AGUARDANDO_APROVACAO | RETORNADA | CONCLUIDA | CANCELADA | NAO_EXECUTADA",
+      "rolloverDe": "date | null (DEC-025)",
       "prioridade": "NORMAL | ELEVADA | MAXIMA",
       "slaVencimentoEm": "ISO8601 | null",
       "slaViolado": "boolean",
@@ -1213,7 +1452,7 @@ Ao criar um usuário com `perfil = Empreiteiro`, o payload de `POST /usuarios` (
 | `OPR-002` | Operador | Operador fora do setor da demanda (aviso — não bloqueio em alocação manual) |
 | `OPR-003` | Operador | Check-in duplicado no mesmo turno |
 | `OPR-004` | Operador | Checkout sem expediente ativo |
-| `OPR-005` | Operador | Checkout bloqueado — demanda em `EM_ANDAMENTO` ou `PAUSADA` pendente de conclusão |
+| `OPR-005` | Operador | ~~Checkout bloqueado~~ — **Supersedido por DEC-025**: demandas em `EM_ANDAMENTO`/`PAUSADA` são devolvidas automaticamente no checkout (`devolver_fim_expediente`, ator SISTEMA); código reservado para referência histórica |
 | `OPR-006` | Operador | Ajudante já é o ajudante ativo do turno |
 | `OPR-007` | Operador | Ajudante em turno ativo com outro operador |
 | `REC-001` | Recurso espacial | Nome/código duplicado na mesma obra |
@@ -1241,6 +1480,48 @@ Ao criar um usuário com `perfil = Empreiteiro`, o payload de `POST /usuarios` (
 | `POST /demandas/bulk` | 20 req | 1 min | — |
 
 Violações retornam `HTTP 429` com header `Retry-After` (segundos até desbloqueio).
+
+---
+
+## 10. Eventos WebSocket (`/ws`)
+
+**Rastreio PRD:** `REQ-FUNC-006`, `REQ-FUNC-014`
+
+O canal WebSocket (`/ws`) é gerenciado pelo NestJS com proxy via IIS ARR (DEC-022). Clientes autenticados recebem eventos de domínio em tempo real filtrados por perfil e `obraId` (D4). Eventos WebSocket são unidirecionais — servidor → cliente.
+
+### Convenções gerais de eventos
+
+| Campo | Valor |
+|-------|-------|
+| Protocolo | WebSocket com upgrade preservado via IIS ARR (DEC-022) |
+| Autenticação | Token JWT enviado no handshake (`Authorization: Bearer <token>`) |
+| Envelope | `{ "tipo": "string", ...payload }` |
+| Scope | Filtrado por `obraId` (D4); `SuperAdmin`/`Board` recebem cross-tenant (D5) |
+
+---
+
+### Evento: AGENDADA_DISPONIVEL (DEC-026)
+
+**Rastreio PRD:** `REQ-FUNC-006`
+
+Emitido quando uma demanda agendada fica disponível para aceite. Inclui demandas que transitam para `AGENDADA` (aprovação de AdminOp para agendamentos de `UsuarioInternoFGR` — DEC-027) e demandas recém-criadas com `urgencia = AGENDADA` por AdminOp/SuperAdmin.
+
+**Canal:** Todos os operadores conectados com `TipoMaquinario` compatível com o serviço da demanda (broadcast por TipoMaquinario — sem filtro de setor, DEC-026)
+
+**Payload:**
+```json
+{
+  "tipo": "AGENDADA_DISPONIVEL",
+  "demandaId": "uuid",
+  "dataAgendada": "ISO8601",
+  "tipoMaquinarioId": "uuid",
+  "tipoMaquinarioNome": "string",
+  "servicoNome": "string",
+  "expiracaoAceiteEm": "ISO8601"
+}
+```
+
+> `expiracaoAceiteEm` corresponde a T-1h antes da `dataAgendada`. Após esse instante, a demanda transita automaticamente para `NAO_EXECUTADA` (DEC-028).
 
 ---
 

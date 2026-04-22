@@ -48,10 +48,18 @@ O motor de fila depende da coerência cadastral de `SetorOperacional`, `Quadra`,
 - **Checkpoint Manual**: cálculo de proximidade sem IoT/GPS que infere a localização atual da máquina. No início do expediente, a localização é neutra (`Fora da Obra`) e o checkpoint só passa a influenciar a adjacência após a primeira conclusão do turno.
 - **Arquitetura Tática (DDD)**: separação entre regras puras do domínio operacional e a infraestrutura tecnológica, como `NestJS`, `SQL Server` e `Prisma`.
 - **DemandaLog**: trilha auditável que registra transições, justificativas e eventos relevantes da `Demanda`.
-- **AGENDADA**: estado inicial de uma demanda programada para o futuro, invisível ao operador até a janela de ativação.
-- **dataAgendada**: atributo temporal que define o momento exato do atendimento solicitado e governa a transição para `PENDENTE` 60 minutos antes do horário-alvo.
+- **`AGUARDANDO_APROVACAO`** — Estado intermediário de demandas agendadas criadas por `UsuarioInternoFGR`. Permanece nesse estado até que AdminOp/SuperAdmin aprove (→ `AGENDADA`) ou rejeite (→ `CANCELADA`). Enquanto em `AGUARDANDO_APROVACAO`, a demanda não é visível para operadores. (DEC-027)
+- **`AGENDADA`** — Estado de demanda com `dataAgendada` futura, aguardando aceite explícito de um operador compatível. A demanda fica visível na aba "Demandas Agendadas" para todos os operadores com `TipoMaquinario` compatível. Transições possíveis:
+  - `→ PENDENTE` via `aceitar_agendada` (operador aceita explicitamente)
+  - `→ NAO_EXECUTADA` via `expirar_sem_aceite` (sistema, T-1h antes da `dataAgendada`)
+  - `→ CANCELADA` via `cancelar` (AdminOp/SuperAdmin)
+
+  Anterior: shadow-queue T-60 (substituída por aceite explícito via DEC-026).
+- **dataAgendada**: atributo temporal que define o momento exato do atendimento solicitado; governa a janela de visibilidade para aceite operacional e a transição `AGENDADA → NAO_EXECUTADA` via `expirar_sem_aceite` em T-1h (DEC-026, DEC-028).
+- **`NAO_EXECUTADA`** — Estado terminal de demandas agendadas que expiraram sem que nenhum operador tenha aceitado o agendamento. Transição: `AGENDADA → NAO_EXECUTADA` (ator: SISTEMA, T-1h antes da `dataAgendada`). Log registra por operador: `RECUSADA` (recusou explicitamente) ou `NAO_RESPONDIDA` (adiou/ignorou). Distingue cancelamentos administrativos de expiração por falta de aceite operacional. (DEC-028)
 - **AuditLogCrossTenant**: log especializado para registrar acessos privilegiados de `SuperAdmin` e `Board` que transcendem o isolamento por obra.
 - **TurnoAjudante**: registro cronológico associado ao `RegistroExpediente` que mapeia a relação temporal entre ajudante e par operador-máquina.
 - **recalcular_fila**: ação administrativa que força a atualização imediata de scores pendentes numa obra com base nos pesos atuais.
+- **Rollover** — Mecanismo automático que preserva demandas não executadas ao fim do expediente para redistribuição no dia seguinte. Executado pelo worker `expedienteFim`. Demandas `EM_ANDAMENTO`/`PAUSADA` são devolvidas forçadamente via `RETORNADA → PENDENTE`; demandas `PENDENTE` têm `rolloverDe` preenchido e `operadorId` limpo. No dia seguinte, entram no pipeline padrão de distribuição. (DEC-025)
 - **Perfilar** (`Iniciar Depois / Perfilar`): ação disponível no pop-up de notificação de nova demanda (`REQ-FUNC-013`). Quando o operador escolhe "Iniciar Depois (Perfilar)", a demanda permanece em `PENDENTE`, o pop-up é fechado e o operador retorna à tela de fila sem iniciar execução. Não há transição de estado — a demanda aguarda na fila pela ordem de score até o operador decidir iniciá-la.
 - ~~**SolicitacaoCancelamento**~~: entidade removida do MVP (DEC-019). O cancelamento de demandas em `EM_ANDAMENTO` pelo `Operador` passou a ser direto, com justificativa obrigatória registrada em `DemandaLog`, sem estado intermediário de aprovação gerencial.

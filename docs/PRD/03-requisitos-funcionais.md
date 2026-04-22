@@ -62,12 +62,50 @@ O frontend deve permitir agrupar sequências de serviços com lógica estrutural
 -> SPEC: [../SPEC/01-modulos-plataforma.md#capacidades-operacionais-do-machinery-link](../SPEC/01-modulos-plataforma.md#capacidades-operacionais-do-machinery-link)
 -> SPEC: [../SPEC/02-modelo-dados.md#entidades-principais](../SPEC/02-modelo-dados.md#entidades-principais)
 
-### `REQ-FUNC-006` Alocação manual e agendamentos
+### `REQ-FUNC-006` Demandas Agendadas: Modelo de Aceite Explícito
 
-`AdminOperacional` e `SuperAdmin` podem criar demandas com atribuição explícita de operador via `operadorAlocadoId` ou definir uma `dataAgendada` futura. O `UsuarioInternoFGR` pode criar demandas simples (`PENDENTE`) sem pré-seleção de operador (DEC-020). Demandas agendadas permanecem em `AGENDADA` e entram automaticamente na fila pendente 60 minutos antes do horário alvo. A alocação via `operadorAlocadoId` sobrepõe as regras automáticas de distribuição e elegibilidade (jurisdição, proximidade e balanceamento) como exceção de gestão auditável, mas não remove o motor de priorização da fila do operador. A ordem resultante na fila constitui organização recomendada de atendimento, não bloqueio rígido de execução (DEC-001).
+O sistema deve suportar criação de demandas com data/hora futura e um fluxo de aceite explícito pelo operador, substituindo a shadow-queue automática anterior. (DEC-026, DEC-027, DEC-028, DEC-029)
 
--> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#regra-zero-hard-filter-destaque-e-score](../SPEC/03-fila-scoring-estados-sla.md#regra-zero-hard-filter-destaque-e-score)
--> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#maquina-de-estados-da-demanda](../SPEC/03-fila-scoring-estados-sla.md#maquina-de-estados-da-demanda)
+**5.1 Criação:**
+
+| Perfil criador | Resultado imediato |
+|---|---|
+| AdminOp / SuperAdmin | Estado `AGENDADA` (imediato) |
+| AdminOp / SuperAdmin + `operadorAlocadoId` | Estado `AGENDADA` com bypass do fluxo de aceite (DEC-001) |
+| UsuarioInternoFGR | Estado `AGUARDANDO_APROVACAO` — requer aprovação de AdminOp/SuperAdmin → `AGENDADA` |
+
+**5.2 Visibilidade e Aceite:**
+
+- Demanda `AGENDADA` fica visível na aba "Demandas Agendadas" para todos os operadores com `TipoMaquinario` compatível (broadcast por TipoMaquinario — sem filtro de setor)
+- No **check-in** (ou login), pop-up exibe demandas agendadas pendentes de aceite
+- Operador pode: **Aceitar** / **Recusar** / **Fechar** (adiar decisão, sem registro de recusa)
+- Ao aceitar: `AGENDADA → PENDENTE`, entra na fila do operador
+- Restrição: operador não pode aceitar mais de uma demanda no mesmo slot horário (janela configurável por obra)
+- Recusa não remove: demanda permanece na aba; log registra `RECUSADA` / `ACEITA_POR_OUTRO` por operador
+
+**5.3 Expiração:**
+
+- Se nenhum operador aceitar até **T-1h** antes da `dataAgendada`: `AGENDADA → NAO_EXECUTADA` (estado terminal)
+- Log registra status por operador: `RECUSADA` ou `NAO_RESPONDIDA`
+
+**5.4 Bloqueio T-30:**
+
+- 30 min antes da `dataAgendada`: operador que aceitou não pode iniciar novas demandas da fila
+- Demandas em andamento podem ser concluídas; novas não podem ser iniciadas
+- Bloqueio permanece até a demanda agendada ser concluída ou cancelada
+
+**5.5 Cancelamento:**
+
+- **AdminOp/SuperAdmin:** cancelam diretamente com observação/motivo obrigatório (qualquer estado)
+- **Operador:** solicita cancelamento via botão "Solicitar Cancelamento" → AdminOp recebe no painel e decide (DEC-029)
+- Aplica-se mesmo com demanda em `EM_ANDAMENTO` se originada de agendamento
+
+-> SPEC: [../SPEC/03-fila-scoring-estados-sla.md](../SPEC/03-fila-scoring-estados-sla.md) (estados AGUARDANDO_APROVACAO, NAO_EXECUTADA, diagrama final, bloqueio T-30)
+-> SPEC: [../SPEC/07-design-ui-logica.md](../SPEC/07-design-ui-logica.md) (pop-up check-in, aba Demandas Agendadas, tela admin)
+-> SPEC: [../SPEC/06-definicoes-complementares.md](../SPEC/06-definicoes-complementares.md) (evento WebSocket, janela de aceite)
+-> SPEC: [../SPEC/08-api-contratos.md](../SPEC/08-api-contratos.md) (endpoints aceitar, recusar, solicitar-cancelamento)
+-> SPEC: [../SPEC/02-modelo-dados.md](../SPEC/02-modelo-dados.md) (campos aceiteOperadorId, aceiteEm, SolicitacaoCancelamentoAgendada)
+-> RBAC: [01-usuarios-rbac.md](01-usuarios-rbac.md) (REQ-RBAC-004, REQ-RBAC-006)
 
 ### `REQ-FUNC-007` Timers de atendimento
 
@@ -133,6 +171,33 @@ Quando uma nova demanda é atribuída a um operador cuja fila está vazia, o sis
 -> SPEC: [../SPEC/07-design-ui-logica.md#notificacao-de-nova-demanda-fila-vazia-vs-fila-ativa](../SPEC/07-design-ui-logica.md#notificacao-de-nova-demanda-fila-vazia-vs-fila-ativa) (UX completa)
 -> SPEC: [../SPEC/06-definicoes-complementares.md#regras-de-deduplicacao-e-estado-visual](../SPEC/06-definicoes-complementares.md#regras-de-deduplicacao-e-estado-visual) (mecânica técnica: vibração, som, reconexão offline)
 
+### `REQ-FUNC-014` Rollover e redistribuição de demandas entre dias
+
+O sistema deve realizar rollover de demandas não concluídas ao fim do expediente, redistribuindo-as no dia seguinte conforme operadores fazem check-in.
+
+**Comportamentos obrigatórios:**
+
+1. **Devolução forçada (EM_ANDAMENTO/PAUSADA):** Ao fim do expediente (gatilho duplo: checkout do operador ou worker `expedienteFim`), demandas em `EM_ANDAMENTO` ou `PAUSADA` são devolvidas automaticamente via `devolver_fim_expediente → RETORNADA → PENDENTE` (ator: SISTEMA, justificativa automática: "Devolução automática por fim de expediente").
+
+2. **Rollover de PENDENTE:** Demandas em `PENDENTE` ao fim do expediente permanecem nesse estado com:
+   - Campo `rolloverDe` preenchido com a data do dia
+   - Campo `operadorId` limpo (sem operador atribuído)
+   - SLA agendado para reset no `expedienteInicio` do dia seguinte
+
+3. **Redistribuição no check-in:** No dia seguinte, ao fazer check-in, operadores recebem demandas redistribuídas via pipeline padrão (hard filter completo + scoring normal). Demandas com `rolloverDe` são tratadas como demandas normais — sem estado especial, sem prioridade diferenciada.
+
+4. **SLA sem auto-encerramento:** SLA de demandas roladas mantém alertas e escalação, mas **não** causa auto-encerramento. SLA reseta no `expedienteInicio` do dia seguinte (marco zero = início do expediente).
+
+5. **Indicador visual admin:** Painel admin exibe demandas redistribuídas com badge "Dia anterior".
+
+**Supersede parcialmente:** DEC-002 (parte de auto-encerramento por SLA estourado — removida).
+**DEC:** DEC-025
+
+-> SPEC: [../SPEC/03-fila-scoring-estados-sla.md](../SPEC/03-fila-scoring-estados-sla.md) (máquina de estados, worker expedienteFim, rollover)
+-> SPEC: [../SPEC/06-definicoes-complementares.md](../SPEC/06-definicoes-complementares.md) (campo rolloverDe, reset de SLA, mecânica do worker)
+-> SPEC: [../SPEC/02-modelo-dados.md](../SPEC/02-modelo-dados.md) (campo rolloverDe na entidade Demanda)
+-> ACE: [05-criterios-aceite.md#rollover-e-redistribuicao-de-demandas-entre-dias](05-criterios-aceite.md#rollover-e-redistribuicao-de-demandas-entre-dias) (REQ-ACE-010)
+
 ## Critérios de aceite relacionados
 
 - [REQ-ACE-002](05-criterios-aceite.md#maquina-de-estados-bloqueio-de-bypass-pos-conclusao)
@@ -140,3 +205,4 @@ Quando uma nova demanda é atribuída a um operador cuja fila está vazia, o sis
 - [REQ-ACE-004](05-criterios-aceite.md#audit-log-com-justificativa-em-modificacoes-gerenciais)
 - [REQ-ACE-005](05-criterios-aceite.md#destaque-visual-de-prioridade-maxima-na-ui-mobile)
 - [REQ-ACE-006](05-criterios-aceite.md#cancelamento-de-demandas-em-campo-e-encerramento-por-sla)
+- [REQ-ACE-010](05-criterios-aceite.md#rollover-e-redistribuicao-de-demandas-entre-dias)

@@ -22,6 +22,7 @@ Artefatos derivados do PRD: diagramas em Mermaid para revisão rápida de jornad
 | [03-fila-score-triagem.md](03-fila-score-triagem.md) | Pipeline de distribuição: Regra Zero → Hard Filter → Destaque → Score → Ordenação. | REQ-JOR-002…003, REQ-FUNC-001…002, REQ-ACE-002…003 | [03-requisitos-funcionais.md](../PRD/03-requisitos-funcionais.md) |
 | [04-cancelamento-sla.md](04-cancelamento-sla.md) | Cancelamento direto do Operador → CANCELADA (DEC-019); alertas de SLA por nível de prioridade. | REQ-JOR-005, REQ-FUNC-009, REQ-ACE-006 | [05-criterios-aceite.md](../PRD/05-criterios-aceite.md) |
 | [05-autenticacao-rbac.md](05-autenticacao-rbac.md) | Login segmentado (PIN campo / senha admin), JWT, isolamento multi-tenant e bypass cross-tenant. | REQ-RBAC-001…006, REQ-NFR-005…007, REQ-ACE-001, REQ-ACE-008 | [01-usuarios-rbac.md](../PRD/01-usuarios-rbac.md) |
+| [06-rollover-redistribuicao.md](06-rollover-redistribuicao.md) | Rollover de fim de expediente: devolução forçada → rollover PENDENTE → redistribuição progressiva no check-in. (DEC-025) | REQ-FUNC-014, REQ-ACE-010 | [03-requisitos-funcionais.md](../PRD/03-requisitos-funcionais.md) |
 
 - [Índice PRD](../PRD/_index.md)
 - [Matriz de rastreabilidade](../traceability.md)

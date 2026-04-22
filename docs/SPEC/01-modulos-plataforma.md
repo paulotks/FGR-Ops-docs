@@ -1,6 +1,6 @@
 # Módulos da plataforma
 
-**Rastreio PRD:** `REQ-JOR-001`, `REQ-JOR-004`, `REQ-FUNC-003`, `REQ-FUNC-004`, `REQ-FUNC-005`, `REQ-FUNC-010`, `REQ-RBAC-001`, `REQ-RBAC-002`, `REQ-RBAC-003`, `REQ-SCO-001`, `REQ-SCO-002`, `REQ-SCO-003`, `REQ-SCO-004`
+**Rastreio PRD:** `REQ-JOR-001`, `REQ-JOR-004`, `REQ-FUNC-003`, `REQ-FUNC-004`, `REQ-FUNC-005`, `REQ-FUNC-010`, `REQ-FUNC-014`, `REQ-RBAC-001`, `REQ-RBAC-002`, `REQ-RBAC-003`, `REQ-SCO-001`, `REQ-SCO-002`, `REQ-SCO-003`, `REQ-SCO-004`
 
 Este módulo consolida as fronteiras de responsabilidade entre o `Core` da plataforma e o `Machinery Link`, explicando onde vivem os dados compartilhados, os fluxos operacionais e as dependências entre contextos.
 
@@ -47,7 +47,7 @@ Gerir o ciclo de vida completo e estrito de solicitações, filas, agrupamentos 
 
 1. **Solicitação**: abertura de demandas simples, agrupadas, em lote múltiplo e programações agendadas. Na abertura, o `Empreiteiro` informa obrigatoriamente a localização onde necessita do serviço, selecionando **Quadra/Lote** ou **Local Externo** (Portaria, Pulmão, Garagem, entre outros cadastrados por obra). O `SetorOperacional` é derivado automaticamente da localização, ancorando o pedido ao contexto logístico que alimenta o hard filter de jurisdição e o fator de adjacência do motor de score. O empreiteiro seleciona serviço e maquinário com filtragem mútua pelo catálogo. Opcionalmente, pode selecionar **Material** (para `fator_material` do score) e informar **Destino** (Quadra/Lote) para contextualizar serviços de movimentação. O empreiteiro pode acrescentar descrição complementar antes de submeter (`REQ-JOR-001`).
 2. **Agrupamento e criação múltipla**: o frontend permite agrupar sequências de serviços com lógica estrutural compartilhada (mesmo local, mesmo tipo de maquinário) e submeter um payload bulk que gera demandas independentes a partir da mesma experiência de formulário. Cada demanda gerada pelo bulk recebe ID próprio, participa individualmente do pipeline de fila e pode ser concluída ou cancelada de forma autônoma. A relação lógica entre demandas do mesmo lote é preservada em `DemandaGrupo` para rastreabilidade, sem implicar orquestração de execução (`REQ-FUNC-005`).
-3. **Gestão da fila**: distribuição transparente filtrada por setores, jurisdição logística e score.
+3. **Gestão da fila**: distribuição transparente filtrada por setores, jurisdição logística e score. Ao fim do expediente, o worker `expedienteFim` executa o rollover de demandas não concluídas: demandas `EM_ANDAMENTO` ou `PAUSADA` são devolvidas forçadamente via `devolver_fim_expediente → RETORNADA → PENDENTE` (ator: SISTEMA); demandas `PENDENTE` permanecem com o campo `rolloverDe` preenchido e SLA agendado para reset no `expedienteInicio` do dia seguinte. No dia seguinte, demandas redistribuídas entram no pipeline padrão (hard filter + scoring) durante o check-in dos operadores. (`REQ-FUNC-014`, DEC-025)
 4. **Execução**: fluxo de campo para assumir, concluir, devolver ou contestar tarefas via máquina de estados.
 5. **Expediente**: controle de início e fim da jornada operacional do maquinário, com máquina e ajudante ativos.
 6. **Operações dinâmicas**: alocação manual, empilhamento não destrutivo e trilha de auditoria obrigatória.
