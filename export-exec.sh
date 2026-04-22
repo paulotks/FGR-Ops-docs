@@ -1,14 +1,13 @@
-   #!/usr/bin/env bash
+#!/usr/bin/env bash
 # export-exec.sh — Exporta visão executiva do FGR-OPS (gestores, board, stakeholders não técnicos)
 # Conteúdo: objetivos, perfis de usuário, jornadas, regras de negócio, métricas e riscos
 # Excluído: arquitetura técnica, modelo de dados, contratos de API, NFRs, critérios de aceite QA
 #
-# Uso: bash export-exec.sh [pdf|html|all]
+# Uso: bash export-exec.sh
 # Requisito: pandoc instalado no PATH
 
 set -e
 
-FORMAT="${1:-all}"
 OUT_DIR="./export"
 TMP_DIR="./export/.tmp-exec"
 DATE=$(date +%Y-%m-%d)
@@ -221,47 +220,6 @@ export_html() {
 }
 
 # ---------------------------------------------------------------------------
-# Exportação PDF
-# ---------------------------------------------------------------------------
-export_pdf() {
-  echo "Gerando PDF executivo..."
-
-  if command -v wkhtmltopdf &>/dev/null; then
-    # Rota preferida: wkhtmltopdf (preserva CSS)
-    local html_tmp="$TMP_DIR/exec-intermediate.html"
-    pandoc \
-      "${PROCESSED_FILES[@]}" \
-      "${PANDOC_META[@]}" \
-      --to html5 \
-      --css "$TMP_DIR/exec-style.css" \
-      --self-contained \
-      --output "$html_tmp"
-    wkhtmltopdf \
-      --page-size A4 \
-      --margin-top 20mm --margin-bottom 20mm \
-      --margin-left 22mm --margin-right 22mm \
-      --print-media-type \
-      --enable-local-file-access \
-      "$html_tmp" "$OUT_DIR/FGR-OPS-Executivo-$DATE.pdf"
-  else
-    # Fallback: xelatex
-    pandoc \
-      "${PROCESSED_FILES[@]}" \
-      "${PANDOC_META[@]}" \
-      --pdf-engine=xelatex \
-      --include-in-header=export-unicode.tex \
-      -V geometry:margin=2.5cm \
-      -V fontsize=11pt \
-      -V lang=pt-BR \
-      -V mainfont="Calibri" \
-      -V sansfont="Segoe UI" \
-      -V monofont="Consolas" \
-      --output "$OUT_DIR/FGR-OPS-Executivo-$DATE.pdf"
-  fi
-  echo "  -> $OUT_DIR/FGR-OPS-Executivo-$DATE.pdf"
-}
-
-# ---------------------------------------------------------------------------
 # Limpeza do diretório temporário ao sair
 # ---------------------------------------------------------------------------
 cleanup() {
@@ -269,25 +227,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-# ---------------------------------------------------------------------------
-# Dispatch
-# ---------------------------------------------------------------------------
-case "$FORMAT" in
-  html) export_html ;;
-  pdf)  export_pdf ;;
-  all)
-    export_html
-    export_pdf
-    ;;
-  *)
-    echo "Uso: bash export-exec.sh [pdf|html|all]"
-    echo ""
-    echo "Gera documentação executiva (gestores, board, stakeholders não técnicos)."
-    echo "Inclui: visão/objetivos, perfis de usuário, jornadas, regras de negócio, métricas e riscos."
-    echo "Exclui: arquitetura técnica, modelo de dados, contratos de API, NFRs."
-    exit 1
-    ;;
-esac
+export_html
 
 echo ""
 echo "Exportação executiva concluída. Arquivos em: $OUT_DIR/"

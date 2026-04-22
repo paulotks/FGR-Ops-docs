@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
-# export-docs.sh — Exporta a documentação FGR-OPS para PDF e HTML via Pandoc
-# Uso: bash export-docs.sh [pdf|html|all]
+# export-docs.sh — Exporta a documentação FGR-OPS para HTML via Pandoc
+# Uso: bash export-docs.sh
 # Requisito: pandoc instalado no PATH
 
 set -e
 
-FORMAT="${1:-all}"
 OUT_DIR="./export"
 TMP_DIR="./export/.tmp-docs"
 DATE=$(date +%Y-%m-%d)
@@ -199,46 +198,7 @@ export_html() {
   echo "  -> $OUT_DIR/FGR-OPS-Docs-$DATE.html"
 }
 
-export_pdf() {
-  echo "Gerando PDF (requer LaTeX ou wkhtmltopdf)..."
-
-  # Tenta com wkhtmltopdf via html intermediário; fallback para xelatex
-  if command -v wkhtmltopdf &>/dev/null; then
-    pandoc \
-      "${PRD_FILES[@]}" "${SPEC_FILES[@]}" \
-      "${PANDOC_META[@]}" \
-      --to html5 \
-      --output "$OUT_DIR/FGR-OPS-Docs-$DATE.html"
-    wkhtmltopdf "$OUT_DIR/FGR-OPS-Docs-$DATE.html" "$OUT_DIR/FGR-OPS-Docs-$DATE.pdf"
-  else
-    pandoc \
-      "${PRD_FILES[@]}" "${SPEC_FILES[@]}" \
-      "${PANDOC_META[@]}" \
-      --pdf-engine=xelatex \
-      --include-in-header=export-unicode.tex \
-      -V geometry:margin=1.8cm \
-      -V fontsize=10pt \
-      -V lang=pt-BR \
-      -V mainfont="Calibri" \
-      -V sansfont="Segoe UI" \
-      -V monofont="Consolas" \
-      --output "$OUT_DIR/FGR-OPS-Docs-$DATE.pdf"
-  fi
-  echo "  -> $OUT_DIR/FGR-OPS-Docs-$DATE.pdf"
-}
-
-case "$FORMAT" in
-  html) export_html ;;
-  pdf)  export_pdf ;;
-  all)
-    export_html
-    export_pdf
-    ;;
-  *)
-    echo "Uso: bash export-docs.sh [pdf|html|all]"
-    exit 1
-    ;;
-esac
+export_html
 
 echo ""
 echo "Exportação concluída. Arquivos em: $OUT_DIR/"
