@@ -34,13 +34,12 @@
     ]
   },
   "mcpServers": {
-    "filesystem": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-filesystem",
-        "C:/dev/FGR-Ops-Requisitos"
-      ]
+    "docs": {
+      "command": "node",
+      "args": ["C:/dev/fgr-docs-mcp/dist/index.js"],
+      "env": {
+        "DOCS_ROOT": "C:/dev/FGR-Ops-docs/docs"
+      }
     },
     "github": {
       "command": "npx",
