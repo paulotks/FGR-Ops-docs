@@ -627,6 +627,28 @@ Este registo centraliza as decisões de produto necessárias antes das correçõ
 
 ---
 
+## DEC-031 — Telas de configuração operacional pertencem ao escopo do Machinery Link
+
+- **Estado:** Decidido
+- **Data:** 2026-04-25
+- **Participantes:** Produto, Arquitetura
+- **Contexto:** Durante a prototipação das telas MVP faltantes (`implementation_plan.md`), as telas "Configurações da Obra" (malha espacial, catálogos, parâmetros) e "Gestão de Acessos" (empreiteiras, operadores, empreiteiros, ajudantes) foram inicialmente posicionadas em `docs/UI/FGR-Ops/`. Verificação contra DEC-014 e SPEC/01 §"Delimitação de responsabilidades" revelou que ambas operam sobre entidades `tenant-scoped` (`obraId` obrigatório) e são executadas pelo `AdminOperacional` — perfil que opera exclusivamente dentro do módulo Machinery Link, não no shell cross-tenant do FGR Ops.
+- **Opções em análise:**
+  - A) Manter as telas em `docs/UI/FGR-Ops/` com acesso cross-tenant para `AdminOperacional`.
+  - B) Mover as telas para `docs/UI/Machinery-Link/` como parte do escopo tenant-scoped do módulo.
+- **Decisão:** B) Telas `07-configuracoes-obra.md` e `08-gestao-acessos.md` pertencem ao módulo Machinery Link (`docs/UI/Machinery-Link/`), acessíveis via sidebar do módulo nas rotas `/machinery-link/configuracoes` e `/machinery-link/acessos`. O `AdminOperacional` gerencia apenas a obra à qual está vinculado; o `SuperAdmin` acessa qualquer obra (cross-tenant, via middleware D5).
+- **Justificação:** DEC-014 (2026-04-09) formaliza que cadastros operacionais internos — incluindo malha espacial, catálogos, parâmetros, empreiteiras e operadores — são responsabilidade exclusiva do Machinery Link (tenant-scoped). A tela de CRUD de Obras e ativação de módulos (`docs/UI/FGR-Ops/03-crud-obras.md`) permanece no FGR Ops por ser cross-tenant e exclusiva do `SuperAdmin`. Separar as responsabilidades na UI reflete fielmente a separação arquitetural já definida.
+- **Aplicação:**
+  - `docs/UI/Machinery-Link/07-configuracoes-obra.md`: criado — malha espacial (Setores, Quadras, Lotes, Adjacências, Locais Externos), catálogos (TipoMaquinario, Servico, Maquinario, Material) e parâmetros operacionais (expediente, pesos de fila).
+  - `docs/UI/Machinery-Link/08-gestao-acessos.md`: criado — Empreiteiras, Empreiteiros (PIN), Operadores (PIN + habilitações), Ajudantes.
+  - `docs/UI/FGR-Ops/03-crud-obras.md`: criado — CRUD de Obras e toggle de ativação do Machinery Link (SuperAdmin only).
+  - `docs/UI/Machinery-Link/03-dashboard-supervisor.md` §3.1: sidebar atualizada com "Configurações" (⚙) e "Acessos" (👥).
+  - `docs/UI/FGR-Ops/02-app-shell-hub.md` §6: navegação do Machinery Link atualizada com todos os itens de sidebar.
+  - `docs/UI/UI-DESIGN.md` §7: índice de telas atualizado com as 6 novas telas MVP.
+  - `docs/traceability.md`: referências UI adicionadas nas linhas `REQ-RBAC-*`, `REQ-FUNC-006/009`, `REQ-FUNC-013`, `REQ-ACE-002-006`, `REQ-NFR-002`.
+
+---
+
 ## Fase 2 — Correcoes de achados importantes
 
 As correcoes abaixo nao exigiram decisao de produto nova; derivam directamente dos achados da auditoria e das decisoes ja tomadas na Fase 0.

@@ -171,11 +171,16 @@ Após entrar em um módulo, o App Shell permanece como container. A sidebar atua
 
 ### Machinery Link — Itens de Navegação
 
-| Item | Rota | Perfis |
-|---|---|---|
-| **Fila de Demandas** | `/machinery-link/fila` | AdminOperacional, UsuarioInternoFGR |
-| **Dashboard** | `/machinery-link/dashboard` | AdminOperacional, UsuarioInternoFGR, Board |
-| **Auditoria** | `/machinery-link/auditoria` | AdminOperacional, UsuarioInternoFGR (Gerente), Board |
+| Item | Ícone | Rota | Perfis |
+|---|---|---|---|
+| **Fila de Demandas** | 📋 | `/machinery-link/fila` | AdminOperacional, UsuarioInternoFGR |
+| **Dashboard** | 📊 | `/machinery-link/dashboard` | AdminOperacional, UsuarioInternoFGR, Board |
+| **Auditoria** | 📝 | `/machinery-link/auditoria` | AdminOperacional, UsuarioInternoFGR, Board |
+| **Operadores** | 👷 | `/machinery-link/operadores` | AdminOperacional, UsuarioInternoFGR |
+| **Configurações** | ⚙ | `/machinery-link/configuracoes` | AdminOperacional, SuperAdmin |
+| **Acessos** | 👥 | `/machinery-link/acessos` | AdminOperacional, SuperAdmin |
+
+> **Tab Agendamentos** (Dashboard): acessível via tab switcher no conteúdo do Dashboard, não pela sidebar — ver [`docs/UI/Machinery-Link/05-gestao-agendamentos.md`](../Machinery-Link/05-gestao-agendamentos.md).
 
 ---
 

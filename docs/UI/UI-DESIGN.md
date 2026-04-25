@@ -179,27 +179,21 @@ As especificações detalhadas de layout, componentes e interações estão orga
 
 ### FGR Ops (Plataforma)
 
-| # | Tela | Arquivo | Device |
-|---|---|---|---|
-| 1 | Portal Login | [01-login-portal.md](FGR-Ops/01-login-portal.md) | Desktop / Mobile |
-| 2 | App Shell / Hub de Módulos | [02-app-shell-hub.md](FGR-Ops/02-app-shell-hub.md) | Desktop / Mobile |
+| # | Tela | Arquivo | Device | Perfis |
+|---|---|---|---|---|
+| 1 | Portal Login | [01-login-portal.md](FGR-Ops/01-login-portal.md) | Desktop / Mobile | Todos (FGR) |
+| 2 | App Shell / Hub de Módulos | [02-app-shell-hub.md](FGR-Ops/02-app-shell-hub.md) | Desktop / Mobile | SuperAdmin, Board, AdminOp, UserFGR |
+| 3 | CRUD de Obras | [03-crud-obras.md](FGR-Ops/03-crud-obras.md) | Desktop | SuperAdmin |
 
 ### Machinery Link (Módulo Operacional)
 
-| # | Tela | Arquivo | Device |
-|---|---|---|---|
-| 1 | Mobile Empreiteiro — Criação de Demandas | [01-mobile-empreiteiro.md](Machinery-Link/01-mobile-empreiteiro.md) | Mobile |
-| 2 | Mobile Operador — Execução em Campo | [02-mobile-operador.md](Machinery-Link/02-mobile-operador.md) | Mobile |
-| 3 | Dashboard Supervisor / Subordinado | [03-dashboard-supervisor.md](Machinery-Link/03-dashboard-supervisor.md) | Desktop |
-
-### Próximos Passos (Fase Posterior)
-
-> As telas de **cadastro administrativo** (CRUD) serão especificadas em iteração futura, incluindo:
-> - Gestão de Setores Operacionais
-> - Gestão de Quadras e Lotes
-> - Gestão de Locais Externos e Adjacências
-> - Catálogo de Materiais
-> - Cadastro de Usuários e Perfis
-> - Cadastro de Maquinários e Serviços
->
-> Cada uma possui regras de negócio específicas que exigem planejamento dedicado.
+| # | Tela | Arquivo | Device | Perfis |
+|---|---|---|---|---|
+| 1 | Mobile Empreiteiro — Criação de Demandas | [01-mobile-empreiteiro.md](Machinery-Link/01-mobile-empreiteiro.md) | Mobile | Empreiteiro, UsuarioInternoFGR |
+| 2 | Mobile Operador — Execução em Campo | [02-mobile-operador.md](Machinery-Link/02-mobile-operador.md) | Mobile | Operador |
+| 3 | Dashboard Supervisor / Subordinado | [03-dashboard-supervisor.md](Machinery-Link/03-dashboard-supervisor.md) | Desktop | AdminOp, UserFGR, Board |
+| 4 | Auditoria e Histórico Operacional | [04-auditoria-operacao.md](Machinery-Link/04-auditoria-operacao.md) | Desktop | AdminOp, UserFGR, Board |
+| 5 | Gestão de Agendamentos (Tab do Dashboard) | [05-gestao-agendamentos.md](Machinery-Link/05-gestao-agendamentos.md) | Desktop | AdminOp, UserFGR |
+| 6 | Gestão de Operadores | [06-gestao-operadores.md](Machinery-Link/06-gestao-operadores.md) | Desktop | AdminOp, UserFGR |
+| 7 | Configurações da Obra | [07-configuracoes-obra.md](Machinery-Link/07-configuracoes-obra.md) | Desktop | AdminOp, SuperAdmin |
+| 8 | Gestão de Acessos | [08-gestao-acessos.md](Machinery-Link/08-gestao-acessos.md) | Desktop | AdminOp, SuperAdmin |

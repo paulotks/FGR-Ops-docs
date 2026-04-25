@@ -58,12 +58,16 @@
 
 Herda do App Shell com itens específicos do Machinery Link:
 
-| Item | Ícone | Rota |
-|---|---|---|
-| **Fila de Demandas** | 📋 | `/machinery-link/fila` (ativo) |
-| **Dashboard** | 📊 | `/machinery-link/dashboard` |
-| **Auditoria** | 📝 | `/machinery-link/auditoria` |
-| **Operadores** | 👷 | `/machinery-link/operadores` |
+| Item | Ícone | Rota | Perfis |
+|---|---|---|---|
+| **Fila de Demandas** | 📋 | `/machinery-link/fila` (ativo) | AdminOperacional, UsuarioInternoFGR |
+| **Dashboard** | 📊 | `/machinery-link/dashboard` | AdminOperacional, UsuarioInternoFGR, Board |
+| **Auditoria** | 📝 | `/machinery-link/auditoria` | AdminOperacional, UsuarioInternoFGR, Board |
+| **Operadores** | 👷 | `/machinery-link/operadores` | AdminOperacional, UsuarioInternoFGR |
+| **Configurações** | ⚙ | `/machinery-link/configuracoes` | AdminOperacional, SuperAdmin |
+| **Acessos** | 👥 | `/machinery-link/acessos` | AdminOperacional, SuperAdmin |
+
+> **Tab Agendamentos:** acessível via tab switcher dentro do Dashboard (`?tab=agendamentos`), não pela sidebar — ver [`05-gestao-agendamentos.md`](./05-gestao-agendamentos.md).
 
 ### 3.2 Top Toolbar (Filtros Globais)
 
