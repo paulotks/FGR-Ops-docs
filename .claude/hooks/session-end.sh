@@ -162,6 +162,20 @@ if [[ "$NEED_TRACEABILITY_WARN" == "true" ]]; then
   echo "   Rode /audit para verificar inconsistências."
 fi
 
+# --- Re-index MCP server se há mudanças não-commitadas em docs/ ---
+DOCS_CHANGED=$(echo "$ALL_CHANGED" | grep '^docs/' || true)
+if [[ -n "$DOCS_CHANGED" ]]; then
+  INDEXER="C:/dev/fgr-docs-mcp/dist/indexer.js"
+  if [[ -f "$INDEXER" ]]; then
+    echo ""
+    echo "[fgr-docs-mcp] Mudanças não-commitadas em docs/ — re-indexando MCP..."
+    node "$INDEXER" "C:/dev/FGR-Ops-docs/docs" 2>&1 | tail -4
+    echo "[fgr-docs-mcp] Pronto."
+  else
+    echo "[fgr-docs-mcp] AVISO: dist/indexer.js não encontrado — execute 'npm run build' em C:/dev/fgr-docs-mcp"
+  fi
+fi
+
 echo ""
 echo "OK: Session end hook concluído."
 exit 0
