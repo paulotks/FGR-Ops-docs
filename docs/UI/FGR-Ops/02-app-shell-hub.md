@@ -7,13 +7,15 @@
 **Rastreio PRD:** `REQ-RBAC-001`, `REQ-RBAC-002`, `REQ-RBAC-003`
 → SPEC: [`docs/SPEC/07-design-ui-logica.md` §1.4](../../SPEC/07-design-ui-logica.md)
 → SPEC: [`docs/SPEC/04-rbac-permissoes.md`](../../SPEC/04-rbac-permissoes.md)
-→ SPEC: [`docs/SPEC/01-modulos-plataforma.md`](../../SPEC/01-modulos-plataforma.md)
+→ SPEC: [`docs/SPEC/01-modulos-plataforma.md` §Fluxo de autenticação](../../SPEC/01-modulos-plataforma.md) · DEC-030
 
 ---
 
 ## 1. Objetivo
 
-Funcionar como o **hub central** pós-login. O App Shell é o container global que envolve todos os módulos FGR Ops. Exibe os módulos disponíveis para o perfil do usuário logado e permite navegação rápida entre contextos.
+Funcionar como o **hub central** pós-login para **funcionários FGR**. O App Shell é o container global que envolve todos os módulos FGR Ops. Exibe os módulos disponíveis para o perfil do usuário logado e permite navegação rápida entre contextos.
+
+> **Escopo:** FGR Ops (e seu App Shell) é destinado exclusivamente a funcionários da FGR — perfis `SuperAdmin`, `Board`, `AdminOperacional` e `UsuarioInternoFGR`. Empreiteiro e Operador acessam aplicações separadas: o Empreiteiro vai diretamente ao módulo Machinery Link da sua obra ao logar; o Operador utiliza o app de campo para receber e atender solicitações.
 
 ---
 
@@ -128,8 +130,8 @@ A visibilidade dos módulos depende do perfil do usuário logado:
 
 | Módulo | Perfis com Acesso | Status |
 |---|---|---|
-| **Machinery Link** | Todos os perfis operacionais | ✅ MVP |
-| **Relatórios** | AdminOperacional, Gerente, Board, SuperAdmin | 🔜 Em breve |
+| **Machinery Link** | SuperAdmin, Board, AdminOperacional, UsuarioInternoFGR | ✅ MVP |
+| **Relatórios** | AdminOperacional, UsuarioInternoFGR (Gerente), Board, SuperAdmin | 🔜 Em breve |
 | **Configurações** | AdminOperacional, SuperAdmin | 🔜 Em breve |
 
 - Módulos "Em breve" aparecem com `opacity: 0.6` e badge cinza
@@ -144,9 +146,11 @@ A visibilidade dos módulos depende do perfil do usuário logado:
 | **SuperAdmin** | Dropdown de obra visível no top bar, lista todas as obras |
 | **Board** | Dropdown visível, lista obras do seu escopo |
 | **AdminOperacional** | Obra fixa, sem dropdown |
-| **Empreiteiro, Operador** | Obra fixa, sem dropdown |
+| **UsuarioInternoFGR** | Obra fixa, sem dropdown |
 
 A troca de obra recarrega os dados da fila, dashboard e configurações do módulo ativo.
+
+> **Nota:** Empreiteiro e Operador não acessam o FGR Ops. Eles não aparecem nesta tabela de contexto pois utilizam aplicações próprias.
 
 ---
 
@@ -169,10 +173,9 @@ Após entrar em um módulo, o App Shell permanece como container. A sidebar atua
 
 | Item | Rota | Perfis |
 |---|---|---|
-| **Fila de Demandas** | `/machinery-link/fila` | AdminOperacional, Subordinado |
-| **Dashboard** | `/machinery-link/dashboard` | AdminOperacional, Subordinado, Gerente |
-| **Auditoria** | `/machinery-link/auditoria` | AdminOperacional, Gerente, Board |
-| **Minhas Solicitações** | `/machinery-link/minhas` | Empreiteiro |
+| **Fila de Demandas** | `/machinery-link/fila` | AdminOperacional, UsuarioInternoFGR |
+| **Dashboard** | `/machinery-link/dashboard` | AdminOperacional, UsuarioInternoFGR, Board |
+| **Auditoria** | `/machinery-link/auditoria` | AdminOperacional, UsuarioInternoFGR (Gerente), Board |
 
 ---
 

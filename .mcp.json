@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "fgr-docs-mcp": {
+      "command": "C:/nvm4w/nodejs/node.exe",
+      "args": [
+        "C:/dev/fgr-docs-mcp/dist/index.js"
+      ],
+      "env": {
+        "DOCS_ROOT": "C:/dev/FGR-Ops-docs/docs"
+      }
+    }
+  }
+}

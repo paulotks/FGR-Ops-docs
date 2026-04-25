@@ -78,12 +78,13 @@ A ativação de uma obra ocorre em **duas camadas**: primeiro no **FGR Ops** (pl
 
 ### Fluxo de autenticação e roteamento de entrada
 
-O FGR Ops expõe **dois pontos de entrada** distintos para minimizar fricção operacional em campo. Ambos compartilham o mesmo stack de autenticação (JWT + RBAC conforme D3 e D6); a diferença é exclusivamente a rota de entrada na aplicação web/PWA.
+O FGR Ops expõe **três pontos de entrada** distintos conforme perfil, minimizando fricção operacional (DEC-030). Todos compartilham o mesmo stack de autenticação backend (JWT + RBAC conforme D3 e D6); a diferença está na rota de frontend e na UX de autenticação.
 
-1. **Shell FGR Ops** — usado por `SuperAdmin` e `Board`. Após o login, o usuário seleciona a obra e visualiza o **hub de módulos habilitados** para aquela obra. No MVP, o único módulo exibido é o Machinery Link. A partir do hub, o usuário acessa o contexto do módulo mantendo a sessão.
-2. **Acesso direto ao Machinery Link** — usado por `AdminOperacional`, `UsuarioInternoFGR`, `Empreiteiro` e `Operador`. Estes perfis entram diretamente na aplicação do módulo, sem passar pelo hub, porque sua jurisdição é sempre uma obra pré-atribuída no momento da criação do usuário. Para perfis de campo (`Empreiteiro`, `Operador`), esse acesso direto é especialmente crítico para reduzir toques e latência em smartphone (`REQ-NFR-002`, `REQ-OBJ-005`).
+1. **Shell FGR Ops (`/`)** — `SuperAdmin` e `Board`. Login via email + senha forte. Após autenticação, o usuário seleciona a obra e visualiza o **hub de módulos habilitados** para aquela obra. No MVP, o único módulo exibido é o Machinery Link. A partir do hub, o usuário acessa o contexto do módulo mantendo a sessão.
+2. **Acesso direto ao Machinery Link via FGR Ops (`/`)** — `AdminOperacional` e `UsuarioInternoFGR`. Mesmo portal de login (email + senha forte), mas o JWT redireciona o usuário diretamente ao módulo Machinery Link, ignorando o hub. Jurisdição sempre escopada a uma obra pré-atribuída.
+3. **Login Campo — PWA Machinery Link (`/app`)** — `Empreiteiro` e `Operador`. Aplicação separada, mobile-first, com autenticação por PIN de 6 dígitos (D6). Entra diretamente no módulo Machinery Link da obra pré-atribuída. PWA manifest próprio para instalação correta via "Add to Home Screen". Acesso direto crítico para reduzir toques e latência em smartphone (`REQ-NFR-002`, `REQ-OBJ-005`). (DEC-030)
 
-O ponto de entrada correto é determinado pelo perfil do token JWT; tentativas de acesso cruzado (`Operador` tentando carregar o shell FGR Ops, por exemplo) são redirecionadas ao seu fluxo canônico sem erro visível.
+O ponto de entrada correto é determinado pelo perfil do token JWT; tentativas de acesso cruzado (`Operador` tentando carregar o shell FGR Ops, por exemplo) são redirecionadas ao fluxo canônico sem erro visível.
 
 ### Sequência canônica de cadastros
 

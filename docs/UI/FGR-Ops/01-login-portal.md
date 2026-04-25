@@ -7,12 +7,15 @@
 **Rastreio PRD:** `REQ-RBAC-001`
 → SPEC: [`docs/SPEC/07-design-ui-logica.md` §1.4](../../SPEC/07-design-ui-logica.md)
 → SPEC: [`docs/SPEC/04-rbac-permissoes.md`](../../SPEC/04-rbac-permissoes.md)
+→ SPEC: [`docs/SPEC/01-modulos-plataforma.md` §Fluxo de autenticação](../../SPEC/01-modulos-plataforma.md) · DEC-030
 
 ---
 
 ## 1. Objetivo
 
-Hub seguro de entrada para a plataforma FGR Ops. Primeira impressão do sistema — deve transmitir **confiança corporativa, solidez e modernidade**. Autenticação padrão com branding institucional.
+Hub seguro de entrada para a plataforma FGR Ops, destinado exclusivamente a **funcionários da FGR** (perfis: `SuperAdmin`, `Board`, `AdminOperacional`, `UsuarioInternoFGR`). Primeira impressão do sistema — deve transmitir **confiança corporativa, solidez e modernidade**. Autenticação padrão com branding institucional.
+
+> **Escopo:** Empreiteiro e Operador não utilizam este portal. O Empreiteiro acessa diretamente o módulo Machinery Link da sua obra via aplicação própria. O Operador utiliza o app de campo.
 
 ---
 

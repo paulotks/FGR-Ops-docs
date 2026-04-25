@@ -608,6 +608,23 @@ Este registo centraliza as decisões de produto necessárias antes das correçõ
 - **Justificação:** O fluxo de solicitação preserva a integridade operacional (operador não cancela unilateralmente) mas reconhece que, em demandas agendadas, o operador fez comprometimento explícito e pode ter motivos legítimos para solicitar descomprometimento.
 - **Aplicação:** Plano 2 — ver `novos-requisitos/plano-2-agendadas.md`.
 
+## DEC-030 — Rota de login separada para Empreiteiro e Operador (PWA campo)
+
+- **Estado:** Decidido
+- **Data:** 2026-04-25
+- **Participantes:** Produto, Engenharia
+- **Contexto:** FGR Ops é destinado exclusivamente a funcionários da FGR. Empreiteiro e Operador não acessam o shell FGR Ops. D6 impõe autenticação por PIN de 6 dígitos para perfis de campo, incompatível com o formulário email + senha forte do portal FGR Ops. O PWA `manifest.json` exige entrypoint separado para que o "Add to Home Screen" instale o app correto com ícone e nome adequados. No futuro, o Empreiteiro poderá ter um portal multi-app para navegar entre serviços disponíveis; a separação de rota antecipa essa arquitetura sem overhead no MVP.
+- **Opções em análise:**
+  - A) Portal unificado com bifurcação de UX por perfil detectada após e-mail (exibe PIN ou campo de senha conforme perfil).
+  - B) Rota de login separada para campo (`/app`) — PIN-first, mobile-optimized — independente do portal FGR Ops (`/`).
+- **Decisão:** B) Rota separada. O portal FGR Ops (`/`) autentica funcionários FGR (`SuperAdmin`, `Board`, `AdminOperacional`, `UsuarioInternoFGR`) via email + senha forte. O login campo (`/app`) autentica `Empreiteiro` e `Operador` via email + PIN 6 dígitos, com UX mobile-first e PWA manifest próprio.
+- **Justificação:** UX de autenticação fundamentalmente diferente (PIN vs senha) inviabiliza portal único sem bifurcação condicional — que introduziria complexidade desnecessária. Rotas separadas permitem: (i) manifest PWA correto por aplicação; (ii) UX de campo otimizada para toque em smartphone; (iii) evolução independente (ex.: portal Empreiteiro multi-app em Fase 2) sem afetar o portal corporativo.
+- **Aplicação:**
+  - `docs/SPEC/01-modulos-plataforma.md`: seção "Fluxo de autenticação e roteamento de entrada" atualizada — três pontos de entrada explicitados com rotas e perfis.
+  - `docs/UI/FGR-Ops/01-login-portal.md`: escopo exclusivo para funcionários FGR documentado.
+  - `docs/UI/FGR-Ops/02-app-shell-hub.md`: Empreiteiro e Operador removidos do shell; perfis canônicos corrigidos.
+  - `docs/UI/Machinery-Link/00-login-campo.md`: criado — portal PWA campo (PIN-first, mobile-first).
+
 ---
 
 ## Fase 2 — Correcoes de achados importantes

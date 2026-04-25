@@ -18,6 +18,10 @@
           {
             "type": "command",
             "command": "bash .claude/hooks/traceability-validator.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/mcp-reindex.sh"
           }
         ]
       }
@@ -32,24 +36,5 @@
         ]
       }
     ]
-  },
-  "mcpServers": {
-    "docs": {
-      "command": "node",
-      "args": ["C:/dev/fgr-docs-mcp/dist/index.js"],
-      "env": {
-        "DOCS_ROOT": "C:/dev/FGR-Ops-docs/docs"
-      }
-    },
-    "github": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-github"
-      ],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
-      }
-    }
   }
 }

@@ -1,3 +1,27 @@
+## 2026-04-25
+
+**Sessão encerrada em:** 2026-04-25 11:52
+
+### Arquivos Alterados
+
+- .claude/settings.json
+- docs/UI/FGR-Ops/01-login-portal.md
+- docs/UI/FGR-Ops/02-app-shell-hub.md
+
+### REQ-IDs Tocados
+
+REQ-RBAC-001,REQ-RBAC-002,REQ-RBAC-003
+
+### DEC-IDs Registrados
+
+DEC-025,DEC-026,DEC-027,DEC-028,DEC-029
+
+### Decisões Tomadas
+
+(Registrar manualmente se houve decisões táticas importantes)
+
+---
+
 ## 2026-04-22
 
 **Sessão encerrada em:** 2026-04-22 09:01
