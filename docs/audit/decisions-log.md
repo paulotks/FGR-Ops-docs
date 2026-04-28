@@ -649,6 +649,46 @@ Este registo centraliza as decisões de produto necessárias antes das correçõ
 
 ---
 
+## DEC-032 — Política de versões do ambiente local — Node 24, pnpm 10, Memurai, SQL Express
+
+- **Estado:** Decidido
+- **Data:** 2026-04-27
+- **Participantes:** Engenharia
+- **Contexto:** O `INFRA.md` (escrito em 2026-04) especificava Node 20 LTS, pnpm 9.x e Redis 7.x (Linux) como pré-requisitos. Na auditoria do ambiente local de bootstrap (2026-04-27) constatou-se: Node v24.15.0 já instalado, pnpm 10.33.2 já instalado, Memurai 4.2.2 (compatível com Redis API 7.4.7) já instalado e em execução como serviço Windows, SQL Server Express 2019 com instância nomeada `SQLEXPRESS` em execução. O time é pequeno (1 dev) e a produção é Windows Server (DEC-022).
+- **Opções em análise:**
+  - A) Downgrade para Node 20 LTS e pnpm 9 (seguir INFRA.md à letra).
+  - B) Adotar versões já instaladas (Node 24, pnpm 10) e atualizar INFRA.md.
+  - C) Tornar Node 20 e 24 ambos suportados via `.nvmrc` + matrix CI.
+- **Decisão:** B) Adotar Node 24 LTS, pnpm 10 e Memurai (Redis para Windows) como baseline oficial do FGR-Ops. SQL Server Express 2019 com instância nomeada `SQLEXPRESS` é aceito para desenvolvimento local — `DATABASE_URL` deve usar o formato `sqlserver://localhost\\SQLEXPRESS;database=fgrops_dev;...` ao invés da porta 1433 padrão. Turborepo instalado via dual-install (global para CLI + `devDependency` no root para pinning). Pinagem reforçada via `packageManager: "pnpm@10.x"` e `engines: { "node": ">=24" }` no `package.json` raiz.
+- **Justificativa:** 1) Paridade dev/prod: Memurai é o build oficial do Redis para Windows e a produção é Windows Server — usar Memurai em dev elimina a divergência que aparece só no deploy. 2) Node 24 entrou em LTS em 2025-10 e tem suporte completo de NestJS 10+, Vite 5+, React 19 e Prisma; não há razão técnica para downgrade. 3) pnpm 10 fixa o lockfile em `lockfileVersion: '10.0'`; `packageManager` no root garante que Corepack force a versão correta em qualquer máquina. 4) Turbo dual-install: CLI global conveniente + `devDep` faz pinning por repo (global defere automaticamente para a versão local quando presente). 5) SQL Express com instância nomeada exige connection string específica; documentar evita debug desnecessário.
+- **SPECs/REQ-IDs afetados:** `INFRA.md §1`, `INFRA.md §3`, `INFRA.md §4`
+- **Aplicação (2026-04-28):**
+  - `docs/INFRA.md §1`: tabela dev local — Node.js 20 LTS → **24 LTS**, pnpm 9.x → **10.x**, Redis 7.x → **Memurai 4.x**; Turborepo com nota de dual-install; instância nomeada SQL Express adicionada; tabela produção alinhada.
+  - `docs/INFRA.md §3`: `DATABASE_URL` atualizado para instância nomeada (`localhost\\SQLEXPRESS`); `.env` separado por app (ver DEC-033).
+  - `docs/INFRA.md §4`: instrução de bootstrap atualizada com nota de Turborepo dual-install.
+
+---
+
+## DEC-033 — Pipeline Turborepo — `.env` por app, `cache: false` explícito em `dev`, `test` vs `test:integration`
+
+- **Estado:** Decidido
+- **Data:** 2026-04-28
+- **Participantes:** Engenharia
+- **Contexto:** Bootstrap do monorepo Turborepo (Fase 1.1). Três decisões de configuração precisam ser fixadas antes de criar `turbo.json`, `package.json` raiz e os `.env`: (a) **Localização do `.env`** — `INFRA.md §3` exemplificava um único `.env` na raiz misturando segredos de backend e variáveis `VITE_*` do front. (b) **Cache do `turbo dev`** — comportamento implícito de tasks `persistent`. (c) **Dependência do target `test`** — `packages/domain` roda Vitest sobre TS fonte direto, sem precisar de artefato compilado.
+- **Opções em análise:**
+  - A) `.env` único na raiz · cache implícito · `test` depende de `build`.
+  - B) `.env` por app · `"cache": false` explícito · `test` independente; integration manual.
+  - C) `.env` por app · `"cache": false` explícito · `test` rápido + `test:integration` separado — **ESCOLHIDO**.
+- **Decisão:** (a) **`.env` por app**: cada app gerencia seu próprio `.env`/`.env.example` (`apps/api/.env`, `apps/web/.env`). Não há `.env` na raiz. (b) **`"cache": false` explícito** em todas as tasks `dev` no `turbo.json`. (c) **Dois targets de teste**: `test` (sem dependências — loop TDD rápido contra TS fonte) e `test:integration` (depende de `build` e `^build` — para testes que precisam do dist/Prisma client). `turbo run test` é o default; CI roda ambos.
+- **Justificativa:** (a) Isola `JWT_SECRET` (server-only) de `VITE_API_BASE_URL` (browser-exposto); `apps/mobile` futuro (DEC-023) reutiliza o padrão. (b) Custo zero — Turbo já tem o comportamento por padrão; `"cache": false` explícito documenta a intenção e protege contra marcação acidental. (c) Ciclo red-green-refactor de `packages/domain` precisa ser sub-segundo; forçar `test → build` compilaria 6+ packages antes de cada execução.
+- **SPECs/REQ-IDs afetados:** `INFRA.md §2`, `INFRA.md §3`, `INFRA.md §6`
+- **Aplicação (2026-04-28):**
+  - `docs/INFRA.md §2`: estrutura do monorepo — `.env` removido da raiz; `.env`/`.env.example` por app sob `apps/api/` e `apps/web/`; `package.json` raiz anotado com `engines` + `packageManager`.
+  - `docs/INFRA.md §3`: seção reestruturada em subseções `apps/api/.env.example` e `apps/web/.env.example`; separação explícita de segredos backend vs variáveis `VITE_*`.
+  - `docs/INFRA.md §6`: target `test:integration` documentado separadamente de `test`; semântica de cada target explicada.
+
+---
+
 ## Fase 2 — Correcoes de achados importantes
 
 As correcoes abaixo nao exigiram decisao de produto nova; derivam directamente dos achados da auditoria e das decisoes ja tomadas na Fase 0.

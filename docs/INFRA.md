@@ -10,13 +10,13 @@ Guia de configuração do ambiente de desenvolvimento do monorepo Turborepo e do
 
 ### Desenvolvimento local
 
-| Ferramenta | Versão mínima | Notas |
-|-----------|---------------|-------|
-| Node.js | 20 LTS | Compatível com Vite 5+, React 19 e NestJS 10+ |
-| pnpm | 9.x | Gestor de pacotes do monorepo |
-| Turborepo | última estável | `pnpm add -g turbo` |
-| SQL Server | 2019+ ou Azure SQL | Banco principal (D2) |
-| Redis | 7.x | Blacklist de JWT e rate limiting (D3) |
+| Ferramenta | Versão | Notas |
+|-----------|--------|-------|
+| Node.js | **24 LTS** | NestJS 10+, Vite 5+, React 19, Prisma; pinado em `engines.node` (`DEC-032`) |
+| pnpm | **10.x** | Gestor de pacotes do monorepo; versão forçada via `packageManager` no root (`DEC-032`) |
+| Turborepo | última estável | Dual-install: `pnpm add -g turbo` (CLI global) + `devDependency` no root (pinning) — `DEC-032` |
+| SQL Server Express 2019 | instância `SQLEXPRESS` | Dev local; connection string com instância nomeada, ver §3 (`DEC-032`) |
+| Memurai | **4.x** (Redis API 7.4.7) | Redis para Windows — blacklist JWT e rate limiting (D3); paridade com Windows Server prod (`DEC-032`) |
 | Git | 2.x | — |
 
 ### Produção (Windows Server — fornecido pela FGR)
@@ -28,11 +28,11 @@ Guia de configuração do ambiente de desenvolvimento do monorepo Turborepo e do
 | IIS URL Rewrite Module | última | Reescrita de URLs para proxy |
 | IIS Application Request Routing (ARR) | última | Reverse proxy HTTP/HTTPS/WebSocket |
 | IIS WebSocket Protocol | habilitado | Upgrade para `/ws` (NestJS Gateway) |
-| Node.js | 20 LTS (Windows MSI) | Runtime do NestJS em produção |
+| Node.js | **24 LTS** (Windows MSI) | Runtime do NestJS em produção (`DEC-032`) |
 | PM2 | última estável | Process manager |
 | `pm2-windows-service` | última | Registrar PM2 como serviço Windows |
 | SQL Server | 2019+ | Banco (pode ser remoto) |
-| Redis | 7.x (Windows build, WSL ou remoto) | Cache / blacklist JWT |
+| Memurai | 4.x (Redis para Windows) | Cache / blacklist JWT — build oficial Redis para Windows Server (`DEC-032`) |
 
 ---
 
@@ -42,7 +42,11 @@ Guia de configuração do ambiente de desenvolvimento do monorepo Turborepo e do
 fgr-ops/
 ├── apps/
 │   ├── api/          # Backend NestJS 10+ (REST + WebSocket Gateway)
+│   │   ├── .env      # (não versionado) segredos backend — ver §3
+│   │   └── .env.example
 │   ├── web/          # Frontend Vite + React 19 (PWA, mobile-first)
+│   │   ├── .env      # (não versionado) variáveis VITE_* — ver §3
+│   │   └── .env.example
 │   └── mobile/       # (previsto — DEC-023) Expo + React Native
 ├── packages/
 │   ├── types/        # DTOs e enums (fonte única de contratos)
@@ -53,22 +57,29 @@ fgr-ops/
 │   └── utils/        # Utilitários comuns
 ├── turbo.json
 ├── pnpm-workspace.yaml
-└── .env              # (não versionado — ver .env.example abaixo)
+└── package.json      # engines: node>=24; packageManager: pnpm@10.x
 ```
 
 > **DEC-023:** `apps/mobile` não é criado no MVP; apenas a estrutura de packages é preparada e consumida por `apps/web`. Quando o app mobile for desenvolvido, bastará criar `apps/mobile` com Expo e consumir os mesmos 4 packages (`types`, `schemas`, `api-client`, `domain`).
+>
+> **DEC-033:** Não há `.env` na raiz. Cada app gerencia seu próprio `.env`/`.env.example` para isolar segredos backend (`JWT_SECRET`, `DATABASE_URL`) das variáveis expostas ao browser (`VITE_*`).
 
 ---
 
-## 3. Variáveis de ambiente (`.env.example`)
+## 3. Variáveis de ambiente
 
-Copiar para `.env` na raiz e preencher os valores para o ambiente local. O Vite expõe para o cliente **apenas** variáveis prefixadas com `VITE_` (segurança — o restante fica no servidor NestJS).
+Cada app possui seu próprio `.env`/`.env.example` (`DEC-033`). O Vite expõe ao browser **apenas** variáveis prefixadas com `VITE_` — as demais ficam exclusivamente no servidor NestJS.
+
+### `apps/api/.env.example`
 
 ```dotenv
 # ── Base de dados (D2 — SQL Server com Prisma ORM) ──────────────────────────
-DATABASE_URL="sqlserver://localhost:1433;database=fgrops_dev;user=sa;password=SUA_SENHA;trustServerCertificate=true"
+# Dev local com SQL Server Express 2019 (instância nomeada — DEC-032):
+DATABASE_URL="sqlserver://localhost\\SQLEXPRESS;database=fgrops_dev;user=sa;password=SUA_SENHA;trustServerCertificate=true"
+# Produção ou SQL Server padrão (porta 1433):
+# DATABASE_URL="sqlserver://localhost:1433;database=fgrops_dev;user=sa;password=SUA_SENHA;trustServerCertificate=true"
 
-# ── Redis (D3 — blacklist JWT e rate limiting) ───────────────────────────────
+# ── Redis / Memurai (D3 — blacklist JWT e rate limiting) ─────────────────────
 REDIS_URL="redis://localhost:6379"
 
 # ── JWT (D3) ─────────────────────────────────────────────────────────────────
@@ -102,7 +113,11 @@ TZ="America/Sao_Paulo"
 API_PORT=3000
 API_HOST="127.0.0.1"              # loopback em produção (atrás do IIS)
 NODE_ENV="development"
+```
 
+### `apps/web/.env.example`
+
+```dotenv
 # ── Frontend Vite + React (apenas VITE_* são expostas ao browser) ────────────
 VITE_API_BASE_URL="http://localhost:3000/api/v1"
 VITE_WS_URL="ws://localhost:3000/ws"
@@ -118,28 +133,34 @@ VITE_APP_NAME="FGR-OPS"
 git clone <url-repo> fgr-ops
 cd fgr-ops
 
-# 2. Copiar variáveis de ambiente
-cp .env.example .env
-# Editar .env com as credenciais locais
+# 2. Instalar Turborepo global (CLI conveniente) — DEC-032
+# O global defere automaticamente para a devDependency local quando presente
+pnpm add -g turbo
 
-# 3. Instalar dependências (todos os workspaces)
+# 3. Copiar variáveis de ambiente por app — DEC-033
+cp apps/api/.env.example apps/api/.env
+cp apps/web/.env.example apps/web/.env
+# Editar apps/api/.env com DATABASE_URL (instância nomeada), JWT_SECRET, etc.
+# Editar apps/web/.env com VITE_API_BASE_URL se necessário
+
+# 4. Instalar dependências (todos os workspaces)
 pnpm install
 
-# 4. Gerar cliente Prisma e executar migrações
+# 5. Gerar cliente Prisma e executar migrações
 pnpm --filter api exec prisma generate
 pnpm --filter api exec prisma migrate dev --name init
 
-# 5. (Opcional) Popular dados de seed
+# 6. (Opcional) Popular dados de seed
 pnpm --filter api exec prisma db seed
 
-# 6. Iniciar todos os apps em modo dev (Turborepo)
+# 7. Iniciar todos os apps em modo dev (Turborepo)
 turbo dev
 # ou individualmente:
 # turbo dev --filter=api    (NestJS em :3000)
 # turbo dev --filter=web    (Vite em :5173)
 ```
 
-> `turbo dev` inicia `apps/api` (`:3000`) e `apps/web` (`:5173`) em paralelo com hot-reload.
+> `turbo dev` inicia `apps/api` (`:3000`) e `apps/web` (`:5173`) em paralelo com hot-reload. A task `dev` tem `"cache": false` explícito no `turbo.json` (`DEC-033`).
 
 ---
 
@@ -159,12 +180,25 @@ Os arquivos são gerados em `apps/web/src/components/ui/` e passam a ser proprie
 
 ## 6. Executar testes
 
+Dois targets distintos (`DEC-033`):
+
+| Target | Dependências Turbo | Uso |
+|---|---|---|
+| `test` | nenhuma | Loop TDD rápido — Vitest sobre TS fonte direto (sem build) |
+| `test:integration` | `build`, `^build` | Requer dist compilado e Prisma client gerado |
+
 ```bash
-# Todos os workspaces
+# Loop TDD rápido (sem build — default)
 turbo test
 
-# Backend (Jest ou Vitest — unitários e integração)
+# Testes de integração (requerem build completo)
+turbo test:integration
+
+# Backend — unitários
 pnpm --filter api test
+
+# Backend — integração
+pnpm --filter api test:integration
 pnpm --filter api test:cov
 
 # Frontend (Vitest + Testing Library)
@@ -368,7 +402,7 @@ pm2 save
 ## 9. Referências
 
 - [SPEC/00-visao-arquitetura.md](SPEC/00-visao-arquitetura.md) — ADRs D1 (Turborepo), D2 (SQL Server/Prisma), D3 (JWT/Redis), D6 (política de autenticação), D7 revista (React + Vite + Tailwind + shadcn/ui)
-- [audit/decisions-log.md](audit/decisions-log.md) — DEC-004 (parâmetros de sessão por perfil), DEC-021 (stack frontend Vite+React, supersede DEC-007/DEC-008), DEC-022 (infra Windows/IIS/PM2), DEC-023 (preparação mobile RN)
+- [audit/decisions-log.md](audit/decisions-log.md) — DEC-004 (parâmetros de sessão por perfil), DEC-021 (stack frontend Vite+React, supersede DEC-007/DEC-008), DEC-022 (infra Windows/IIS/PM2), DEC-023 (preparação mobile RN), DEC-032 (versões Node 24/pnpm 10/Memurai/SQL Express), DEC-033 (.env por app, test vs test:integration)
 - [SPEC/07-design-ui-logica.md](SPEC/07-design-ui-logica.md) — padrões React, Tailwind + shadcn/ui, react-hook-form + zod
 - [SPEC/08-api-contratos.md](SPEC/08-api-contratos.md) — contratos REST, rate limiting por endpoint
 - [SPEC/06-definicoes-complementares.md](SPEC/06-definicoes-complementares.md) — estratégia PWA offline (Service Worker, IndexedDB), WebSocket
