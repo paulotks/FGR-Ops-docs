@@ -775,3 +775,68 @@ As correcoes abaixo nao exigiram decisao de produto nova; derivam directamente d
 - **Data:** 2026-03-20
 - **Resultado:** Todos os 37 achados resolvidos (7 bloqueantes, 28 importantes, 2 menores). Cobertura: 62 requisitos cobertos, 2 parciais (M01), 0 não cobertos. Risco geral: baixo.
 - **Artefactos regenerados:** `consolidated-global.json`, `traceability.md`.
+
+---
+
+## DEC-034 — Linha divisória DDD Tático vs Transaction Script
+
+- **Estado:** Decidido
+- **Data:** 2026-04-29
+- **Participantes:** Engenharia, Arquitetura
+- **Contexto:** O design document (2026-04-28) formalizou uma abordagem híbrida: aggregates ricos para núcleo comportamental, Transaction Script para catálogos. Sem uma ADR explícita, há risco de devs futuros "padronizarem tudo como aggregate" (cerimônia desnecessária) ou "simplificarem tudo como CRUD" (invariantes da Demanda espalhadas em service-methods de centenas de linhas). A linha divisória precisa ser critérios concretos, não julgamento individual.
+- **Opções em análise:**
+  - A) Tudo como aggregate (DDD puro): rejeitada — cerimônia desproporcional para CRUDs, risco de anemic domain model nos aggregates simples.
+  - B) Tudo como Transaction Script: rejeitada — invariantes da Demanda explodem em service-methods; auditoria fica opcional.
+  - C) Critério subjetivo caso a caso: rejeitada — inconsistência entre devs, sem referência para code review.
+  - D) Critérios objetivos ≥2 de 4 (adotada): previsível, auditável em PR, extensível para novos módulos.
+- **Decisão:** Usar Aggregate Rico (DDD Tático) quando a entidade satisfaz ≥2 dos critérios: (1) máquina de estados com ≥3 estados e transições condicionais por perfil; (2) invariantes de negócio que devem ser blindadas estruturalmente (não apenas por validação em service); (3) auditoria estrutural obrigatória via Domain Events (não log opcional); (4) reuso garantido em outro app/contexto (ex: mobile). Caso contrário: Transaction Script + Prisma direto. Entidades aggregate no MVP: `Demanda`, `RegistroExpediente`, `Usuario` (auth/PIN). Entidades Transaction Script no MVP: `TipoMaquinario`, `Material`, `Servico`, `Empreiteira`, `Ajudante`, `SetorOperacional`, `Quadra`/`Lote`/`Rua`.
+- **Justificativa:** Os 9 estados × 6 perfis × ~10 ações da Demanda criam combinatória que explode em service-methods sem aggregate. A auditoria regulatória (`DemandaLog`) não pode depender de "lembrar de logar" — Domain Events tornam-na estrutural. Os CRUDs de catálogo têm ciclo de vida trivial (criar/editar/soft-delete) sem invariantes interdependentes; adicionar aggregate neles seria cerimônia sem retorno. O critério de ≥2 evita tanto falsos positivos quanto falsos negativos.
+- **SPECs/REQ-IDs afetados:** `SPEC/02`, `SPEC/03`, `SPEC/04`, `docs/superpowers/specs/2026-04-28-arquitetura-fgr-ops-design.md`
+
+---
+
+## DEC-035 — Biblioteca Result/Either para erros de domínio previsíveis
+
+- **Estado:** Decidido
+- **Data:** 2026-04-29
+- **Participantes:** Engenharia
+- **Contexto:** O design document define Result/Either como padrão para erros de domínio previsíveis (transição inválida, operador não autorizado), com exceptions reservadas para falhas de infra. Três opções foram consideradas: implementação custom mínima, neverthrow (biblioteca npm), e ts-results. O Plano 01 de implementação (packages/domain bootstrap) já criou `Result.ts` custom como ponto de partida.
+- **Opções em análise:**
+  - A) neverthrow (npm): API rica, bem mantida, tipagem excelente — descartada pela dependência transitiva no mobile e pela API excessiva para o MVP.
+  - B) ts-results (npm): mais simples que neverthrow, inspirado em Rust — descartada pelos mesmos motivos de dependência + overhead de aprendizado sem ganho real sobre custom.
+  - C) Custom mínima em `packages/domain/shared/Result.ts` (adotada): zero dependência, API controlada, suficiente para MVP, reavaliável na Fase 2.
+- **Decisão:** Adotar implementação custom mínima em `packages/domain/shared/Result.ts`. A API expõe: `Result<T, E>`, `ok(value)`, `err(error)`, `isOk()`, `isErr()`, e `map`/`mapErr` para encadeamento. Sem dependência externa no `packages/domain` — o package deve permanecer zero-dependency além de TypeScript.
+- **Justificativa:** `packages/domain` é compartilhado entre `api` (NestJS) e `mobile` (Expo/React Native futura). Adicionar neverthrow ou ts-results cria dependência transitiva que pode conflitar com tree-shaking do bundler mobile. A API necessária no MVP (ok/err/map) é trivial de implementar (~40 linhas) e elimina o risco de breaking changes de versão de biblioteca externa. neverthrow tem API rica (match, andThen, orElse) — útil mas desnecessária para o escopo do MVP; pode ser reavaliada na Fase 2 se a custom se mostrar insuficiente.
+- **SPECs/REQ-IDs afetados:** `SPEC/00`, `docs/superpowers/specs/2026-04-28-arquitetura-fgr-ops-design.md`
+
+---
+
+## DEC-036 — Estratégia Outbox — tabela única vs uma por bounded context
+
+- **Estado:** Decidido
+- **Data:** 2026-04-29
+- **Participantes:** Engenharia, Arquitetura
+- **Contexto:** O padrão Domain Events + Outbox foi escolhido para garantir auditoria estrutural (`DemandaLog`), entrega de eventos para WebSocket Gateway e métricas sem acoplamento direto entre domínio e infra. A decisão pendente é a topologia da tabela Outbox: uma tabela global `OutboxEvent` ou uma tabela por bounded context (ex: `MachineryOutbox`, `AuthOutbox`). No MVP há um bounded context dominante (Machinery/Demanda) com volume de eventos estimado baixo.
+- **Opções em análise:**
+  - A) Uma tabela por bounded context: isolamento físico, particionamento natural — descartada para MVP por overhead de migrations e monitoring sem volume que justifique.
+  - B) Tabela única `OutboxEvent` com campo `boundedContext` (adotada): simples, rastreável, split futuro possível sem mudança de contrato.
+  - C) Sem Outbox (log direto em transaction): descartada — perde garantia de entrega e acopla domínio à infra de log.
+- **Decisão:** Tabela única `OutboxEvent` com campo `boundedContext` (string enum) para identificação lógica e roteamento pelo dispatcher. Schema mínimo: `id` (UUID), `boundedContext`, `eventType`, `aggregateId`, `obraId`, `payload` (JSON), `createdAt`, `processedAt` (nullable), `retries`. O dispatcher filtra por `boundedContext` para rotear para handlers corretos. Particionamento por tabela será reavaliado se o volume ultrapassar 10k eventos/dia ou se surgir um segundo bounded context ativo com ciclo de vida independente.
+- **Justificativa:** No MVP há 1 bounded context dominante com volume de eventos baixo. Tabela única simplifica migrations, o dispatcher, o monitoring e o rollback. O campo `boundedContext` garante separação lógica suficiente e permite split físico futuro sem mudança de contrato de publisher ou subscriber. Uma tabela por BC adicionaria 2–3 tabelas extras com overhead de JOIN em monitoring e sem nenhum benefício de isolamento real neste volume. O campo `obraId` na tabela Outbox garante que o multi-tenancy é rastreável mesmo em eventos assíncronos.
+- **SPECs/REQ-IDs afetados:** `SPEC/03`, `SPEC/06`, `docs/superpowers/specs/2026-04-28-arquitetura-fgr-ops-design.md`
+
+---
+
+## DEC-037 — Organização de packages/domain — por bounded context vs por aggregate
+
+- **Estado:** Decidido
+- **Data:** 2026-04-29
+- **Participantes:** Engenharia
+- **Contexto:** `packages/domain` é o pacote puro compartilhado entre `api` e `mobile` (Fase 2). Precisa ser organizado de forma que devs encontrem código rapidamente, bounded contexts não vazem entre si, e o pacote escale para Fase 2 sem refatoração destrutiva. Duas topologias foram consideradas: pastas por aggregate funcional (`demanda/`, `fila/`, `sla/`) vs pastas por bounded context formal (`machinery/`, `auth/`, `catalog/`).
+- **Opções em análise:**
+  - A) Por bounded context formal (`domain/machinery/`, `domain/auth/`): separação DDD estrita — descartada para MVP por indireção desnecessária com único BC dominante.
+  - B) Por aggregate/sub-domínio funcional sem prefixo BC (adotada): navegável, flat, refatorável quando Fase 2 introduzir segundo BC real.
+  - C) Flat sem subpastas (tudo em `domain/`): descartada — não escala além de 5–6 arquivos.
+- **Decisão:** Organizar por aggregate/sub-domínio funcional, sem prefixo de bounded context no MVP. Estrutura: `domain/demanda/`, `domain/fila/`, `domain/sla/`, `domain/expediente/`, `domain/shared/`. A pasta `shared/` contém os primitivos compartilhados por todos os aggregates: `Result.ts`, `DomainEvent.ts`, `AggregateRoot.ts`. Quando a Fase 2 introduzir um segundo bounded context real (ex: RH, Financeiro), a migração para `domain/machinery/demanda/` + `domain/rh/...` é cirúrgica — mover pastas + atualizar barrel imports.
+- **Justificativa:** No MVP com um único bounded context dominante, adicionar uma camada de pasta `machinery/demanda/` seria indireção sem valor — todo o código comportamental está no mesmo BC. A estrutura flat por aggregate é mais navegável para um time pequeno e reduz o caminho de import. A migração futura para subpastas por BC é mecânica (`sed` + `tsc --noEmit` para confirmar) e não exige mudança de lógica. O custo de não fazer agora é zero; o custo de fazer prematuramente é paths mais longos, confusão em onboarding e barrel exports aninhados desnecessários.
+- **SPECs/REQ-IDs afetados:** `SPEC/00`, `docs/superpowers/specs/2026-04-28-arquitetura-fgr-ops-design.md`
