@@ -1267,54 +1267,74 @@ Admin rejeita solicitação de cancelamento do operador. Demanda permanece no es
 
 ---
 
-### GET /obras/:id/servicos — Catálogo de serviços
+### GET /servicos — Catálogo de serviços (GLOBAL)
 
-**Query params:** `?tipoMaquinarioId=` (filtragem por tipo — DEC-005/DEC-009)
+> **Divergência SPEC↔código (Rule 15, código canônico — T8.2).** `Servico` é
+> catálogo **global** (sem `obraId`/`deletadoEm`, igual `TipoMaquinario`): rota
+> global `/servicos` (não aninhada em `/obras/:id`), **hard-delete** (não
+> soft-delete), campo `prioridade` (não `prioridadeBase`), `+ categoria`,
+> response embeda `tipoMaquinario {id,nome}`. Precedente: `/tipos-maquinario`.
 
-**Response 200:** lista de `Servico` com `nome`, `descricao`, `prioridadeBase`, `exigeTransporte`, `tipoMaquinarioId`
+**Perfis:** qualquer autenticado (leitura aberta).
+
+**Response 200:** array puro de `Servico` com `id`, `nome`, `descricao`,
+`prioridade`, `exigeTransporte`, `categoria`, `tipoMaquinario { id, nome }`,
+`criadoEm`, `atualizadoEm` (sem paginação — carve-out de cardinalidade Q3/PERF-002).
 
 ---
 
-### POST /obras/:id/servicos — Criar serviço
+### GET /servicos/:id
 
-**Perfis:** `AdminOperacional`, `SuperAdmin`
+**Response 200:** `Servico` · **Erros:** `404` `TEN-001` serviço não encontrado.
+
+---
+
+### POST /servicos — Criar serviço
+
+**Perfis:** `AdminOperacional`, `SuperAdmin` (`CATALOGO_WRITE_PERFIS`).
 
 **Request (CreateServicoDto):**
 ```json
 {
-  "nome": "string (obrigatório)",
-  "descricao": "string (obrigatório)",
-  "prioridade": "NORMAL | ELEVADA | MAXIMA",
-  "exigeTransporte": "boolean (padrão false)",
-  "tipoMaquinarioId": "uuid (obrigatório)"
+  "nome": "string (obrigatório, 1..255)",
+  "descricao": "string (opcional)",
+  "prioridade": "NORMAL | ELEVADA | MAXIMA (obrigatório)",
+  "exigeTransporte": "boolean (opcional, padrão false)",
+  "categoria": "MOVIMENTACAO | OUTRO (opcional, padrão OUTRO)",
+  "tipoMaquinarioId": "string (obrigatório)"
 }
 ```
 
-**Response 201:** `Servico` criado com `id`, `nome`, `descricao`, `prioridade`, `exigeTransporte`, `tipoMaquinarioId`
+**Response 201:** `Servico` criado (shape acima, com `tipoMaquinario` embed).
 
-**Erros:** `400` campos obrigatórios ausentes · `404` `tipoMaquinarioId` não encontrado
+**Erros:** `400` validação DTO · `404` `TEN-001` `tipoMaquinarioId` não encontrado ·
+`409` `REC-001` já existe serviço com este nome para o mesmo tipo de maquinário.
 
 ---
 
-### PATCH /obras/:id/servicos/:servicoId — Atualizar serviço
+### PATCH /servicos/:servicoId — Atualizar serviço
 
-**Perfis:** `AdminOperacional`, `SuperAdmin`
+**Perfis:** `AdminOperacional`, `SuperAdmin`.
 
 **Request (UpdateServicoDto):** campos parciais de `CreateServicoDto`
+**exceto `tipoMaquinarioId`** (imutável — extra rejeitado pelo `.strict()`).
+Corpo vazio → `400`.
 
-**Response 200:** `Servico` atualizado
+**Response 200:** `Servico` atualizado.
 
-**Erros:** `404` serviço não encontrado · `409` serviço possui demandas ativas (soft-delete bloqueado)
+**Erros:** `400` validação / corpo vazio · `404` `TEN-001` serviço não encontrado ·
+`409` `REC-001` nome duplicado no mesmo tipo.
 
 ---
 
-### DELETE /obras/:id/servicos/:servicoId — Excluir serviço (soft-delete)
+### DELETE /servicos/:servicoId — Excluir serviço (HARD-delete)
 
-**Perfis:** `AdminOperacional`, `SuperAdmin`
+**Perfis:** `AdminOperacional`, `SuperAdmin`.
 
 **Response 204**
 
-**Erros:** `409` serviço possui demandas ativas (`PENDENTE`, `EM_ANDAMENTO`, `AGENDADA`)
+**Erros:** `404` `TEN-001` serviço não encontrado · `409` `REC-002` serviço possui
+demandas vinculadas (não pode ser excluído).
 
 ---
 
