@@ -12,7 +12,7 @@ if ! echo "$INPUT" | grep -qiE '[/\\]docs[/\\]'; then
   exit 0
 fi
 
-INDEXER="C:/dev/fgr-docs-mcp/dist/indexer.js"
+INDEXER="C:/dev/mcp-servers/fgr-ops/fgr-docs-mcp/dist/indexer.js"
 if [[ ! -f "$INDEXER" ]]; then
   echo "[mcp-reindex] AVISO: indexer não encontrado em $INDEXER" >&2
   exit 0

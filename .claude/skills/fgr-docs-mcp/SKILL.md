@@ -29,7 +29,7 @@ description: Use when working in FGR-Ops-docs with the fgr-docs-mcp MCP server �
 
 Se precisar forçar manualmente:
 ```bash
-npm --prefix C:/dev/fgr-docs-mcp run index
+npm --prefix C:/dev/mcp-servers/fgr-ops/fgr-docs-mcp run index
 ```
 
 Saída esperada: `[indexer] Done — N files, N sections, N reqs, N decisions`

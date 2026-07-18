@@ -6,7 +6,7 @@ Acionado quando: redação ou atualização de seções SPEC, adição de novos 
 
 1. **Antes de escrever qualquer seção SPEC**, leia o módulo PRD correspondente e anote todos os `REQ-IDs` relevantes
 2. **Toda seção nova** deve começar com o bloco `**Rastreio PRD:**` listando os `REQ-xxx` cobertos
-3. **Para cada decisão arquitetural** tomada ao escrever, registre em `docs/audit/decisions-log.md` como `DEC-NNN` (próximo disponível: DEC-011)
+3. **Para cada decisão arquitetural** tomada ao escrever, registre em `docs/audit/decisions-log.md` como `DEC-NNN` (próximo disponível: consultar o ponteiro em `CLAUDE.md` ou `get_decision()` — nunca fixar número)
 4. **Atualize `docs/traceability.md`** antes de considerar a seção estável — verifique se o mapeamento PRD ↔ SPEC está correto
 5. **Use `.agent/skills/`** apenas como referência para entender patterns arquiteturais — nunca copie código para dentro da SPEC
 6. **Diagramas sempre em Mermaid**, armazenados em `docs/flows/` e linkados por path relativo da seção correspondente
