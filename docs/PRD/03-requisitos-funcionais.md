@@ -18,13 +18,15 @@ No fluxo automático de distribuição, máquinas e operadores não podem visual
 
 ### `REQ-FUNC-003` Gestão de maquinário, serviços e ajudantes
 
-O sistema deve suportar o cadastro estruturado de `Tipos de Maquinario`, `Servicos`, `Maquinas` e `Ajudantes` via telas dedicadas de administração. O `Operador` precisa de estar vinculado aos tipos de maquinário que está autorizado a operar.
+O sistema deve suportar o cadastro estruturado de `Tipos de Maquinario`, `Servicos`, `Maquinas` e `Ajudantes` via telas dedicadas de administração. O `Operador` precisa de estar vinculado aos tipos de maquinário que está autorizado a operar (competência).
+
+**Elegibilidade por MÁQUINA (ADR 0004):** a habilitação por tipo **não é suficiente** — o operador só pode dar check-in em **máquinas específicas liberadas para ele**, numa cascata tipo→máquina. Motivo: maquinários são frequentemente **alugados**; dois operadores habilitados ao mesmo tipo (ex.: "Escavadeira") podem ter permissão para unidades diferentes (A opera ESC-01, não ESC-02). Regras: (1) tipo sozinho **nunca** libera check-in; (2) toda máquina liberada deve pertencer a um tipo habilitado do mesmo operador (invariante de cascata, validada no write); (3) as duas relações são independentes — competência por tipo pode existir sem máquina liberada. Gestão via `PATCH /operadores/:id` (replace-whole-set combinado de `tiposMaquinarioIds` **e** `maquinariosIds`, numa transação atômica).
 
 O cadastro de `TipoMaquinario` deve exigir os seguintes campos:
 
 - **Nome** do tipo (obrigatório).
 - **Descrição** do tipo (obrigatório).
-- Os serviços associados são gerenciados separadamente via cadastro de `Servico`, vinculado ao tipo pelo campo `tipoMaquinarioId`.
+- Os serviços associados são gerenciados separadamente via cadastro de `Servico`, vinculado **a um ou mais** tipos (relação N:M — Slice 9).
 
 O cadastro de `Maquinario` deve exigir os seguintes campos para o MVP:
 
@@ -33,7 +35,7 @@ O cadastro de `Maquinario` deve exigir os seguintes campos para o MVP:
 - **Placa** (opcional, para máquinas com registro veicular).
 - Vínculo obrigatório ao **TipoMaquinario** correspondente.
 
-A relação `TipoMaquinario → Servico` permite filtragem mútua na criação de demanda: ao selecionar um maquinário, apenas os serviços do seu tipo são exibidos; ao selecionar um serviço, apenas os maquinários do tipo compatível são exibidos.
+A relação `TipoMaquinario ↔ Servico` (N:M) permite filtragem mútua na criação de demanda: ao selecionar um maquinário, apenas os serviços vinculados ao seu tipo são exibidos; ao selecionar um serviço, apenas os tipos de maquinário (e maquinários compatíveis) vinculados a ele são exibidos. No formulário do Empreiteiro, essa filtragem é bidirecional: escolher um serviço restringe as opções de tipo, e escolher um tipo restringe as opções de serviço (Slice 9).
 
 O cadastro de `Servico` deve exigir no mínimo os seguintes campos:
 
@@ -41,19 +43,24 @@ O cadastro de `Servico` deve exigir no mínimo os seguintes campos:
 - **Descrição** do serviço (obrigatório).
 - **Exige Transporte** (`exigeTransporte`, flag booleana, padrão `false`): indica que o serviço envolve deslocamento de material ou equipamento dentro da obra. Quando marcada, a abertura de uma demanda para este serviço exige que o empreiteiro informe o destino (Quadra/Lote) ou declare Transporte Interno.
 
-Cada `Servico` é vinculado a um `TipoMaquinario`. Um mesmo tipo pode ter múltiplos serviços associados.
+Cada `Servico` é vinculado **a um ou mais** `TipoMaquinario` (N:M — Slice 9, supersede o vínculo 1:N original). Um mesmo tipo pode ter múltiplos serviços associados, e um mesmo serviço pode aceitar múltiplos tipos de maquinário compatíveis.
 
 -> SPEC: [../SPEC/01-modulos-plataforma.md#dependencias-sobre-o-core](../SPEC/01-modulos-plataforma.md#dependencias-sobre-o-core)
 -> SPEC: [../SPEC/02-modelo-dados.md#entidades-principais](../SPEC/02-modelo-dados.md#entidades-principais)
+-> SPEC: [../SPEC/04-rbac-permissoes.md#habilitacao-do-operador--tipo-competencia--maquina-unidade-adr-0004](../SPEC/04-rbac-permissoes.md#habilitacao-do-operador--tipo-competencia--maquina-unidade-adr-0004)
+-> SPEC: [../SPEC/08-api-contratos.md#4-operadores-operadores](../SPEC/08-api-contratos.md#4-operadores-operadores) (`POST`/`PATCH /operadores` — `maquinariosIds`, `OPR-012`)
 
 ### `REQ-FUNC-004` Diário operacional de expediente
 
 O `RegistroExpediente` formaliza diariamente o uso do equipamento, associando `Operador`, `Maquina` e `Ajudante` num período temporal. No check-in, o operador escolhe a máquina filtrada pelas suas autorizações e registra o ajudante ativo; a troca de ajudante durante o turno deve permanecer auditada. A primeira demanda do dia parte de uma localização neutra (`Fora da Obra`) e só depois da primeira conclusão o checkpoint manual passa a influenciar a adjacência.
 
+**Elegibilidade por MÁQUINA no check-in (ADR 0004, `REQ-FUNC-003`):** o check-in valida que a máquina selecionada está entre as especificamente liberadas para o operador (`OperadorMaquinario`) — não basta a competência por tipo. Falha ⇒ `403 OPR-011`. É o **primeiro** portão de elegibilidade instalado no check-in (antes inexistente). Leitura complementar para o PWA de campo: `GET /expediente/maquinarios-liberados` (self-scoped, lista as máquinas liberadas para o operador autenticado).
+
 -> SPEC: [../SPEC/01-modulos-plataforma.md#capacidades-operacionais-do-machinery-link](../SPEC/01-modulos-plataforma.md#capacidades-operacionais-do-machinery-link)
 -> SPEC: [../SPEC/02-modelo-dados.md#entidades-principais](../SPEC/02-modelo-dados.md#entidades-principais)
 -> SPEC: [../SPEC/06-definicoes-complementares.md#rastreabilidade-de-ajudantes](../SPEC/06-definicoes-complementares.md#rastreabilidade-de-ajudantes)
 -> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#regra-zero-hard-filter-destaque-e-score](../SPEC/03-fila-scoring-estados-sla.md#regra-zero-hard-filter-destaque-e-score)
+-> SPEC: [../SPEC/08-api-contratos.md#post-expedientecheckin--check-in-de-expediente](../SPEC/08-api-contratos.md#post-expedientecheckin--check-in-de-expediente) (`OPR-011`, `GET /expediente/maquinarios-liberados`)
 
 ### `REQ-FUNC-005` Agrupamento e criação múltipla
 

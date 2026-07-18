@@ -5,16 +5,18 @@
 **Design System:** [UI-DESIGN.md](../UI-DESIGN.md)
 
 **Rastreio PRD:** `REQ-RBAC-005`, `REQ-RBAC-006`, `REQ-NFR-002`, `REQ-OBJ-005`
-→ SPEC: [`docs/SPEC/01-modulos-plataforma.md` §Fluxo de autenticação](../../SPEC/01-modulos-plataforma.md) · DEC-030
+→ SPEC: [`docs/SPEC/01-modulos-plataforma.md` §Fluxo de autenticação](../../SPEC/01-modulos-plataforma.md) · DEC-030, DEC-042, **DEC-049**
 → SPEC: [`docs/SPEC/04-rbac-permissoes.md`](../../SPEC/04-rbac-permissoes.md) · D6
 
 ---
 
 ## 1. Objetivo
 
-Ponto de entrada do **PWA Machinery Link** para perfis de campo — `Empreiteiro` e `Operador`. Autenticação via email + PIN de 6 dígitos (D6). UX mobile-first, mínimo de toques, instalável via "Add to Home Screen" com manifest próprio.
+Ponto de entrada do **PWA Machinery Link** para perfis de campo — `Empreiteiro` e `Operador`. Autenticação via **CPF + PIN de 6 dígitos** (D6; CPF é o identificador canônico — DEC-042, reafirmado como contrato de UI por DEC-049, supersede parcialmente a redação "email + PIN" de DEC-030). UX mobile-first, mínimo de toques, instalável via "Add to Home Screen" com manifest próprio.
 
 > **Escopo:** Esta tela não pertence ao FGR Ops. É o entrypoint da rota `/app` (campo). Funcionários FGR usam o portal `docs/UI/FGR-Ops/01-login-portal.md`. (DEC-030)
+
+> **Nota de status (2026-07-13, DEC-049):** O redesign visual desta tela foi implementado **interinamente** na rota `/auth/pin` do portal (não em `/app` do PWA Machinery Link como descrito acima) — divergência deliberada de caminho, não de contrato de credencial. O PWA separado permanece o alvo (DEC-030 reafirmada nesse ponto). Detalhe visual implementado: `docs/superpowers/plans/2026-07-13-redesign-telas-campo-contratos/login-pin.md`.
 
 ---
 
@@ -33,7 +35,7 @@ Ponto de entrada do **PWA Machinery Link** para perfis de campo — `Empreiteiro
 │   FORM PANEL             │
 │                          │
 │   ┌──────────────────┐   │
-│   │ Email / Matrícula│   │
+│   │ CPF              │   │
 │   └──────────────────┘   │
 │                          │
 │   PIN (6 dígitos)        │
@@ -62,12 +64,15 @@ Ponto de entrada do **PWA Machinery Link** para perfis de campo — `Empreiteiro
 
 ### 3.1 Campo de Identificação
 
+> **Amendado (DEC-049):** o campo de identificação passa de Email/Matrícula para **CPF** — alinhado ao identificador já canônico no BE (`POST /auth/pin`, DEC-042/ADR 0003).
+
 | Campo | Tipo | Validação | Placeholder |
 |---|---|---|---|
-| **Email / Matrícula** | `input[type=email]` ou texto | Obrigatório | "seu.email@empresa.com" |
+| **CPF** | `input[type=text]`, máscara `000.000.000-00`, `inputmode="numeric"` | Obrigatório; dígito verificador (DV) validado no FE; normalizado para **11 dígitos** (`stripNonDigits`) no submit | "000.000.000-00" |
 
 - Height: `48px`, border-radius `8px`, font `16px` (previne zoom iOS)
 - Focus: `2px solid --color-primary`
+- Normalização anti-fragmentação de lockout: variantes de máscara do mesmo CPF resolvem para a mesma chave de lockout progressivo (D6/DEC-004) — o FE envia sempre os 11 dígitos, nunca a string mascarada.
 
 ### 3.2 Input PIN 6 Dígitos
 
@@ -82,9 +87,9 @@ Ponto de entrada do **PWA Machinery Link** para perfis de campo — `Empreiteiro
 - **Tipo:** Primary button, `width: 100%`
 - **Background:** `--color-primary` (`#ad0f0a`)
 - **Texto:** `--color-primary-foreground` (`#ffffff`), `16px/700`
-- **Habilitado:** somente quando email preenchido E 6 dígitos inseridos
+- **Habilitado:** somente quando CPF válido (11 dígitos, DV ok) E 6 dígitos de PIN inseridos
 - **Loading state:** Spinner branco + "Entrando..." — sem duplo-submit
-- **Height:** `48px`, border-radius `8px`
+- **Height:** ~~`48px`~~ → **`56px`** (protótipo 1d vence — DEC-049), border-radius `8px`
 
 ### 3.4 Link "Esqueci meu PIN"
 
@@ -101,7 +106,7 @@ Ponto de entrada do **PWA Machinery Link** para perfis de campo — `Empreiteiro
 | **Idle** | Campos vazios; botão desabilitado |
 | **Digitando PIN** | Foco avança campo a campo; botão habilita ao completar 6 dígitos |
 | **Loading** | Botão com spinner, inputs desabilitados |
-| **Erro de autenticação** | Banner inline: _"Email ou PIN incorretos"_ — genérico (sem distinguir campo errado) |
+| **Erro de autenticação** | Banner inline: ~~_"Email ou PIN incorretos"_~~ → _**"Identificação ou PIN inválidos"**_ (DEC-049, copy canônica) — genérico (sem distinguir campo errado) |
 | **Conta bloqueada** | _"Conta temporariamente bloqueada. Tente novamente em X minutos."_ |
 | **Sucesso — Empreiteiro** | Redirect para `/app/demandas` (lista de demandas da obra) |
 | **Sucesso — Operador** | Redirect para `/app/fila` (fila do operador / check-in diário) |

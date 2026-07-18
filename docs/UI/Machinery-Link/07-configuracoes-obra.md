@@ -75,7 +75,7 @@ Item **Configurações** ativo:
 |---|---|---|
 | **🗺 Malha Espacial** | Estrutura territorial da obra | Setor, Quadra, Lote, LoteAdjacencia, LocalExterno |
 | **📦 Catálogos** | Inventário operacional | TipoMaquinario, Servico, Maquinario, Material |
-| **⚙ Parâmetros** | Regras operacionais | Expediente, Pesos da Fila |
+| **⚙ Parâmetros** | Regras operacionais | Expediente (rota própria, ver §6), Pesos da Fila (pós-MVP — não implementado, ver §6) |
 
 Cada tab mantém seu próprio estado de navegação. A URL reflete a navegação: `/machinery-link/configuracoes?tab=malha&sub=setores`.
 
@@ -229,43 +229,44 @@ Passo #12. Catálogo de materiais da obra, para `fator_material` do score. Rastr
 
 ## 6. Domínio 3: Parâmetros Operacionais
 
-Passo #18. Configurações que governam o expediente e o motor de score.
+Passo #18. **Amendment 2026-07-16 (DEC-050, `REQ-FUNC-004`):** a tela real (`apps/web/src/routes/machinery-link/$obra/configuracoes/expediente.tsx`) vive em rota própria (item **"Expediente"** no grupo "Configurações" da sidebar do módulo, `/machinery-link/$obra/configuracoes/expediente`), não como sub-aba de uma tela de "Parâmetros" tabulada — o mockup abaixo é atualizado para os 4 campos reais e o switch tudo-ou-nada; a estrutura de tabs/sidebar do resto do arquivo (§2, §3) não foi revisitada nesta amenda (fora do escopo). **Pesos da fila (`W_adj`/`W_srv`/`W_mat`) são pós-MVP** — não há UI de configuração deles; o motor usa os pesos fixos 50/30/20 (`SPEC/03`).
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────┐
-│  PARÂMETROS OPERACIONAIS                        [💾 Salvar Parâmetros]   │
-│  ──────────────────────────────────────────────────────────────────────  │
 │  EXPEDIENTE                                                              │
+│  ──────────────────────────────────────────────────────────────────────  │
+│  [✓] Controle de expediente ativo                                        │
+│                                                                          │
 │  Início do Expediente *    Fim do Expediente *                           │
 │  ┌──────────────────┐      ┌──────────────────┐                         │
 │  │  07:00           │      │  17:00           │                         │
 │  └──────────────────┘      └──────────────────┘                         │
 │                                                                          │
-│  ⚠ O horário de expediente não tem valor default. Deve ser              │
-│    definido explicitamente — governa o auto-encerramento de SLA.         │
+│  Tolerância de hora extra                                                │
+│  Horas ┌──────┐   Minutos ┌──────┐                                       │
+│        │  1   │           │  30  │                                       │
+│        └──────┘           └──────┘                                       │
 │                                                                          │
-│  ──────────────────────────────────────────────────────────────────────  │
-│  PESOS DA FILA (soma deve = 100)                                         │
+│  Dias ativos                                                             │
+│  [✓]Seg [✓]Ter [✓]Qua [✓]Qui [✓]Sex [ ]Sáb [ ]Dom                       │
 │                                                                          │
-│  W_adj (Adjacência)  W_srv (Serviço)  W_mat (Material)                  │
-│  ┌──────┐            ┌──────┐          ┌──────┐                          │
-│  │  50  │            │  30  │          │  20  │                          │
-│  └──────┘            └──────┘          └──────┘                          │
-│  Padrão: 50 · 30 · 20 — aplica-se automaticamente se não configurado.   │
+│                                              [ Salvar ]                  │
 └──────────────────────────────────────────────────────────────────────────┘
 ```
 
-**Campos de Parâmetros:**
+Desligar o switch **"Controle de expediente ativo"** abre um diálogo de confirmação (_"Isso remove o horário, a tolerância de hora extra e os dias ativos configurados para esta obra. Deseja continuar?"_) — ao confirmar, envia os 4 campos como `null` (tudo-ou-nada, `SPEC/08`). Com o switch desligado, o formulário some e exibe apenas uma nota informativa.
 
-| Campo | Tipo | Validação | Default |
+**Campos de Parâmetros (`ObraConfiguracoesDto`, `SPEC/08` §`GET/PATCH /obras/:id/configuracoes`):**
+
+| Campo | Tipo | Validação | Default (form ligado) |
 |---|---|---|---|
-| `expedienteInicio` | `input[type=time]` | Obrigatório, anterior ao fim | Sem default — obrigatório |
-| `expedienteFim` | `input[type=time]` | Obrigatório, posterior ao início | Sem default — obrigatório |
-| `W_adj` | `input[type=number]` | 0–100; soma W_adj + W_srv + W_mat = 100 | `50` |
-| `W_srv` | `input[type=number]` | 0–100 | `30` |
-| `W_mat` | `input[type=number]` | 0–100 | `20` |
+| Início do Expediente (`expedienteInicio`) | `input[type=time]` | Obrigatório, anterior ao fim (`HH:MM`) | `07:00` |
+| Fim do Expediente (`expedienteFim`) | `input[type=time]` | Obrigatório, posterior ao início; `fim + tolerância` não pode cruzar meia-noite | `17:00` |
+| Tolerância de hora extra — Horas | `input[type=number]` | Inteiro 0–7 | `0` |
+| Tolerância de hora extra — Minutos | `input[type=number]` | Inteiro 0–59 | `0` |
+| Dias ativos (`diasAtivos`) | checkboxes Seg–Dom (ISO 1–7) | Ao menos 1 dia selecionado | `Seg, Ter, Qua, Qui, Sex` (`[1,2,3,4,5]`) |
 
-**Validação cross-field dos pesos:** exibir erro inline se soma ≠ 100: _"A soma dos pesos deve ser igual a 100. Atual: [X]."_ O botão "Salvar" permanece desabilitado enquanto a soma estiver inválida.
+Horas+Minutos de tolerância se combinam em `limiteHoraExtraMin` (payload) antes do envio. Validação client-side cobre formato/obrigatoriedade; a validação canônica de negócio (tudo-ou-nada, `inicio < fim`, cruzamento de meia-noite) roda no BE — erro `422` exibido via toast com a mensagem do servidor (sem reimplementação no cliente).
 
 ---
 

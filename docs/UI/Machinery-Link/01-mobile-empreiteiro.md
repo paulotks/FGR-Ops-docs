@@ -275,3 +275,18 @@ Acionado pelo ícone `✕` nos cards `PENDENTE` de autoria própria.
 | **FAB contrast** | Branco sobre `#ad0f0a` — ratio 9.2:1 ✅ |
 | **Swipe gestures** | BottomSheet com drag handle nativo (não obrigatório) |
 | **Offline** | Banner de status offline visível no header quando sem conexão |
+
+---
+
+## 8. Desvios do MVP (2026-07-13)
+
+Redesign visual da tela (`FieldShell` compartilhado com o Operador — REQ-JOR-001) entregue com os desvios abaixo em relação às seções acima. Fonte do detalhe visual: `docs/superpowers/plans/2026-07-13-redesign-telas-campo-contratos/empreiteiro.md`.
+
+| Desvio | Descrição |
+|---|---|
+| **Header degradado sem nomes** | O JWT não carrega claims de nome de obra/usuário/empreiteira — o header (`FieldShell`, compartilhado com a tela do Operador) exibe marca FGR + "Machinery Link" + rótulo do perfil (`Empreiteiro`) + botão Sair, em vez do título "Minhas Solicitações" + avatar de §3.1. |
+| **Cancelamento via justificativa texto-livre** | O modal de cancelamento (§5) permanece com textarea de justificativa livre (mín. 10 caracteres) — **sem** chips de motivo pré-definido. |
+| **Badges `estado-*` sem glifos** | Os badges de estado (§6) usam apenas cor + texto — sem os emojis/glifos (🔵🟢🟡) do wireframe ASCII em §2. |
+| **Card rico (2026-07-14)** | Cards de "Em aberto" exibem serviço (título), chips de prioridade + countdown de SLA (só PENDENTE), `Local:` e material — via `DemandaResumoDto` enriquecido (design `2026-07-14-card-demanda-rico-campo`). Sem linha de solicitante (a lista é do próprio Empreiteiro). Histórico permanece mínimo (título + tempo). |
+
+> **Nota:** nenhuma mudança de contrato de API ou de máquina de estados da Demanda — desvios são de apresentação/UI e de superfície do DTO de leitura, não de regra de negócio.

@@ -2,6 +2,19 @@
 
 Documento migrado a partir de `FGR-OPS-SPEC.md` (seções 1–2). Paridade com o PRD: [PRD — visão e escopo](../PRD/00-visao-escopo.md).
 
+> ## ℹ️ Nota — MVP intermediário 15/jul/2026
+>
+> Esta SPEC funcional **não foi alterada**; continua sendo o destino do produto. Para acelerar a entrega de um piloto em obra real, foi planejado um **MVP de escopo reduzido com data 15/jul/2026** que substitui temporariamente partes do roadmap (`dev-todo/fase-2-backend §2.5–§2.10`, `fase-3`, `fase-4`).
+>
+> O MVP introduz um novo perfil humano (`TOWER_OPERATOR`) que substitui temporariamente a complexidade algorítmica (scoring por adjacência/material/serviço) e o WebSocket (substituído por polling 10s).
+>
+> Detalhes:
+> - Spec do MVP: [`docs/superpowers/specs/2026-05-26-mvp-15-julho-escopo-reduzido-design.md`](../../../docs/superpowers/specs/2026-05-26-mvp-15-julho-escopo-reduzido-design.md)
+> - Workplan ativo: [`dev-todo/roadmap-mvp.md`](../../../dev-todo/roadmap-mvp.md)
+> - Parking lot pós-MVP (decisões/features adiadas): [`memory/decisions/2026-05-26-mvp-escopo-reduzido-15-julho.md`](../../../memory/decisions/2026-05-26-mvp-escopo-reduzido-15-julho.md)
+>
+> Pós-15/jul/2026 o roadmap reabre seguindo esta SPEC original como destino.
+
 ## 1. Visão Geral do Sistema {#visao-geral}
 
 ### Propósito, escopo e contexto de negócio {#proposito-escopo-contexto}

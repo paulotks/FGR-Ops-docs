@@ -51,7 +51,7 @@ O empreiteiro pode cancelar demandas da sua autoria enquanto estas estiverem no 
 *   **Card de Demanda Ativa Principal:**
     *   Exibe *apenas* a demanda atual / próxima da fila (`EM_ANDAMENTO` ou a primeira `PENDENTE`).
     *   Dados da demanda: Local, Serviço, Empreiteiro solicitante.
-    *   Botões de Ação Dinâmicos: "Cheguei ao Local", "Pausar", "Concluir" variando dependendo do estado atual da demanda.
+    *   Botões de Ação Dinâmicos: "Iniciar" (rótulo MVP — volta a "Cheguei ao Local" pós-MVP, quando houver dado de localização para medir deslocamento; design 2026-07-14), "Pausar", "Finalizar" variando dependendo do estado atual da demanda.
     *   > **Fase 2:** Botão "Iniciar Deslocamento" removido do MVP — funcionalidade de rastreamento de deslocamento será endereçada em iteração futura.
 *   **Lista de Fila (Opcional/Secundária):** Permite ver "o que vem pela frente" apenas com caráter informativo, sem poder de escolha.
 

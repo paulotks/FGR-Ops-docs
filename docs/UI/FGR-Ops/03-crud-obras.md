@@ -17,6 +17,8 @@ Gerenciar o ciclo de vida de `Obras` no nível da plataforma FGR Ops. Exclusivo 
 
 > **Escopo:** Esta tela opera no nível cross-tenant do FGR Ops. O `AdminOperacional` **não** acessa esta tela — ele gerencia configurações operacionais dentro do módulo Machinery Link (ver [`07-configuracoes-obra.md`](../Machinery-Link/07-configuracoes-obra.md)).
 
+> **Selecionar obra — [DEC-048]:** a ação "Selecionar obra" do card leva ao **hub da obra** (`/obras/{obraId}` — módulos habilitados + usuários da obra), não mais direto ao módulo Machinery Link. Ver [`04-hub-obra.md`](04-hub-obra.md).
+
 ---
 
 ## 2. Layout

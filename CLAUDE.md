@@ -35,7 +35,7 @@
 
 - **PRD:** `REQ-<PREFIX>-<NNN>` — prefixes: `FUNC NFR ACE RBAC JOR CTX OBJ MET RISK`
 - **SPEC:** bloco `**Rastreio PRD:**` obrigatório em toda seção que referencie REQ-IDs
-- **Decisões táticas:** `DEC-NNN` em `decisions-log.md` — próxima: **DEC-038**
+- **Decisões táticas:** `DEC-NNN` em `decisions-log.md` — próxima: **DEC-056**
 - **ADRs:** `D1–D7` nas SPECs
 - **Cross-links:** PRD→SPEC `→ SPEC: path#anchor` · SPEC→PRD bloco `Rastreio PRD:`
 
@@ -109,15 +109,18 @@ Plataforma multi-tenant de operações de construção civil. MVP = **Machinery 
 
 ---
 
-## Current State (2026-04-20)
+## Current State (2026-07-18)
+
+> **Fonte de estado vivo:** `C:/dev/Fgr-Ops/memory/wake-up.md` (monorepo, versionado). Este repositório é **doc-only**, servido via MCP `fgr-docs-mcp` — o snapshot abaixo é de alto nível; o detalhe operacional por slice/sessão vive no wake-up.
 
 | | Estado |
 |---|---|
+| Fase | MVP-15jul em implementação avançada (monorepo `Fgr-Ops`, Sessão 5 · PR #99 merged) |
 | PRD | 7 módulos estáveis (`00`–`06`); REQ-IDs: CTX-001…003, OBJ-001…005, SCO-001…005, SCO-F2-001…006, SCO-GAT-001…004, RBAC-001…006, JOR-001…005, FUNC-001…014, NFR-001…007, ACE-001…006+008…010, MET-001…003, RISK-001…002 |
-| SPEC | 9 módulos + `docs/UI/` (Design System + 11 telas: 3 FGR-Ops + 8 Machinery-Link) + `docs/flows/06-rollover-redistribuicao.md`; cobertura 64 cobertos / 2 parciais / 0 descobertos |
-| Decisions | Última: DEC-037 · Próxima: **DEC-038** |
-| OpsX ativos | `stack-frontend-vite-react` (em aplicação — DEC-021/022/023) |
-| Audit | 37 achados, todos resolvidos · `docs/audit/output/global/consolidated-global.json` · DEC-025…031 adicionados pós-auditoria |
+| SPEC | 9 módulos + `docs/UI/` (Design System + telas FGR-Ops `01`–`04` + Machinery-Link `00`–`08`) + `docs/flows/06-rollover-redistribuicao.md` |
+| Decisions | Última: DEC-055 · Próxima: **DEC-056** |
+| Reconciliação 2026-07-18 (Regra 15) | prontidão `GET /obras/:obraId/prontidao` (DEC-046/052) · expediente + worker (DEC-050) · SLA fora da UI (DEC-051) · pré-alocação `operadorId` (DEC-053) · compat operador↔tipo `422 DEM-013` (DEC-054) · material texto-livre (DEC-055). Contratos pós-MVP marcados _(não implementado)_: `POST /demandas/bulk`, `GET /demandas` + `/:id`, ciclo `AGENDADA` §3b, catálogo de materiais |
+| Audit | baseline histórica 37 achados resolvidos · `docs/audit/output/global/consolidated-global.json` |
 
 ---
 

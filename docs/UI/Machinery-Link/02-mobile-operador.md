@@ -154,7 +154,7 @@ Os botões são **gigantes** para uso com luvas e em ambientes com vibração.
 
 | Botão | Visível em | Estilo | Tamanho |
 |---|---|---|---|
-| **"Cheguei ao Local"** | `PENDENTE` → transita para `EM_ANDAMENTO` | `--status-success` bg, branco | `height: 72px`, `width: 100%`, `font: 20px/700` |
+| **"Iniciar"** (rótulo MVP; "Cheguei ao Local" pós-MVP — design 2026-07-14) | `PENDENTE` → transita para `EM_ANDAMENTO` | `--status-success` bg, branco | `height: 72px`, `width: 100%`, `font: 20px/700` |
 | **"Finalizar"** | `EM_ANDAMENTO` | `--status-success` bg, branco | `height: 72px`, `width: 100%`, `font: 20px/700` |
 | **"Pausar"** | `EM_ANDAMENTO` | `--status-warning` outline, `border: 2px` | `height: 56px`, `width: 100%`, `font: 16px/600` |
 | **"Cancelar"** | `EM_ANDAMENTO` | `--color-neutral` outline, `border: 1px` | `height: 48px`, `width: 100%`, `font: 14px/500` |
@@ -319,7 +319,7 @@ Similar ao do empreiteiro, com justificativa obrigatória (≥10 caracteres).
 
 | Estado | Card Ativo | Botões Visíveis | Fila |
 |---|---|---|---|
-| `PENDENTE` (próxima) | Card expandido | "Cheguei ao Local" | Próximas 2 abaixo |
+| `PENDENTE` (próxima) | Card expandido | "Iniciar" | Próximas 2 abaixo |
 | `EM_ANDAMENTO` | Card expandido (borda verde) | "Finalizar", "Pausar", "Cancelar" | Próximas 2 abaixo |
 | `PAUSADA` | Card com borda amarela, motivo exibido | "Retomar" (volta a `EM_ANDAMENTO`) | Fila recalculada |
 | Fila vazia | Tela de espera | Nenhum | — |
@@ -336,3 +336,22 @@ Similar ao do empreiteiro, com justificativa obrigatória (≥10 caracteres).
 | **Sol direto** | Cores high-contrast, sem gradientes sutis que desaparecem sob luz |
 | **Vibração** | Alertas com multi-sensorial (som + vibração + visual) |
 | **Offline** | Banner persistente "Sem Conexão" no header + offline queue ativo |
+
+---
+
+## 11. Desvios do MVP (2026-07-13)
+
+Redesign visual da tela (`FieldShell` compartilhado com o Empreiteiro — REQ-JOR-004) entregue com os desvios abaixo em relação às seções acima. Fonte do detalhe visual: `docs/superpowers/plans/2026-07-13-redesign-telas-campo-contratos/operador.md`.
+
+| Desvio | Descrição |
+|---|---|
+| **Header degradado sem nomes** | O JWT não carrega claims de nome de obra/usuário/empreiteira — o header (`FieldShell`, compartilhado com a tela do Empreiteiro) exibe marca FGR + "Machinery Link" + rótulo do perfil (`Operador`) + botão Sair, em vez do "🟢 Turno Ativo" + ícone de engrenagem de §4.1. |
+| **Pausa/cancelamento via justificativa texto-livre** | O modal de Pausa (§7) **não** usa o dropdown de motivo pré-definido ("Quebra de equipamento", "Condição climática", etc.) — segue o mesmo padrão do modal de Cancelamento (§8): textarea de justificativa livre (mín. 10 caracteres), sem chips/opções de motivo. |
+| **Confirmação ao encerrar turno (ADICIONADA)** | Novo dialog "Encerrar o turno?" ao acionar o encerramento — com aviso quando há tarefa em aberto — antes de disparar a mesma mutation de checkout. Não existia nas seções acima (que não descreviam fluxo de encerramento). |
+| **Sem tela de rollover pós-checkout** | Não há tela dedicada de rollover inter-dias após o checkout — o fluxo de rollover (`NAO_EXECUTADA`, SPEC/03) permanece server-side, sem superfície de UI própria nesta rodada. |
+| **Badges `estado-*` sem glifos** | Os badges de estado (§9, e o "🟢 Em Andamento" do wireframe em §2/§4) usam apenas cor + texto — sem os emojis/glifos do ASCII original. |
+| **Material como texto livre** | Quando exibido, o campo material vem como texto livre do DTO — sem dropdown/categoria associada na superfície desta tela. |
+| **Card rico (2026-07-14)** | O card exibe serviço (título), chips de prioridade + countdown de SLA (só PENDENTE; estourado em vermelho — DEC-025 sem auto-encerramento), `Local:` (origem → destino quando transporte externo) e `Solicitante:` (empreiteira, fallback criador) — via `DemandaResumoDto` enriquecido (design `2026-07-14-card-demanda-rico-campo`). Demanda legada sem serviço degrada para o card anterior. |
+| **Rótulo "INICIAR"** | Ação primária de `PENDENTE` usa "INICIAR" no MVP — sem dado de localização não há como medir deslocamento; "Cheguei ao Local" retorna pós-MVP. |
+
+> **Nota:** nenhuma mudança de contrato de API ou de máquina de estados da Demanda — desvios são de apresentação/UI e de superfície do DTO de leitura, não de regra de negócio.

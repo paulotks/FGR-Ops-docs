@@ -17,6 +17,8 @@ Funcionar como o **hub central** pós-login para **funcionários FGR**. O App Sh
 
 > **Escopo:** FGR Ops (e seu App Shell) é destinado exclusivamente a funcionários da FGR — perfis `SuperAdmin`, `Board`, `AdminOperacional` e `UsuarioInternoFGR`. Empreiteiro e Operador acessam aplicações separadas: o Empreiteiro vai diretamente ao módulo Machinery Link da sua obra ao logar; o Operador utiliza o app de campo para receber e atender solicitações.
 
+> **Hub por obra — [DEC-048]:** o hub de módulos é **obra-scoped**: vive em `/obras/{obraId}` (nível "Obra" da navegação, entre a plataforma `/ops` e os módulos). "Selecionar obra" no `/ops` leva ao hub; o card do módulo leva a `/machinery-link/{obraId}`; o link "Usuários da obra" leva a `/obras/{obraId}/usuarios` (gestão de `AdminOperacional`/`UsuarioInternoFGR`). Detalhe em [`04-hub-obra.md`](04-hub-obra.md).
+
 ---
 
 ## 2. Layout
@@ -87,7 +89,8 @@ Funcionar como o **hub central** pós-login para **funcionários FGR**. O App Sh
 |---|---|
 | **Logo** | Logo FGR em versão com cor primária, `height: 32px` |
 | **Título** | "FGR Ops" — `--color-text-primary`, `18px/600` |
-| **Obra Selector** | Dropdown para troca de `obraId` (contexto de tenant). Exibe nome da obra ativa. Visível apenas para perfis com acesso multi-obra (SuperAdmin, Board). |
+| **Nome da Obra** | Nome da obra ativa (read-only), derivado do `obraId` **no path** (`/machinery-link/{obraId}/*`, fonte de verdade). A troca de obra **não** acontece aqui — vive no `/ops` (ver §4). **[DEC-047]** |
+| **Botão "← FGR Ops"** | Retorna à shell FGR-Ops (`/ops`). Visível apenas para perfis cross-obra (SuperAdmin, Board); substitui o antigo dropdown de troca no top bar. **[DEC-047]** |
 | **User Menu** | Avatar + nome do usuário. Dropdown com: Perfil, Configurações, Sair |
 
 **Estilo Top Bar:**
@@ -139,16 +142,18 @@ A visibilidade dos módulos depende do perfil do usuário logado:
 
 ---
 
-## 4. Troca de Contexto (Obra / Tenant)
+## 4. Troca de Contexto (Obra / Tenant) — **[DEC-047]**
+
+A obra é **`obraId` no path** (`/machinery-link/{obraId}/*`) — fonte de verdade única, linkável por obra. A troca de obra **não** é um dropdown no top bar do módulo; ela vive na shell FGR-Ops (`/ops`, ObraSwitcher). O header do módulo mostra o **nome** da obra ativa + um botão **"← FGR Ops"** (só cross-obra) para voltar e escolher outra.
 
 | Perfil | Comportamento |
 |---|---|
-| **SuperAdmin** | Dropdown de obra visível no top bar, lista todas as obras |
-| **Board** | Dropdown visível, lista obras do seu escopo |
-| **AdminOperacional** | Obra fixa, sem dropdown |
-| **UsuarioInternoFGR** | Obra fixa, sem dropdown |
+| **SuperAdmin** | Escolhe a obra no `/ops` (ObraSwitcher, lista todas), entra em `/machinery-link/{obraId}`; "← FGR Ops" retorna ao `/ops`. Pode navegar qualquer obra pela URL. |
+| **Board** | Idem SuperAdmin, obras do seu escopo. |
+| **AdminOperacional** | Obra fixa (do JWT); o `obraId` ainda aparece no path + nome no header. Sem troca; **sem** botão "← FGR Ops". Tentar outra obra na URL → **redirect para a própria obra** (guard de tenant, Rule 1/3). |
+| **UsuarioInternoFGR** | Idem AdminOperacional. |
 
-A troca de obra recarrega os dados da fila, dashboard e configurações do módulo ativo.
+Trocar de obra (via `/ops`) recarrega fila, dashboard e configurações da obra selecionada. O guard de tenant garante que a UI de um tenant admin **nem aparente** cross-obra.
 
 > **Nota:** Empreiteiro e Operador não acessam o FGR Ops. Eles não aparecem nesta tabela de contexto pois utilizam aplicações próprias.
 
@@ -161,7 +166,7 @@ A troca de obra recarrega os dados da fila, dashboard e configurações do módu
 | **Loading inicial** | Skeleton loader nos cards de módulo (3 placeholders) |
 | **Erro de carregamento** | Card de erro com botão "Tentar novamente" |
 | **Sem módulos** | Mensagem: _"Nenhum módulo disponível para seu perfil. Contate o administrador."_ |
-| **Navegação para módulo** | Click no card navega para `/machinery-link/` (ou rota equivalente). Sidebar marca o módulo ativo. |
+| **Navegação para módulo** | Click no card do hub (`/obras/{obraId}`) navega para `/machinery-link/{obraId}` (DEC-048). Sidebar marca o módulo ativo. |
 
 ---
 
@@ -169,16 +174,18 @@ A troca de obra recarrega os dados da fila, dashboard e configurações do módu
 
 Após entrar em um módulo, o App Shell permanece como container. A sidebar atualiza para exibir a navegação interna do módulo:
 
+> **Convergência de rotas — [DEC-047]:** todas as telas do Machinery Link agora vivem sob **`/machinery-link/{obraId}/*`** (obra no path). O split anterior `/admin/*` (catálogo/config) × `/machinery-link/*` **foi removido**: catálogo e configuração ficam sob `configuracoes/`, com `dashboard` e `operadores` no topo da obra. As rotas abaixo omitem o segmento `{obraId}` por brevidade (ele é sempre o 2º segmento).
+
 ### Machinery Link — Itens de Navegação
 
-| Item | Ícone | Rota | Perfis |
-|---|---|---|---|
-| **Fila de Demandas** | 📋 | `/machinery-link/fila` | AdminOperacional, UsuarioInternoFGR |
-| **Dashboard** | 📊 | `/machinery-link/dashboard` | AdminOperacional, UsuarioInternoFGR, Board |
-| **Auditoria** | 📝 | `/machinery-link/auditoria` | AdminOperacional, UsuarioInternoFGR, Board |
-| **Operadores** | 👷 | `/machinery-link/operadores` | AdminOperacional, UsuarioInternoFGR |
-| **Configurações** | ⚙ | `/machinery-link/configuracoes` | AdminOperacional, SuperAdmin |
-| **Acessos** | 👥 | `/machinery-link/acessos` | AdminOperacional, SuperAdmin |
+| Item | Ícone | Rota (sob `/machinery-link/{obraId}/`) | Perfis | Status |
+|---|---|---|---|---|
+| **Dashboard** | 📊 | `dashboard` | AdminOperacional, UsuarioInternoFGR, Board | ✅ MVP (placeholder) |
+| **Operadores** | 👷 | `operadores` | AdminOperacional, UsuarioInternoFGR | ✅ MVP |
+| **Configurações** | ⚙ | `configuracoes/{maquinarios,tipos-maquinario,setores,ruas,quadras,locais-externos,servicos}` | AdminOperacional, SuperAdmin | ✅ MVP |
+| **Fila de Demandas** | 📋 | `fila` | AdminOperacional, UsuarioInternoFGR | 🔜 Slice 6/7 |
+| **Auditoria** | 📝 | `auditoria` | AdminOperacional, UsuarioInternoFGR, Board | 🔜 Em breve |
+| **Acessos** | 👥 | `acessos` | AdminOperacional, SuperAdmin | 🔜 Em breve |
 
 > **Tab Agendamentos** (Dashboard): acessível via tab switcher no conteúdo do Dashboard, não pela sidebar — ver [`docs/UI/Machinery-Link/05-gestao-agendamentos.md`](../Machinery-Link/05-gestao-agendamentos.md).
 

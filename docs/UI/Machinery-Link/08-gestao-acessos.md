@@ -151,15 +151,33 @@ Passo #16. Usuários com perfil `Operador` habilitados por `TipoMaquinario`. Aut
 | Campo | Tipo | Validação |
 |---|---|---|
 | Nome Completo | `input[type=text]` | Obrigatório |
-| Tipos de Maquinário Habilitados | Multi-select (`TipoMaquinario`) | Mínimo 1 — dependência #10 |
-| PIN | Gerado automaticamente (6 dígitos) | Exibido uma vez na criação |
+| CPF | `input[type=text]` | **Obrigatório** — login de campo (ADR 0003); dígito verificador validado; máscara normalizada p/ 11 dígitos |
+| E-mail | `input[type=email]` | Opcional |
+| Tipos de Maquinário Habilitados | Checkbox group (`TipoMaquinario`) | Mínimo 1 (FE) — dependência #10 |
+| Máquinas Liberadas | Checkbox group agrupado por tipo habilitado (`Maquinario`), **cascata visual** — ADR 0004 | Opcional (0+); só exibe unidades cujo tipo está marcado acima |
+| PIN | Gerado automaticamente (6 dígitos) no servidor | Exibido uma vez na criação (não recuperável) |
 
-**Habilitações (`TipoMaquinario`):**
-- Exibidas como badges na tabela: `[Retroescavadeira] [Caminhão Basculante]`
-- O operador só recebe demandas cujo maquinário corresponda a um `TipoMaquinario` de sua habilitação (motor de fila)
-- Ao editar habilitações, exibir aviso se o operador tiver expediente ativo: _"Alterar habilitações de um operador com expediente aberto afetará sua fila imediatamente."_
+> **T4.4 (2026-06-26):** implementação canônica em **`/machinery-link/operadores`** (shell mínimo
+> `/machinery-link`; entrada via nav do `/admin`). A tela 4-abas consolidada (`/machinery-link/acessos`) e as
+> demais entradas da sidebar ficam diferidas (pós-MVP). **Campos CPF (obrigatório) + E-mail (opcional)** entram
+> por força do ADR 0003 / SPEC-08 §4 (a versão anterior listava só Nome/Tipos/PIN). **"Multi-select" → checkbox
+> group** (não há multi-select no app; catálogo de baixa cardinalidade). A **lista** mostra a ação **"Resetar
+> PIN"** por linha + colunas **CPF (mascarado)** e **Status** (em vez da coluna "PIN ●●●●●● ↻" do mock). O aviso
+> de edição com expediente ativo é **estático** (`OperadorView` não expõe a flag de expediente).
+>
+> **Elegibilidade por MÁQUINA (ADR 0004 — feat/operador-maquinario-elegibilidade):** abaixo do checkbox-group
+> de **Tipos Habilitados**, nova seção **Máquinas Liberadas** agrupada por tipo — cascata visual: só aparecem
+> unidades cujo tipo está marcado. Desmarcar um tipo remove suas máquinas da seleção (mantém a invariante no
+> cliente antes do submit). Submit envia `tiposMaquinarioIds` **e** `maquinariosIds` juntos (`PATCH
+> /operadores/:id` combinado, replace-whole-set dos dois conjuntos). A coluna **"Maquinários Habilitados"** da
+> tabela acima (mock) passa a exibir as **máquinas liberadas** (badges), não mais os tipos — reflete a cascata.
 
-**Gestão de PIN:** idêntica à dos Empreiteiros (geração única, reset, expiração 90 dias).
+**Habilitações — dois níveis em cascata (ADR 0004):**
+- **Tipo (`TipoMaquinario`)** — competência: exibida como badges na tabela: `[Retroescavadeira] [Caminhão Basculante]`. Alimenta o hard-filter de compatibilidade do motor de fila (allocator) — o operador só recebe demandas cujo maquinário corresponda a um `TipoMaquinario` de sua habilitação.
+- **Máquina (`OperadorMaquinario`)** — unidade específica liberada para o **check-in**; tipo sozinho **nunca** libera check-in (motivo: máquinas frequentemente alugadas — dois operadores do mesmo tipo podem ter unidades diferentes liberadas). Toda máquina liberada deve pertencer a um tipo habilitado (cascata, validada no backend no write — `422 OPR-012` se violada).
+- Ao editar habilitações (tipo ou máquina), exibir aviso se o operador tiver expediente ativo: _"Alterar habilitações de um operador com expediente aberto afetará sua fila imediatamente."_
+
+**Gestão de PIN:** idêntica à dos Empreiteiros (geração única, reset).
 
 ---
 
@@ -208,11 +226,14 @@ Exibido imediatamente após o cadastro bem-sucedido. Fecha apenas via botão exp
 │                                                          │
 │  ⚠ Este PIN não será exibido novamente.                 │
 │    Compartilhe-o com o operador em segurança.            │
-│    O PIN expira em 90 dias.                             │
 │                                                          │
 │                        [Entendido — Fechar Modal]        │
 └──────────────────────────────────────────────────────────┘
 ```
+
+> **T4.4 (2026-06-26):** a copy **"O PIN expira em 90 dias" foi removida** do modal: T4.3/T4.4 **não** rastreiam
+> rotação de PIN (sem `senhaTrocadaEm`), então prometer expiração não-aplicada engana o admin. A política de
+> rotação 90d (D6/DEC-004) permanece como intenção até ser enforçada. O reset (↻) usa o mesmo modal.
 
 ---
 

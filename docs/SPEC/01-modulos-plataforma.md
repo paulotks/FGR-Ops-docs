@@ -25,10 +25,11 @@ Fundação da plataforma contendo dados compartilhados entre todos os submódulo
 ### Capacidades principais
 
 - Gestão de `Obras`.
-- Cadastro de `Usuarios`.
-- Atribuição de `Perfis` (`Roles`) em relação com setores e escopos de obra.
+- Cadastro de `Usuarios`, em dois níveis de navegação (DEC-048): usuários de **plataforma** (`SuperAdmin`, `Board` — cross-tenant, tela `/ops/usuarios`) e usuários da **obra** (`AdminOperacional`, `UsuarioInternoFGR` — tenant-scoped, tela `/obras/{obraId}/usuarios` no hub da obra). Usuários exclusivos de módulo (`Operador`, `TowerOperator`, `Empreiteiro`) são provisionados dentro do módulo dono (DEC-031).
+- Atribuição de `Perfis` (enum fixo `Perfil` — não há entidade/tabela `Role`) em relação com setores e escopos de obra.
 - Manutenção da malha espacial operacional (`SetorOperacional`, `Quadra`, `Lote`, `Rua`, adjacências).
-- Disponibilização de catálogos e metadados usados pelo motor operacional.
+
+Os catálogos operacionais (`TipoMaquinario`, `Servico`, `Material`, `Empreiteira`, `Maquinario`, `Ajudante`) **não** pertencem ao `Core`: são propriedade do `Machinery Link`, conforme a [sequência canônica de cadastros](#bootstrapping-de-obra) (coluna "Camada") e a delimitação de responsabilidades MVP (ver ADR 0002 do repositório de código: catálogos operacionais são ML-owned; critério "dono do conceito" — escopo global vs. por obra é eixo ortogonal ao módulo dono).
 
 ## Módulo Machinery Link (MVP)
 
@@ -54,10 +55,11 @@ Gerir o ciclo de vida completo e estrito de solicitações, filas, agrupamentos 
 
 ## Dependências sobre o Core
 
-- O `Machinery Link` depende do `Core` para conhecer `Obra`, `User`, `Role` e o recorte tenant-scoped.
+- O `Machinery Link` depende do `Core` para conhecer `Obra`, `User` (cujo perfil é o enum fixo `Perfil` em `packages/types` — não existe entidade/tabela `Role`) e o recorte tenant-scoped.
 - O filtro logístico usa entidades espaciais mantidas no `Core`, como `SetorOperacional`, `Quadra`, `Lote`, `Rua` e relações de adjacência.
-- O catálogo de `Tipos de Maquinario`, `Maquinarios`, `Servicos` e autorizações do `Operador` determina elegibilidade de atendimento.
 - O `RegistroExpediente` combina referências do `Core` com o estado operacional corrente para definir contexto de execução.
+
+Os catálogos de `Tipos de Maquinario`, `Maquinarios` e `Servicos`, bem como as autorizações do `Operador` que determinam elegibilidade de atendimento, são **internos ao Machinery Link** — não constituem dependência sobre o `Core` (ver ADR 0002 do repositório de código: catálogos operacionais são ML-owned; critério "dono do conceito").
 
 ## Bootstrapping de obra {#bootstrapping-de-obra}
 
@@ -94,7 +96,7 @@ A tabela abaixo lista a ordem mínima de cadastros para uma obra ficar operacion
 | :-- | :--- | :--- | :--- | :--- |
 | 1 | `Obra` | FGR Ops | `SuperAdmin` | — |
 | 2 | Ativar módulo `Machinery Link` para a `Obra` | FGR Ops | `SuperAdmin` | 1 |
-| 3 | Usuários de módulo (`AdminOperacional`, `UsuarioInternoFGR`) vinculados à obra | FGR Ops | `SuperAdmin` | 1 |
+| 3 | Usuários da obra (`AdminOperacional`, `UsuarioInternoFGR`) vinculados à obra — geridos no nível Obra da navegação (`/obras/{obraId}/usuarios`, DEC-048) | FGR Ops | `SuperAdmin` | 1 |
 | 4 | `SetorOperacional` | Machinery Link | `AdminOperacional` | 2 |
 | 5 | `Rua` (opcional — descritiva, ver DEC-012) | Machinery Link | `AdminOperacional` | 2 |
 | 6 | `Quadra` | Machinery Link | `AdminOperacional` | 4 (`setorOperacionalId`), 5 (opcional) |
@@ -102,7 +104,7 @@ A tabela abaixo lista a ordem mínima de cadastros para uma obra ficar operacion
 | 8 | `LoteAdjacencia` (malha de contiguidade para `fator_adjacencia`) | Machinery Link | `AdminOperacional` | 7 |
 | 9 | `LocalExterno` (Portaria, Pulmão, Garagem, etc.) | Machinery Link | `AdminOperacional` | 4 |
 | 10 | `TipoMaquinario` (catálogo global — reutilizado entre obras) | Machinery Link | `AdminOperacional` | — |
-| 11 | `Servico` (vinculado a `TipoMaquinario`; flag `exigeTransporte`) | Machinery Link | `AdminOperacional` | 10 |
+| 11 | `Servico` (vinculado a **um ou mais** `TipoMaquinario` — N:M via `ServicoTipoMaquinario`, Slice 9; flag `exigeTransporte`) | Machinery Link | `AdminOperacional` | 10 |
 | 12 | `Material` (catálogo da obra, para `fator_material` do score) | Machinery Link | `AdminOperacional` | 2 |
 | 13 | `Empreiteira` (quando houver maquinário ou empreiteiros terceirizados) | Machinery Link | `AdminOperacional` | 2 |
 | 14 | `Maquinario` (vinculado a `TipoMaquinario`, `Obra` e propriedade — FGR ou `Empreiteira`) | Machinery Link | `AdminOperacional` | 2, 10, 13 (se terceirizado) |

@@ -71,7 +71,7 @@ Todos os eventos do servidor seguem o formato:
 | :--- | :--- | :--- |
 | `DEMAND_QUEUED` | Nova demanda entra na fila do operador (score calculado, posição definida) | Operador destinatário |
 | `INVALIDATE_QUEUE` | Qualquer alteração que invalide o cache local da fila (nova demanda, recálculo, conclusão por outro) | Todos os operadores ativos da obra |
-| `SLA_ALERT` | Vencimento do SLA de uma demanda pendente — disparado **uma única vez** no instante `slaVencimentoEm` | Operador vinculado à demanda |
+| `SLA_ALERT` ⚠️ **NÃO IMPLEMENTADO / pós-MVP (DEC-051)** | Vencimento do SLA de uma demanda pendente — disparado **uma única vez** no instante `slaVencimentoEm` | Operador vinculado à demanda |
 | `AGENDADA_DISPONIVEL` | Demanda `AGENDADA` ativada e disponível para aceite — broadcast por `TipoMaquinario` (DEC-026) | Todos os operadores conectados com `TipoMaquinario` compatível |
 
 **Payload `DEMAND_QUEUED`:**
@@ -90,6 +90,8 @@ Todos os eventos do servidor seguem o formato:
 ```
 
 **Payload `SLA_ALERT`:**
+
+> **⚠️ NÃO IMPLEMENTADO / pós-MVP (DEC-051 — SLA removido da UI; escalações `SLA_ALERT`/`SLA_ESCALATION` nunca implementadas no código).** O payload abaixo permanece como referência de roadmap; **não** corresponde a comportamento ativo do MVP. Ver `docs/audit/decisions-log.md` (DEC-051).
 
 ```json
 {
@@ -131,11 +133,13 @@ Todos os eventos do servidor seguem o formato:
 
 | Evento | Quando disparado | Destinatário |
 | :--- | :--- | :--- |
-| `SLA_ESCALATION` | Escalação após +5 min sem ação (`MAXIMA`) ou +15 min (`ELEVADA`) | Admins + SuperAdmin da obra |
+| `SLA_ESCALATION` ⚠️ **NÃO IMPLEMENTADO / pós-MVP (DEC-051)** | Escalação após +5 min sem ação (`MAXIMA`) ou +15 min (`ELEVADA`) | Admins + SuperAdmin da obra |
 | `DEMAND_STATUS_CHANGED` | Qualquer transição de estado de demanda | Admins com painel Kanban aberto |
 | `INVALIDATE_QUEUE` | Mesma regra dos operadores | Admins com painel Kanban aberto |
 
 **Payload `SLA_ESCALATION`:**
+
+> **⚠️ NÃO IMPLEMENTADO / pós-MVP (DEC-051 — SLA removido da UI; escalações `SLA_ALERT`/`SLA_ESCALATION` nunca implementadas no código).** O payload abaixo permanece como referência de roadmap; **não** corresponde a comportamento ativo do MVP. Ver `docs/audit/decisions-log.md` (DEC-051).
 
 ```json
 {
@@ -161,7 +165,7 @@ Todos os eventos do servidor seguem o formato:
 
 ### Regras de deduplicação e estado visual {#regras-de-deduplicacao-e-estado-visual}
 
-- O evento `SLA_ALERT` é disparado **uma única vez** por demanda no instante `slaVencimentoEm`. O estado visual de "SLA vencido" na UI persiste até a demanda transitar para `EM_ANDAMENTO`, `CONCLUIDA` ou `CANCELADA`.
+- ⚠️ **NÃO IMPLEMENTADO / pós-MVP (DEC-051 — SLA removido da UI; escalações nunca implementadas):** O evento `SLA_ALERT` é disparado **uma única vez** por demanda no instante `slaVencimentoEm`. O estado visual de "SLA vencido" na UI persiste até a demanda transitar para `EM_ANDAMENTO`, `CONCLUIDA` ou `CANCELADA`. _(Regra de roadmap; nenhum estado visual de SLA existe na UI atual.)_
 - `DEMAND_QUEUED` deve acionar **vibração e alerta sonoro** no dispositivo quando qualquer uma das condições abaixo for verdadeira (união — `REQ-FUNC-013`):
   - `filaVazia = true` (demanda chega a operador sem tarefas — qualquer prioridade), **ou**
   - `prioridade = MAXIMA` (demanda crítica — qualquer estado de fila).
@@ -169,7 +173,7 @@ Todos os eventos do servidor seguem o formato:
   - **Som:** tom de 440 Hz por 300 ms gerado via Web Audio API (`OscillatorNode`), disparo único (não em loop). Não requer arquivo de áudio externo.
   - Quando nenhuma das condições é verdadeira (`filaVazia = false` e prioridade `ELEVADA` ou `NORMAL`), a fila é atualizada silenciosamente sem vibração nem som.
 - `DEMAND_QUEUED` também é emitido quando um operador aceita explicitamente uma demanda `AGENDADA` (modelo de aceite explícito — DEC-026), transitando-a para `PENDENTE` na fila do operador. O campo `filaVazia` reflete o estado real da fila do operador no momento do aceite; o comportamento de vibração/som segue as mesmas regras acima.
-- `SLA_ESCALATION` não é deduplicado — cada etapa de escalação gera um evento distinto.
+- ⚠️ **NÃO IMPLEMENTADO / pós-MVP (DEC-051 — SLA removido da UI; escalações nunca implementadas):** `SLA_ESCALATION` não é deduplicado — cada etapa de escalação gera um evento distinto. _(Regra de roadmap.)_
 - `DEMAND_STATUS_CHANGED` é sempre emitido, independentemente de quem realizou a ação (operador, admin ou sistema).
 
 ### Comportamento de pop-up na reconexão após offline
@@ -356,6 +360,8 @@ Regras transversais:
 - A política garante que qualquer recurso operacional envolvido numa demanda pode ser rastreado desde a criação até o estado atual, assegurando a rastreabilidade consistente exigida por `REQ-NFR-004`.
 
 ## Rastreabilidade de ajudantes {#rastreabilidade-de-ajudantes}
+
+> **⚠️ Fora do MVP-15jul — adiado p/ Fase 2 (DEC-041).** A rastreabilidade de ajudante (sub-escopo de `REQ-FUNC-004` "Diário de expediente"; o núcleo check-in/checkout de `REQ-FUNC-004` permanece no MVP via T5.2) e toda a maquinaria de ajudante (VO `TurnoAjudante`, evento `TROCA_AJUDANTE`, vínculo ajudante↔demanda) foram removidos do domínio no T5.1. As tabelas Prisma `Ajudante`/`TurnoAjudante` permanecem ociosas (parking-lot de DB). O conteúdo abaixo é referência pós-MVP.
 
 O escopo do MVP associa ajudantes ao expediente e não diretamente a `Demanda`.
 

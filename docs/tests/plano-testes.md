@@ -48,7 +48,7 @@ When o usuário acessa o dashboard global de produtividade
 Then o sistema deve exibir dados agregados de todas as obras cadastradas sem restrição de tenant
 ```
 
-**Endpoint:** `GET /api/v1/relatorios/sla` (sem `X-Obra-Id`)
+**Endpoint:** `GET /api/v1/relatorios/sla` (sem `X-Tenant-Obra-Id`)
 **Validação:** resposta inclui dados de ≥ 2 obras distintas
 
 ---
