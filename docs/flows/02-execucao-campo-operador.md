@@ -80,8 +80,8 @@ sequenceDiagram
 
 - [REQ-ACE-004](../PRD/05-criterios-aceite.md#audit-log-com-justificativa-em-modificacoes-gerenciais)
 - [REQ-ACE-005](../PRD/05-criterios-aceite.md#destaque-visual-de-prioridade-maxima-na-ui-mobile)
-- [REQ-ACE-006](../PRD/05-criterios-aceite.md#cancelamento-de-demandas-em-campo-e-encerramento-por-sla)
+- [REQ-ACE-006](../PRD/05-criterios-aceite.md#cancelamento-de-demanda-em-execucao-pelo-operador)
 
 -> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#maquina-de-estados-da-demanda](../SPEC/03-fila-scoring-estados-sla.md#maquina-de-estados-da-demanda)
--> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#fluxo-detalhado-pendente_aprovacao](../SPEC/03-fila-scoring-estados-sla.md#fluxo-detalhado-pendente_aprovacao)
+-> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#fluxo-detalhado-pendente_aprovacao](../SPEC/03-fila-scoring-estados-sla.md)
 -> SPEC: [../SPEC/07-design-ui-logica.md#12-mobile-do-operador-execucao-no-campo](../SPEC/07-design-ui-logica.md#12-mobile-do-operador-execucao-no-campo)

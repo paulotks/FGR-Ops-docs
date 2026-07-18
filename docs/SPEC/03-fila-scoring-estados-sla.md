@@ -188,7 +188,7 @@ Quando um `Operador` precisa interromper temporariamente uma demanda em execuç�
 
 ## Rollover de fim de expediente (DEC-025)
 
-### Mecânica do worker `expedienteFim` (amendment 2026-07-16 — DEC-050, `REQ-FUNC-004`/`REQ-FUNC-014`, [ADR 0006](../../../docs/adr/0006-background-jobs-in-process-nestjs-schedule.md))
+### Mecânica do worker `expedienteFim` (amendment 2026-07-16 — DEC-050, `REQ-FUNC-004`/`REQ-FUNC-014`, [ADR 0006](https://github.com/FGR-Incorporacoes-S-A/Fgr-Ops/blob/main/docs/adr/0006-background-jobs-in-process-nestjs-schedule.md))
 
 `FimExpedienteWorker` roda **in-process** (`@nestjs/schedule`, `@Cron(CronExpression.EVERY_MINUTE, { waitForCompletion: true, timeZone: 'America/Sao_Paulo' })`, sem infra de fila nova) e invoca `ProcessarFimExpedienteUseCase.executarTick(agora)` a cada minuto. Gate por env `FIM_EXPEDIENTE_CRON_ENABLED` (default `true`; `false` em `.env.test`). O tick é um **sweep idempotente por dia-calendário**: itera todas as obras com expediente configurado e, para cada uma, executa a Regra A (turnos) e a Regra B (demandas), com try/catch que nunca propaga erro (uma obra com config inválida não derruba o tick das demais). Um tick perdido/atrasado só posterga — o próximo faz catch-up de tudo que ficou pendente.
 
@@ -284,4 +284,4 @@ Se a `Regra Zero` atribuir manualmente uma nova demanda a um operador que já po
 - [REQ-ACE-003](../PRD/05-criterios-aceite.md#jurisdicao-logistica-sobre-preferencias-no-score)
 - [REQ-ACE-004](../PRD/05-criterios-aceite.md#audit-log-com-justificativa-em-modificacoes-gerenciais)
 - [REQ-ACE-005](../PRD/05-criterios-aceite.md#destaque-visual-de-prioridade-maxima-na-ui-mobile)
-- [REQ-ACE-006](../PRD/05-criterios-aceite.md#cancelamento-de-demandas-em-campo-e-encerramento-por-sla)
+- [REQ-ACE-006](../PRD/05-criterios-aceite.md#cancelamento-de-demanda-em-execucao-pelo-operador)

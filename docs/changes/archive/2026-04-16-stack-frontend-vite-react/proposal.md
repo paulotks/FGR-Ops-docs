@@ -54,7 +54,7 @@ Nenhum REQ novo criado. Mudança é de implementação tecnológica, não de req
 
 ## Referências
 
-- Audit decisions: [`docs/audit/decisions-log.md`](../../audit/decisions-log.md) — DEC-007 (a ser superseded), DEC-008 (a ser superseded), DEC-021 (novo)
+- Audit decisions: [`docs/audit/decisions-log.md`](../../../audit/decisions-log.md) — DEC-007 (a ser superseded), DEC-008 (a ser superseded), DEC-021 (novo)
 - SPEC afetadas: `00-visao-arquitetura.md`, `07-design-ui-logica.md`, `08-api-contratos.md`, `_index.md`
 - PRD afetado: `04-requisitos-nao-funcionais.md` (`REQ-NFR-002`)
 - Infra afetada: `docs/INFRA.md` (reescrita extensa)

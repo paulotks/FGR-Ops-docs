@@ -84,7 +84,7 @@ Demandas não concluídas até o fim do expediente não são encerradas automati
 - No dia seguinte, operadores que fazem check-in recebem as demandas redistribuídas conforme compatibilidade de maquinário (hard filter + scoring normal). A experiência do operador é transparente: demandas com `rolloverDe` aparecem na fila como demandas normais, sem estado especial.
 - O painel admin exibe indicador visual (badge "Dia anterior") para demandas redistribuídas, sem notificação especial.
 
-> **Decisão aplicada:** DEC-025 (2026-04-20) — Rollover e redistribuição de demandas entre dias. Supersede parcialmente DEC-002 (auto-encerramento por SLA removido; alertas e escalação mantidos). Ver [`docs/audit/decisions-log.md#dec-025`](../audit/decisions-log.md#dec-025).
+> **Decisão aplicada:** DEC-025 (2026-04-20) — Rollover e redistribuição de demandas entre dias. Supersede parcialmente DEC-002 (auto-encerramento por SLA removido; alertas e escalação mantidos). Ver [`docs/audit/decisions-log.md#dec-025`](../audit/decisions-log.md#dec-025-rollover-e-redistribuicao-de-demandas-entre-dias).
 
 → SPEC: [../SPEC/03-fila-scoring-estados-sla.md](../SPEC/03-fila-scoring-estados-sla.md) (máquina de estados, worker expedienteFim, rollover PENDENTE)
 → SPEC: [../SPEC/06-definicoes-complementares.md](../SPEC/06-definicoes-complementares.md) (campo rolloverDe, reset de SLA inter-dias)
@@ -105,6 +105,6 @@ Demandas sujeitas a alteração forçada, cancelamento ou devolução à fila de
 - [REQ-ACE-003](05-criterios-aceite.md#jurisdicao-logistica-sobre-preferencias-no-score)
 - [REQ-ACE-004](05-criterios-aceite.md#audit-log-com-justificativa-em-modificacoes-gerenciais)
 - [REQ-ACE-005](05-criterios-aceite.md#destaque-visual-de-prioridade-maxima-na-ui-mobile)
-- [REQ-ACE-006](05-criterios-aceite.md#cancelamento-de-demandas-em-campo-e-encerramento-por-sla)
+- [REQ-ACE-006](05-criterios-aceite.md#cancelamento-de-demanda-em-execucao-pelo-operador)
 - [REQ-ACE-010](05-criterios-aceite.md#rollover-e-redistribuicao-de-demandas-entre-dias)
 

@@ -9,9 +9,9 @@ Documento migrado a partir de `FGR-OPS-SPEC.md` (seções 1–2). Paridade com o
 > O MVP introduz um novo perfil humano (`TOWER_OPERATOR`) que substitui temporariamente a complexidade algorítmica (scoring por adjacência/material/serviço) e o WebSocket (substituído por polling 10s).
 >
 > Detalhes:
-> - Spec do MVP: [`docs/superpowers/specs/2026-05-26-mvp-15-julho-escopo-reduzido-design.md`](../../../docs/superpowers/specs/2026-05-26-mvp-15-julho-escopo-reduzido-design.md)
-> - Workplan ativo: [`dev-todo/roadmap-mvp.md`](../../../dev-todo/roadmap-mvp.md)
-> - Parking lot pós-MVP (decisões/features adiadas): [`memory/decisions/2026-05-26-mvp-escopo-reduzido-15-julho.md`](../../../memory/decisions/2026-05-26-mvp-escopo-reduzido-15-julho.md)
+> - Spec do MVP: [`docs/superpowers/specs/2026-05-26-mvp-15-julho-escopo-reduzido-design.md`](https://github.com/FGR-Incorporacoes-S-A/Fgr-Ops/blob/main/docs/superpowers/specs/2026-05-26-mvp-15-julho-escopo-reduzido-design.md)
+> - Workplan ativo: [`dev-todo/roadmap-mvp.md`](https://github.com/FGR-Incorporacoes-S-A/Fgr-Ops/blob/main/dev-todo/roadmap-mvp.md)
+> - Parking lot pós-MVP (decisões/features adiadas): [`memory/decisions/2026-05-26-mvp-escopo-reduzido-15-julho.md`](https://github.com/FGR-Incorporacoes-S-A/Fgr-Ops/blob/main/memory/decisions/2026-05-26-mvp-escopo-reduzido-15-julho.md)
 >
 > Pós-15/jul/2026 o roadmap reabre seguindo esta SPEC original como destino.
 

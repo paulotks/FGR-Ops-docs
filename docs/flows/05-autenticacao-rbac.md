@@ -109,8 +109,8 @@ sequenceDiagram
 ## Critérios de aceite relacionados (PRD)
 
 - [REQ-ACE-001](../PRD/05-criterios-aceite.md#isolamento-rbac-e-multi-tenancy)
-- [REQ-ACE-007](../PRD/05-criterios-aceite.md#seguranca-de-token)
-- [REQ-ACE-008](../PRD/05-criterios-aceite.md#auditoria-cross-tenant)
+- [REQ-ACE-007](../PRD/05-criterios-aceite.md#seguranca-de-token-e-gestao-de-sessao)
+- [REQ-ACE-008](../PRD/05-criterios-aceite.md)
 
 -> SPEC: [../SPEC/04-rbac-permissoes.md#regras-transversais-de-isolamento-e-bypass](../SPEC/04-rbac-permissoes.md#regras-transversais-de-isolamento-e-bypass)
 -> SPEC: [../SPEC/04-rbac-permissoes.md#perfis-de-acesso](../SPEC/04-rbac-permissoes.md#perfis-de-acesso)

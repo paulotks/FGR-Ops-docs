@@ -74,7 +74,7 @@ A ativação de uma obra ocorre em **duas camadas**: primeiro no **FGR Ops** (pl
 
 **Mapeamento de nomenclatura funcional ↔ perfil técnico:**
 
-- O perfil `SuperAdmin` cumpre o papel operacional de **Administrador do Sistema FGR Ops**: é o único com `core:obra:create` (ver [04-rbac-permissoes.md](04-rbac-permissoes.md#matriz-completa-de-permissoes-por-recurso-lacuna-1)), e é quem provisiona usuários de plataforma e ativa módulos por obra.
+- O perfil `SuperAdmin` cumpre o papel operacional de **Administrador do Sistema FGR Ops**: é o único com `core:obra:create` (ver [04-rbac-permissoes.md](04-rbac-permissoes.md#matriz-completa-de-permissoes-por-recurso)), e é quem provisiona usuários de plataforma e ativa módulos por obra.
 - O perfil `Board` cumpre o papel funcional de **Diretor / Gerente de Obra Global**: acesso cross-tenant estritamente de leitura (`HTTP GET`), voltado à consolidação analítica entre obras. O painel executivo dedicado com cruzamento de dados entre obras (ex.: horas de maquinário por obra, engajamento de operadores) fica no backlog da Fase 2 como módulo futuro do FGR Ops.
 - Os perfis `AdminOperacional`, `UsuarioInternoFGR`, `Empreiteiro` e `Operador` operam **dentro do módulo Machinery Link**, já escopados por `obraId` pelo middleware de multi-tenancy (D4).
 
@@ -150,4 +150,4 @@ A tabela abaixo lista a ordem mínima de cadastros para uma obra ficar operacion
 
 - [REQ-ACE-004](../PRD/05-criterios-aceite.md#audit-log-com-justificativa-em-modificacoes-gerenciais)
 - [REQ-ACE-005](../PRD/05-criterios-aceite.md#destaque-visual-de-prioridade-maxima-na-ui-mobile)
-- [REQ-ACE-006](../PRD/05-criterios-aceite.md#cancelamento-de-demandas-em-campo-e-encerramento-por-sla)
+- [REQ-ACE-006](../PRD/05-criterios-aceite.md#cancelamento-de-demanda-em-execucao-pelo-operador)

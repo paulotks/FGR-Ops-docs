@@ -150,7 +150,7 @@ O operador pode pausar uma demanda em `EM_ANDAMENTO`, registrando obrigatoriamen
 
 -> SPEC: [../SPEC/03-fila-scoring-estados-sla.md#fluxo-detalhado-pausada-dec-011](../SPEC/03-fila-scoring-estados-sla.md#fluxo-detalhado-pausada-dec-011)
 
--> SPEC: [../SPEC/07-design-ui-logica.md#mapeamento-visual-de-estados-state-to-ui-mapping](../SPEC/07-design-ui-logica.md#mapeamento-visual-de-estados-state-to-ui-mapping)
+-> SPEC: [../SPEC/07-design-ui-logica.md#mapeamento-visual-de-estados-state-to-ui-mapping](../SPEC/07-design-ui-logica.md#2-mapeamento-visual-de-estados-state-to-ui-mapping)
 
 ### `REQ-FUNC-012` Gestão de Empreiteiras e vínculo com usuário Empreiteiro
 
@@ -211,5 +211,5 @@ O sistema deve realizar rollover de demandas não concluídas ao fim do expedien
 - [REQ-ACE-003](05-criterios-aceite.md#jurisdicao-logistica-sobre-preferencias-no-score)
 - [REQ-ACE-004](05-criterios-aceite.md#audit-log-com-justificativa-em-modificacoes-gerenciais)
 - [REQ-ACE-005](05-criterios-aceite.md#destaque-visual-de-prioridade-maxima-na-ui-mobile)
-- [REQ-ACE-006](05-criterios-aceite.md#cancelamento-de-demandas-em-campo-e-encerramento-por-sla)
+- [REQ-ACE-006](05-criterios-aceite.md#cancelamento-de-demanda-em-execucao-pelo-operador)
 - [REQ-ACE-010](05-criterios-aceite.md#rollover-e-redistribuicao-de-demandas-entre-dias)
