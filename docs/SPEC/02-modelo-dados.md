@@ -208,6 +208,7 @@ erDiagram
         string estadoAnterior
         string estadoNovo
         uuid userId
+        string perfil
         string ator
         string dados
         timestamp timestamp
@@ -366,6 +367,8 @@ Além das ações documentadas na máquina de estados em [03-fila-scoring-estado
 | `rollover` | `SISTEMA` | `estadoAnterior=PENDENTE`, `estadoNovo=PENDENTE`, `justificativa="Rollover para dia seguinte"`, `dados={rolloverDe, operadorAnteriorId}` | Worker `expedienteFim` ao final do expediente — registra a data original e limpa `operadorId` atomicamente |
 | `alocar` | `USER` ou `SISTEMA` | `estadoAnterior=PENDENTE`, `estadoNovo=PENDENTE`, `dados={operadorAlocadoAnteriorId, operadorAlocadoId, origem?}` | Alocação manual por perfil autorizado (`SuperAdmin`/`AdminOperacional`/`TOWER_OPERATOR` — `USER`, `userId` preenchido) ou auto-alocação na criação da demanda (`SISTEMA`, `userId=null`, `origem="auto_criacao"`). Amendment 2026-07-11 (known-debt PR #85, DEC Slice 7 ponto 7). |
 | `reordenar` | `USER` | `estadoAnterior=PENDENTE`, `estadoNovo=PENDENTE`, `dados={posicaoAnterior, posicaoNova, aposDemandaId}` | Reordenação manual da fila (drag & drop por intenção); posições são chaves `posicaoFila` (fractional-indexing). Amendment 2026-07-11 (known-debt PR #85, DEC Slice 7 ponto 7). |
+
+**Amendment 2026-07-19 (DEC-057, `REQ-ACE-004`):** `DemandaLog` ganha a coluna `perfil` (`string | null`, `NVARCHAR(30)`), no mesmo padrão já usado em `AuthAuditLog`/`AuditLogCrossTenant` — armazena o valor string do enum `Perfil` do ator no momento da ação (ex.: `TOWER_OPERATOR`), para relatórios de auditoria futuros ("quem fez o quê, com qual papel"). É preenchida em toda escrita USER-driven (as 6 transições de estado, `alocar` manual, `reordenar`, criação manual). Ações `SISTEMA` (`rollover`, `devolver_fim_expediente`, auto-alocação — `userId=null`) e linhas históricas anteriores a esta migration permanecem com `perfil=null`. `userId` continua sendo a referência canônica do responsável; o NOME do ator não é snapshotado — é resolvido por join sob demanda.
 
 ## Lacunas resolvidas no modelo
 
