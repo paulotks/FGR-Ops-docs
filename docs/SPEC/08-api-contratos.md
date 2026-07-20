@@ -115,7 +115,9 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
 
 **Headers:** `Authorization: Bearer <access_token>`
 
-**Response 204** — token adicionado à blacklist Redis (jti, D3)
+**Body (opcional):** `{ "refreshToken"?: "string" }` — aceito por compatibilidade com o FE; **ignorado** pelo handler (a revogação é por usuário, não por token — vide abaixo).
+
+**Response 204** — revoga **todas as sessões do usuário** (`sub`): cada `jti` rastreado em `auth:user-sessions:${sub}` é adicionado à blacklist Redis e o Set é purgado. Semântica de produto: **logout encerra a sessão em todos os dispositivos** ("logout everywhere"). TTL do blacklist = `USER_SESSIONS_TTL_SECONDS` (invariante: ≥ TTL máximo de refresh). [Amendado 2026-07-20 — antes: revogação per-token (jti do access + refresh do body). Motivo: o refresh reativo do FE abriu um gap (logout com access expirado deixava o refresh rotacionado vivo). DEC 2026-07-20 logout-revoke-all-sessions.]
 
 ---
 
