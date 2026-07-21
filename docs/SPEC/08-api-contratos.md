@@ -471,7 +471,8 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
       "nome": "string",
       "emExpediente": "boolean",
       "tiposAutorizadosIds": "string[] — NOVO (amendment 2026-07-16, compat operador↔tipo): ids de TipoMaquinario com registro em OperadorTipoMaquinario (habilitação estática)",
-      "tipoMaquinarioAtualId": "string | null — NOVO: TipoMaquinario do maquinário do expediente aberto (RegistroExpediente → Maquinario.tipoMaquinarioId); null se fora de expediente"
+      "tipoMaquinarioAtualId": "string | null — NOVO: TipoMaquinario do maquinário do expediente aberto (RegistroExpediente → Maquinario.tipoMaquinarioId); null se fora de expediente",
+      "setoresIds": "string[] — NOVO (amendment 2026-07-21, DEC-058, REQ-JOR-002): ids de SetorOperacional com registro em OperadorSetorOperacional; lista vazia = operador atua na obra inteira. Alimenta o eixo de setor (hint, sem desabilitar ninguém) do modal de alocação manual."
     }
   ]
 }
@@ -505,7 +506,10 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
   "iniciadoEm": "ISO8601 | null",
   "finalizadoEm": "ISO8601 | null",
   "posicaoFila": "string | null",
-  "tipoMaquinarioId": "string | null — NOVO (amendment 2026-07-16, compat operador↔tipo): p/ o modal Alocar filtrar/desabilitar operadores incompatíveis; null = demanda legado (sem check no POST /demandas/:id/alocar)"
+  "tipoMaquinarioId": "string | null — NOVO (amendment 2026-07-16, compat operador↔tipo): p/ o modal Alocar filtrar/desabilitar operadores incompatíveis; null = demanda legado (sem check no POST /demandas/:id/alocar)",
+  "setorOperacionalId": "string | null — NOVO (amendment 2026-07-21, DEC-058, REQ-JOR-002): setor de origem da demanda; null = demanda legado sem setor derivado",
+  "setorNome": "string | null — NOVO: nome do SetorOperacional acima, p/ exibição",
+  "semCoberturaSetor": "boolean — NOVO, computado no read-side (nunca persistido): true quando a demanda está PENDENTE sem operador alocado e existe operador em expediente habilitado no tipo, mas nenhum do setor da demanda. Alimenta o badge \"Sem operador no setor\""
 }
 ```
 
@@ -555,7 +559,9 @@ Este módulo define os contratos de interface REST do `apps/api` (NestJS). Os sc
       "rolloverInicioSla": "ISO8601 | null — permanece no contrato, UI não deriva SLA (DEC 2026-07-17)",
       "operadorAlocado": "{ id: uuid, nome: string } | null",
       "iniciadoEm": "ISO8601 | null",
-      "posicaoFila": "string | null — FE deriva '⚑ manual' = !== null"
+      "posicaoFila": "string | null — FE deriva '⚑ manual' = !== null",
+      "setorNome": "string | null — NOVO (amendment 2026-07-21, DEC-058, REQ-JOR-002): nome do SetorOperacional de origem da demanda; null = demanda legado sem setor derivado",
+      "semCoberturaSetor": "boolean — NOVO, computado no read-side (nunca persistido): true quando a demanda está PENDENTE sem operador alocado e existe operador em expediente habilitado no tipo, mas nenhum do setor da demanda"
     }
   ]
 }
@@ -899,11 +905,12 @@ Admin rejeita solicitação de cancelamento do operador. Demanda permanece no es
   "email": "string | null (OPCIONAL)",
   "obraId": "uuid (só SuperAdmin; AdminOperacional ignora; obrigatório p/ SuperAdmin → 400 OPR-010 se ausente)",
   "tiposMaquinarioIds": "uuid[] (deduplicado; ≥0 permitido)",
-  "maquinariosIds": "uuid[] (deduplicado; default [] — ADR 0004; cascata: cada máquina deve pertencer a um tipo em tiposMaquinarioIds)"
+  "maquinariosIds": "uuid[] (deduplicado; default [] — ADR 0004; cascata: cada máquina deve pertencer a um tipo em tiposMaquinarioIds)",
+  "setoresIds": "uuid[] (OPCIONAL, deduplicado, default [] — DEC-058, REQ-JOR-002; lista vazia = operador atua na obra inteira)"
 }
 ```
 **Response 201 (T4.4):** `{ operador: OperadorView, pin: "string (6 dígitos, gerado no servidor, claro 1×)" }`. `OperadorView` permanece sem `pin`/`pinHash` (reusado por GET/list/PATCH).
-**Erros:** `400` validação / `400 OPR-010` SuperAdmin sem `obraId` · `404` obra não encontrada / `404 OPR-008` tipoMaquinario inexistente / `404 TEN-001` máquina inexistente ou fora do tenant · `422 OPR-012` máquina fora dos tipos habilitados (cascata, ADR 0004) · `409 USR-004` CPF duplicado / `409 USR-001` email duplicado / `409 OPR-009` operador já existe p/ user (backstop) · `401/403`.
+**Erros:** `400` validação / `400 OPR-010` SuperAdmin sem `obraId` · `404` obra não encontrada / `404 OPR-008` tipoMaquinario inexistente / `404 TEN-001` máquina inexistente ou fora do tenant / `404 TEN-001` setor (`setoresIds`) inexistente ou de obra diferente (DEC-058) · `422 OPR-012` máquina fora dos tipos habilitados (cascata, ADR 0004) · `409 USR-004` CPF duplicado / `409 USR-001` email duplicado / `409 OPR-009` operador já existe p/ user (backstop) · `401/403`.
 
 ### GET /operadores — Listar operadores (cadastro admin, paginado) — T4.2
 
@@ -918,7 +925,29 @@ Admin rejeita solicitação de cancelamento do operador. Demanda permanece no es
 
 ### PATCH /operadores/:id — Re-autorizar (replace-whole-set N:M + máquinas) — T4.2 / ADR 0004
 
-**Perfis:** `SuperAdmin`, `AdminOperacional` (machinery:operador:update). **Request (`updateOperadorSchema`, `.strict()`):** `{ "tiposMaquinarioIds": "uuid[]", "maquinariosIds": "uuid[]" }` (**ambos obrigatórios**; ausência de qualquer um → 400). Idempotente: substitui os **dois** conjuntos (`OperadorTipoMaquinario` e `OperadorMaquinario`) atomicamente na mesma transação — replace-whole-set combinado (ADR 0004 D6). Valida cascata: toda máquina em `maquinariosIds` deve ter `tipoMaquinarioId ∈ tiposMaquinarioIds` do mesmo request. **Response 200:** `OperadorView`. Edita **só** autorizações (identidade via `PATCH /usuarios/:id`). **Erros adicionais:** `404 OPR-008` tipoMaquinario inexistente · `404 TEN-001` máquina inexistente/cross-tenant · `422 OPR-012` violação de cascata (máquina fora dos tipos habilitados).
+**Perfis:** `SuperAdmin`, `AdminOperacional` (machinery:operador:update). **Request (`updateOperadorSchema`, `.strict()`):** `{ "tiposMaquinarioIds": "uuid[]", "maquinariosIds": "uuid[]", "setoresIds": "uuid[]" }` (**os três obrigatórios**; ausência de qualquer um → 400). Idempotente: substitui os **três** conjuntos (`OperadorTipoMaquinario`, `OperadorMaquinario` e `OperadorSetorOperacional`) atomicamente na mesma transação — replace-whole-set combinado (ADR 0004 D6; `setoresIds` — DEC-058, `REQ-JOR-002`). Valida cascata: toda máquina em `maquinariosIds` deve ter `tipoMaquinarioId ∈ tiposMaquinarioIds` do mesmo request. `setoresIds` deduplicado, validado contra setores da **mesma obra do operador** (senão `404 TEN-001`); lista vazia = operador atua na obra inteira. **Response 200:** `OperadorView`. Edita **só** autorizações (identidade via `PATCH /usuarios/:id`). **Erros adicionais:** `404 OPR-008` tipoMaquinario inexistente · `404 TEN-001` máquina inexistente/cross-tenant / setor (`setoresIds`) inexistente ou de obra diferente · `422 OPR-012` violação de cascata (máquina fora dos tipos habilitados).
+
+### PATCH /operadores/:id/setores — Editar setores de atuação (carve-out `TOWER_OPERATOR`) — Novo, DEC-058
+
+**Rastreio PRD:** `REQ-JOR-002` · Design: `docs/superpowers/specs/2026-07-21-operador-setores-atuacao-design.md` · DEC-058 (molde DEC-040)
+
+> Endpoint dedicado — **não** exige o CRUD completo de Operador. Existe porque
+> `TOWER_OPERATOR` precisa realocar operador de rua/setor no dia-a-dia da fila (quick-edit no
+> Kanban), mas **não** tem acesso a `PATCH /operadores/:id` (autorizações de tipo/máquina)
+> nem ao restante do cadastro. Mesma obra do JWT — **sem** bypass de tenant.
+
+**Perfis:** `SuperAdmin`, `AdminOperacional`, `TowerOperator` (`machinery:operador-setor:update`)
+
+**Request (`.strict()`):**
+```json
+{
+  "setoresIds": "uuid[] (deduplicado; lista vazia = operador atua na obra inteira)"
+}
+```
+
+**Response 200:** `OperadorView` com `setoresAtuacao` atualizado.
+
+**Erros:** `400` validação (`setoresIds` ausente ou não-array de uuid) · `403 RBAC-001` perfil fora de `machinery:operador-setor:update` · `404 TEN-001` operador inexistente/cross-tenant OU algum `setorOperacionalId` inexistente/de obra diferente · `401/403` guards globais.
 
 ### DELETE /operadores/:id — Excluir operador (soft-delete) — T4.2
 
@@ -973,10 +1002,11 @@ Operador), `REQ-NFR-007` (política de PIN — DEC-004).
   "email": "string | null", "obraId": "uuid",
   "ativo": "boolean (user.deletadoEm === null)",
   "tiposMaquinario": [{ "id": "uuid", "nome": "string" }],
-  "maquinarios": [{ "id": "uuid", "nome": "string", "tipoMaquinarioId": "uuid" }]
+  "maquinarios": [{ "id": "uuid", "nome": "string", "tipoMaquinarioId": "uuid" }],
+  "setoresAtuacao": [{ "id": "uuid", "nome": "string" }]
 }
 ```
-NUNCA expõe `pinHash`. `maquinarios` (ADR 0004) é o conjunto `OperadorMaquinario` — máquinas específicas liberadas para o check-in; distinto de `tiposMaquinario` (competência).
+NUNCA expõe `pinHash`. `maquinarios` (ADR 0004) é o conjunto `OperadorMaquinario` — máquinas específicas liberadas para o check-in; distinto de `tiposMaquinario` (competência). `setoresAtuacao` (DEC-058, `REQ-JOR-002`) é o conjunto `OperadorSetorOperacional`, ordenado por `nome` asc pt-BR; **lista vazia = operador atua na obra inteira**.
 
 ---
 
@@ -1448,7 +1478,7 @@ em sucesso.
 
 **Response 204**
 
-**Erros:** `404 TEN-001` setor não encontrado · `409 REC-002` setor possui quadras ou locais externos vinculados (hard-delete bloqueado por dependências — ADR 2026-05-21, DEC-045)
+**Erros:** `404 TEN-001` setor não encontrado · `409 REC-002` setor possui quadras, locais externos ou **operadores vinculados** (`OperadorSetorOperacional` — amendment 2026-07-21, DEC-058) (hard-delete bloqueado por dependências — ADR 2026-05-21, DEC-045)
 
 ---
 

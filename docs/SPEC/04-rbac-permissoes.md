@@ -184,6 +184,7 @@ Os perfis assinalados com `cross` têm autorização de atuar ignorando restriç
 | `machinery:operador:reject` | — | — | — | — | — | — |
 | `machinery:operador:allocate` | — | — | — | — | — | — |
 | `machinery:operador:export` | cross | cross | ✓ | ✓ | ✗ | ✗ |
+| `machinery:operador-setor:update` *[12] | ✓ | ✗ | ✓ | ✗ | ✗ | ✗ |
 | `machinery:empreiteira:create` | ✓ | ✗ | ✓ | ✗ | ✗ | ✗ |
 | `machinery:empreiteira:read` | cross | cross | ✓ | ✓ | ✗ [10] | ✗ |
 | `machinery:prontidao:read` [11] | cross | cross | ✓ | ✗ | ✗ | ✗ |
@@ -239,6 +240,7 @@ O perfil `TOWER_OPERATOR` não possui coluna dedicada na matriz acima: suas perm
 - **Leitura de prontidão da obra (`machinery:prontidao:read`, DEC-046 — alargado DEC-052):** `TOWER_OPERATOR` lê `GET /obras/:obraId/prontidao` (`PRONTIDAO_READ_PERFIS`) e vê o banner de prontidão no dashboard de gestão — mesma obra, sem bypass. Antes de DEC-052 o perfil era excluído (só `SuperAdmin`/`Board`/`AdminOperacional`); Paulo confirmou (2026-07-17) que o `TOWER_OPERATOR` deve vê-lo, por operar o Kanban/fila lado a lado com o `AdminOperacional`.
 - **Tenant-scoped:** restrito ao `obraId` da claim do JWT, como `Operador`/`Empreiteiro` — **sem** bypass cross-tenant.
 - **Provisionamento (DEC-048):** usuários `TOWER_OPERATOR` são criados/desativados na tela dedicada do módulo (`/machinery-link/{obraId}/tower-operators`), obra-scoped, pelo mesmo contrato `POST /usuarios` (perfil `TowerOperator`, `obraId` derivado do path) — não mais pela tela de plataforma (`/ops/usuarios`, restrita a `SuperAdmin`/`Board` desde DEC-048). RBAC inalterado (`USUARIO_WRITE_PERFIS`).
+- **Escrita — 2ª exceção `machinery:operador-setor:update` (carve-out — DEC-058, molde DEC-040):** o `TOWER_OPERATOR` pode editar os setores de atuação de um operador via `PATCH /operadores/:id/setores` (`{ setoresIds: string[] }`, replace-whole-set, mesma obra do JWT, **sem** bypass de tenant) — realocar operador de rua conforme a frente de obra avança é tarefa rotineira de quem orquestra a fila. **Não** ganha acesso ao CRUD completo de Operador (`POST`/`PATCH /operadores` seguem restritos a `AdminOperacional`/`SuperAdmin`); o carve-out é estrito ao vínculo de setores.
 
 [1] Apenas sobre usuários pertencentes à mesma obra e com perfil hierárquico inferior ou igual.
 [2] Permitido estritamente para leitura de registros da sua autoria ou inerentes ao seu cadastro/entidade.
@@ -251,6 +253,7 @@ O perfil `TOWER_OPERATOR` não possui coluna dedicada na matriz acima: suas perm
 [9] `core:obra:configuracoes` (DEC-050): edição da janela de expediente (`GET/PATCH /obras/:id/configuracoes`) — liberada a `AdminOperacional` **além** de `SuperAdmin`, diferente de `core:obra:update` (só `SuperAdmin`). Escopo restrito aos 4 campos de expediente (`expedienteInicio`/`expedienteFim`/`limiteHoraExtraMin`/`diasAtivos`); não permite editar demais dados da obra.
 [10] `machinery:empreiteira:read` — `Empreiteiro` **removido** do read (amendment 2026-07-08, global-catalog): o catálogo de empreiteiras deixou de ser legível por `Empreiteiro`/`Operador`/`TOWER_OPERATOR`. Fonte única `EMPREITEIRA_READ_PERFIS` (`packages/types/src/perfis.ts`) = `SuperAdmin`/`Board`/`AdminOperacional`/`UsuarioInternoFGR`. Antes desta mudança o `Empreiteiro` tinha `✓*[2]` (leitura da própria entidade).
 [11] `machinery:prontidao:read` (DEC-046, alargado DEC-052): `GET /obras/:obraId/prontidao`, fonte única `PRONTIDAO_READ_PERFIS`. `SuperAdmin`/`Board` cross-tenant (overview da shell, uma chamada por obra); **+ `TOWER_OPERATOR`** — que não tem coluna na matriz, ver subseção "Perfil TOWER_OPERATOR". `UsuarioInternoFGR` fora (não opera a fila).
+[12] `machinery:operador-setor:update` (carve-out — DEC-058, molde DEC-040): `PATCH /operadores/:id/setores` (`{ setoresIds: string[] }`, replace-whole-set) — liberado a `SuperAdmin`, `AdminOperacional` **e `TOWER_OPERATOR`** (que não tem coluna na matriz, ver subseção "Perfil TOWER_OPERATOR"). Carve-out cirúrgico: mesma obra do JWT, sem bypass de tenant; `TOWER_OPERATOR` segue **sem** acesso ao restante do CRUD de Operador (`machinery:operador:create`/`update`/`delete` permanecem ✗ para o perfil).
 
 > **Amendment 2026-07-11 — Slice 7:** o carve-out `TOWER_OPERATOR` se estende a `machinery:demanda:cancel` e a `devolver` (via `PATCH /demandas/:id/estado`) — sempre mesma obra, sem bypass de tenant. `update`/`delete`/`export` seguem ✗. Ver DEC tática `memory/decisions/2026-07-10-slice-7-transicoes-http-ui.md` (ponto 1).
 
